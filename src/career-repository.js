@@ -1,30 +1,66 @@
 // IndexedDB keeps full world careers and their recovery copy outside localStorage's small quota.
 export async function openCareerRepository(factory = indexedDB) {
-  const db = await new Promise((resolve, reject) => {
-    const request = factory.open('footcore-careers', 1);
-    request.onupgradeneeded = () => request.result.createObjectStore('careers');
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  let database = null;
+  let opening = null;
+  const connect = async () => {
+    if (database) return database;
+    if (opening) return opening;
+    opening = new Promise((resolve, reject) => {
+      let request;
+      try { request = factory.open('footcore-careers', 1); }
+      catch (error) { reject(error); return; }
+      request.onupgradeneeded = () => {
+        if (!request.result.objectStoreNames.contains('careers')) request.result.createObjectStore('careers');
+      };
+      request.onsuccess = () => {
+        const connection = request.result;
+        connection.onversionchange = () => connection.close();
+        connection.onclose = () => { if (database === connection) database = null; };
+        database = connection;
+        resolve(connection);
+      };
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => reject(new Error('O salvamento está aberto em outra aba.'));
+    });
+    try { return await opening; }
+    finally { opening = null; }
+  };
+  const isClosedConnection = error => error?.name === 'InvalidStateError' || /connection is (closing|closed)|database connection is closing/i.test(error?.message || '');
+  const withConnection = async operation => {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const connection = await connect();
+      try { return await operation(connection); }
+      catch (error) {
+        if (attempt || !isClosedConnection(error)) throw error;
+        if (database === connection) database = null;
+        try { connection.close(); } catch {}
+      }
+    }
+  };
   let queue = Promise.resolve();
   let hasBackup = false;
-  const read = key => new Promise((resolve, reject) => {
-    const request = db.transaction('careers').objectStore('careers').get(key);
+  const read = key => withConnection(connection => new Promise((resolve, reject) => {
+    let request;
+    try { request = connection.transaction('careers').objectStore('careers').get(key); }
+    catch (error) { reject(error); return; }
     request.onsuccess = () => resolve(request.result ?? null);
     request.onerror = () => reject(request.error);
-  });
+  }));
   const write = entries => {
     // Capture now: callers may change the live match before this transaction starts.
     const snapshot = structuredClone(entries);
-    const operation = queue.then(() => new Promise((resolve, reject) => {
-      const tx = db.transaction('careers', 'readwrite');
+    const operation = queue.then(() => withConnection(connection => new Promise((resolve, reject) => {
+      let tx;
+      try { tx = connection.transaction('careers', 'readwrite'); }
+      catch (error) { reject(error); return; }
       tx.oncomplete = () => resolve();
       tx.onerror = tx.onabort = () => reject(tx.error || new Error('Falha ao salvar a carreira.'));
       for (const [key, value] of snapshot) tx.objectStore('careers').put(value, key);
-    }));
+    })));
     queue = operation.catch(() => {});
     return operation;
   };
+  await connect();
   hasBackup = !!await read('previous');
   return {
     get hasBackup() { return hasBackup; },
