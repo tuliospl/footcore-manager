@@ -1,0 +1,5672 @@
+{
+  "version": 1,
+  "name": "MKFP 02-09-26",
+  "clubs": 559,
+  "players": 15400,
+  "countries": [
+    {
+      "code": "DEU",
+      "name": "Alemanha"
+    },
+    {
+      "code": "SAU",
+      "name": "Arábia Saudita"
+    },
+    {
+      "code": "ARG",
+      "name": "Argentina"
+    },
+    {
+      "code": "BRA",
+      "name": "Brasil"
+    },
+    {
+      "code": "COL",
+      "name": "Colômbia"
+    },
+    {
+      "code": "ESP",
+      "name": "Espanha"
+    },
+    {
+      "code": "USA",
+      "name": "Estados Unidos"
+    },
+    {
+      "code": "FRA",
+      "name": "França"
+    },
+    {
+      "code": "NLD",
+      "name": "Holanda"
+    },
+    {
+      "code": "ENG",
+      "name": "Inglaterra"
+    },
+    {
+      "code": "ITA",
+      "name": "Itália"
+    },
+    {
+      "code": "JPN",
+      "name": "Japão"
+    },
+    {
+      "code": "MEX",
+      "name": "México"
+    },
+    {
+      "code": "PRY",
+      "name": "Paraguai"
+    },
+    {
+      "code": "PRT",
+      "name": "Portugal"
+    },
+    {
+      "code": "RUS",
+      "name": "Rússia"
+    },
+    {
+      "code": "TUR",
+      "name": "Turquia"
+    },
+    {
+      "code": "URY",
+      "name": "Uruguai"
+    }
+  ],
+  "teams": [
+    {
+      "id": "arg-acassuso-f70e8ff1",
+      "name": "Acassuso",
+      "country": "ARG",
+      "players": 30,
+      "strength": 48,
+      "stadium": "La Quema",
+      "csv": "data/m26/times/arg-acassuso-f70e8ff1.csv",
+      "badgePath": "data/m26/escudos/arg-acassuso-f70e8ff1.png"
+    },
+    {
+      "id": "arg-agropecuario-b247500d",
+      "name": "Agropecuario",
+      "country": "ARG",
+      "players": 30,
+      "strength": 58,
+      "stadium": "Ofelia Rosenzuaig",
+      "csv": "data/m26/times/arg-agropecuario-b247500d.csv",
+      "badgePath": "data/m26/escudos/arg-agropecuario-b247500d.png"
+    },
+    {
+      "id": "arg-aldosivi-7a412955",
+      "name": "Aldosivi",
+      "country": "ARG",
+      "players": 30,
+      "strength": 73,
+      "stadium": "José María Minella",
+      "csv": "data/m26/times/arg-aldosivi-7a412955.csv",
+      "badgePath": "data/m26/escudos/arg-aldosivi-7a412955.png"
+    },
+    {
+      "id": "arg-all-boys-086666f8",
+      "name": "All Boys",
+      "country": "ARG",
+      "players": 28,
+      "strength": 53,
+      "stadium": "Islas Malvinas",
+      "csv": "data/m26/times/arg-all-boys-086666f8.csv",
+      "badgePath": "data/m26/escudos/arg-all-boys-086666f8.png"
+    },
+    {
+      "id": "arg-almagro-1442efc0",
+      "name": "Almagro",
+      "country": "ARG",
+      "players": 24,
+      "strength": 53,
+      "stadium": "Tres de Febrero",
+      "csv": "data/m26/times/arg-almagro-1442efc0.csv",
+      "badgePath": "data/m26/escudos/arg-almagro-1442efc0.png"
+    },
+    {
+      "id": "arg-almirante-brown-738d30bc",
+      "name": "Almirante Brown",
+      "country": "ARG",
+      "players": 28,
+      "strength": 58,
+      "stadium": "Fragata Presidente Sarmiento",
+      "csv": "data/m26/times/arg-almirante-brown-738d30bc.csv",
+      "badgePath": "data/m26/escudos/arg-almirante-brown-738d30bc.png"
+    },
+    {
+      "id": "arg-argentinos-juniors-9a4282b1",
+      "name": "Argentinos Juniors",
+      "country": "ARG",
+      "players": 30,
+      "strength": 85,
+      "stadium": "Diego Armando Maradona",
+      "csv": "data/m26/times/arg-argentinos-juniors-9a4282b1.csv",
+      "badgePath": "data/m26/escudos/arg-argentinos-juniors-9a4282b1.png"
+    },
+    {
+      "id": "arg-atlanta-89ff6e80",
+      "name": "Atlanta",
+      "country": "ARG",
+      "players": 30,
+      "strength": 61,
+      "stadium": "León Kolbowski",
+      "csv": "data/m26/times/arg-atlanta-89ff6e80.csv",
+      "badgePath": "data/m26/escudos/arg-atlanta-89ff6e80.png"
+    },
+    {
+      "id": "arg-atletico-de-rafaela-41836dcd",
+      "name": "Atlético de Rafaela",
+      "country": "ARG",
+      "players": 30,
+      "strength": 58,
+      "stadium": "Nuevo Monumental",
+      "csv": "data/m26/times/arg-atletico-de-rafaela-41836dcd.csv",
+      "badgePath": "data/m26/escudos/arg-atletico-de-rafaela-41836dcd.png"
+    },
+    {
+      "id": "arg-atletico-tucuman-3972677e",
+      "name": "Atlético Tucumán",
+      "country": "ARG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Monumental José Fierro",
+      "csv": "data/m26/times/arg-atletico-tucuman-3972677e.csv",
+      "badgePath": "data/m26/escudos/arg-atletico-tucuman-3972677e.png"
+    },
+    {
+      "id": "arg-banfield-03651d4c",
+      "name": "Banfield",
+      "country": "ARG",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Florencio Sola",
+      "csv": "data/m26/times/arg-banfield-03651d4c.csv",
+      "badgePath": "data/m26/escudos/arg-banfield-03651d4c.png"
+    },
+    {
+      "id": "arg-barracas-central-01d92c05",
+      "name": "Barracas Central",
+      "country": "ARG",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Claudio Chiqui Tapia",
+      "csv": "data/m26/times/arg-barracas-central-01d92c05.csv",
+      "badgePath": "data/m26/escudos/arg-barracas-central-01d92c05.png"
+    },
+    {
+      "id": "arg-belgrano-f828062a",
+      "name": "Belgrano",
+      "country": "ARG",
+      "players": 21,
+      "strength": 83,
+      "stadium": "Julio César Villagra",
+      "csv": "data/m26/times/arg-belgrano-f828062a.csv",
+      "badgePath": "data/m26/escudos/arg-belgrano-f828062a.png"
+    },
+    {
+      "id": "arg-boca-juniors-0a04924a",
+      "name": "Boca Juniors",
+      "country": "ARG",
+      "players": 30,
+      "strength": 86,
+      "stadium": "La Bombonera",
+      "csv": "data/m26/times/arg-boca-juniors-0a04924a.csv",
+      "badgePath": "data/m26/escudos/arg-boca-juniors-0a04924a.png"
+    },
+    {
+      "id": "arg-central-cordoba-sde-5381c083",
+      "name": "Central Córdoba (SdE)",
+      "country": "ARG",
+      "players": 26,
+      "strength": 74,
+      "stadium": "Único Madre de Ciudades",
+      "csv": "data/m26/times/arg-central-cordoba-sde-5381c083.csv",
+      "badgePath": "data/m26/escudos/arg-central-cordoba-sde-5381c083.png"
+    },
+    {
+      "id": "arg-central-norte-c5d52eb7",
+      "name": "Central Norte",
+      "country": "ARG",
+      "players": 28,
+      "strength": 50,
+      "stadium": "Padre Ernesto Martearena",
+      "csv": "data/m26/times/arg-central-norte-c5d52eb7.csv",
+      "badgePath": "data/m26/escudos/arg-central-norte-c5d52eb7.png"
+    },
+    {
+      "id": "arg-chacarita-juniors-42f110de",
+      "name": "Chacarita Juniors",
+      "country": "ARG",
+      "players": 25,
+      "strength": 53,
+      "stadium": "Chacarita Juniors",
+      "csv": "data/m26/times/arg-chacarita-juniors-42f110de.csv",
+      "badgePath": "data/m26/escudos/arg-chacarita-juniors-42f110de.png"
+    },
+    {
+      "id": "arg-chaco-for-ever-fbae8310",
+      "name": "Chaco For Ever",
+      "country": "ARG",
+      "players": 25,
+      "strength": 53,
+      "stadium": "Juan Alberto García",
+      "csv": "data/m26/times/arg-chaco-for-ever-fbae8310.csv",
+      "badgePath": "data/m26/escudos/arg-chaco-for-ever-fbae8310.png"
+    },
+    {
+      "id": "arg-ciudad-de-bolivar-d1af0e09",
+      "name": "Ciudad de Bolivar",
+      "country": "ARG",
+      "players": 28,
+      "strength": 58,
+      "stadium": "Municipal Eva Perón",
+      "csv": "data/m26/times/arg-ciudad-de-bolivar-d1af0e09.csv",
+      "badgePath": "data/m26/escudos/arg-ciudad-de-bolivar-d1af0e09.png"
+    },
+    {
+      "id": "arg-colegiales-5daee31d",
+      "name": "Colegiales",
+      "country": "ARG",
+      "players": 30,
+      "strength": 56,
+      "stadium": "Libertarios Unidos",
+      "csv": "data/m26/times/arg-colegiales-5daee31d.csv",
+      "badgePath": "data/m26/escudos/arg-colegiales-5daee31d.png"
+    },
+    {
+      "id": "arg-colon-be3e111a",
+      "name": "Colón",
+      "country": "ARG",
+      "players": 25,
+      "strength": 61,
+      "stadium": "General Estanislao López",
+      "csv": "data/m26/times/arg-colon-be3e111a.csv",
+      "badgePath": "data/m26/escudos/arg-colon-be3e111a.png"
+    },
+    {
+      "id": "arg-defensa-y-justicia-a6bc87cd",
+      "name": "Defensa y Justicia",
+      "country": "ARG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Norberto Tomaghello",
+      "csv": "data/m26/times/arg-defensa-y-justicia-a6bc87cd.csv",
+      "badgePath": "data/m26/escudos/arg-defensa-y-justicia-a6bc87cd.png"
+    },
+    {
+      "id": "arg-defensores-de-belgrano-4abaf454",
+      "name": "Defensores de Belgrano",
+      "country": "ARG",
+      "players": 23,
+      "strength": 56,
+      "stadium": "Juan Pasquale",
+      "csv": "data/m26/times/arg-defensores-de-belgrano-4abaf454.csv",
+      "badgePath": "data/m26/escudos/arg-defensores-de-belgrano-4abaf454.png"
+    },
+    {
+      "id": "arg-deportivo-madryn-1175e69f",
+      "name": "Deportivo Madryn",
+      "country": "ARG",
+      "players": 26,
+      "strength": 68,
+      "stadium": "Abel Sastre",
+      "csv": "data/m26/times/arg-deportivo-madryn-1175e69f.csv",
+      "badgePath": "data/m26/escudos/arg-deportivo-madryn-1175e69f.png"
+    },
+    {
+      "id": "arg-deportivo-maipu-7e4f7c81",
+      "name": "Deportivo Maipú",
+      "country": "ARG",
+      "players": 27,
+      "strength": 64,
+      "stadium": "Omar Higinio Sperdutti",
+      "csv": "data/m26/times/arg-deportivo-maipu-7e4f7c81.csv",
+      "badgePath": "data/m26/escudos/arg-deportivo-maipu-7e4f7c81.png"
+    },
+    {
+      "id": "arg-deportivo-moron-b315cc5a",
+      "name": "Deportivo Morón",
+      "country": "ARG",
+      "players": 28,
+      "strength": 68,
+      "stadium": "Nuevo Francisco Urbano",
+      "csv": "data/m26/times/arg-deportivo-moron-b315cc5a.csv",
+      "badgePath": "data/m26/escudos/arg-deportivo-moron-b315cc5a.png"
+    },
+    {
+      "id": "arg-deportivo-riestra-a227226d",
+      "name": "Deportivo Riestra",
+      "country": "ARG",
+      "players": 29,
+      "strength": 76,
+      "stadium": "Guillermo Laza",
+      "csv": "data/m26/times/arg-deportivo-riestra-a227226d.csv",
+      "badgePath": "data/m26/escudos/arg-deportivo-riestra-a227226d.png"
+    },
+    {
+      "id": "arg-estudiantes-509bc120",
+      "name": "Estudiantes",
+      "country": "ARG",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Jorge Luis Hirschi",
+      "csv": "data/m26/times/arg-estudiantes-509bc120.csv",
+      "badgePath": "data/m26/escudos/arg-estudiantes-509bc120.png"
+    },
+    {
+      "id": "arg-estudiantes-de-caseros-e5b219c2",
+      "name": "Estudiantes de Caseros",
+      "country": "ARG",
+      "players": 30,
+      "strength": 64,
+      "stadium": "Ciudad de Caseros",
+      "csv": "data/m26/times/arg-estudiantes-de-caseros-e5b219c2.csv",
+      "badgePath": "data/m26/escudos/arg-estudiantes-de-caseros-e5b219c2.png"
+    },
+    {
+      "id": "arg-estudiantes-de-rio-cuarto-6a273c15",
+      "name": "Estudiantes de Río Cuarto",
+      "country": "ARG",
+      "players": 30,
+      "strength": 72,
+      "stadium": "Antonio Candini",
+      "csv": "data/m26/times/arg-estudiantes-de-rio-cuarto-6a273c15.csv",
+      "badgePath": "data/m26/escudos/arg-estudiantes-de-rio-cuarto-6a273c15.png"
+    },
+    {
+      "id": "arg-ferro-carril-oeste-31d9698a",
+      "name": "Ferro Carril Oeste",
+      "country": "ARG",
+      "players": 26,
+      "strength": 67,
+      "stadium": "Arquitecto Ricardo Etcheverri",
+      "csv": "data/m26/times/arg-ferro-carril-oeste-31d9698a.csv",
+      "badgePath": "data/m26/escudos/arg-ferro-carril-oeste-31d9698a.png"
+    },
+    {
+      "id": "arg-gimnasia-de-jujuy-c9afc112",
+      "name": "Gimnasia de Jujuy",
+      "country": "ARG",
+      "players": 30,
+      "strength": 64,
+      "stadium": "23 de Agosto",
+      "csv": "data/m26/times/arg-gimnasia-de-jujuy-c9afc112.csv",
+      "badgePath": "data/m26/escudos/arg-gimnasia-de-jujuy-c9afc112.png"
+    },
+    {
+      "id": "arg-gimnasia-de-mendoza-33381eda",
+      "name": "Gimnasia de Mendoza",
+      "country": "ARG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Víctor A. Legrotaglie",
+      "csv": "data/m26/times/arg-gimnasia-de-mendoza-33381eda.csv",
+      "badgePath": "data/m26/escudos/arg-gimnasia-de-mendoza-33381eda.png"
+    },
+    {
+      "id": "arg-gimnasia-la-plata-c7e98cb2",
+      "name": "Gimnasia La Plata",
+      "country": "ARG",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Juan Carmelo Zerillo",
+      "csv": "data/m26/times/arg-gimnasia-la-plata-c7e98cb2.csv",
+      "badgePath": "data/m26/escudos/arg-gimnasia-la-plata-c7e98cb2.png"
+    },
+    {
+      "id": "arg-gimnasia-y-tiro-d96931e0",
+      "name": "Gimnasia y Tiro",
+      "country": "ARG",
+      "players": 26,
+      "strength": 67,
+      "stadium": "El Gigante del Norte",
+      "csv": "data/m26/times/arg-gimnasia-y-tiro-d96931e0.csv",
+      "badgePath": "data/m26/escudos/arg-gimnasia-y-tiro-d96931e0.png"
+    },
+    {
+      "id": "arg-godoy-cruz-06697542",
+      "name": "Godoy Cruz",
+      "country": "ARG",
+      "players": 30,
+      "strength": 64,
+      "stadium": "Feliciano Gambarte",
+      "csv": "data/m26/times/arg-godoy-cruz-06697542.csv",
+      "badgePath": "data/m26/escudos/arg-godoy-cruz-06697542.png"
+    },
+    {
+      "id": "arg-guemes-c2e6b305",
+      "name": "Güemes",
+      "country": "ARG",
+      "players": 28,
+      "strength": 48,
+      "stadium": "Arturo Miranda",
+      "csv": "data/m26/times/arg-guemes-c2e6b305.csv",
+      "badgePath": "data/m26/escudos/arg-guemes-c2e6b305.png"
+    },
+    {
+      "id": "arg-huracan-2f9f1eb7",
+      "name": "Huracán",
+      "country": "ARG",
+      "players": 27,
+      "strength": 81,
+      "stadium": "Tomás Adolfo Ducó",
+      "csv": "data/m26/times/arg-huracan-2f9f1eb7.csv",
+      "badgePath": "data/m26/escudos/arg-huracan-2f9f1eb7.png"
+    },
+    {
+      "id": "arg-independiente-5f9f0d98",
+      "name": "Independiente",
+      "country": "ARG",
+      "players": 26,
+      "strength": 83,
+      "stadium": "Libertadores de América",
+      "csv": "data/m26/times/arg-independiente-5f9f0d98.csv",
+      "badgePath": "data/m26/escudos/arg-independiente-5f9f0d98.png"
+    },
+    {
+      "id": "arg-independiente-rivadavia-ac2d5a2d",
+      "name": "Independiente Rivadavia",
+      "country": "ARG",
+      "players": 28,
+      "strength": 84,
+      "stadium": "Bautista Gargantini",
+      "csv": "data/m26/times/arg-independiente-rivadavia-ac2d5a2d.csv",
+      "badgePath": "data/m26/escudos/arg-independiente-rivadavia-ac2d5a2d.png"
+    },
+    {
+      "id": "arg-instituto-007d3dae",
+      "name": "Instituto",
+      "country": "ARG",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Monumental Presidente Perón",
+      "csv": "data/m26/times/arg-instituto-007d3dae.csv",
+      "badgePath": "data/m26/escudos/arg-instituto-007d3dae.png"
+    },
+    {
+      "id": "arg-lanus-a7dee1d7",
+      "name": "Lanús",
+      "country": "ARG",
+      "players": 25,
+      "strength": 80,
+      "stadium": "La Fortaleza",
+      "csv": "data/m26/times/arg-lanus-a7dee1d7.csv",
+      "badgePath": "data/m26/escudos/arg-lanus-a7dee1d7.png"
+    },
+    {
+      "id": "arg-los-andes-95ebb8e3",
+      "name": "Los Andes",
+      "country": "ARG",
+      "players": 27,
+      "strength": 56,
+      "stadium": "Eduardo Gallardón",
+      "csv": "data/m26/times/arg-los-andes-95ebb8e3.csv",
+      "badgePath": "data/m26/escudos/arg-los-andes-95ebb8e3.png"
+    },
+    {
+      "id": "arg-midland-35fed85b",
+      "name": "Midland",
+      "country": "ARG",
+      "players": 28,
+      "strength": 62,
+      "stadium": "Ciudad de Libertad",
+      "csv": "data/m26/times/arg-midland-35fed85b.csv",
+      "badgePath": "data/m26/escudos/arg-midland-35fed85b.png"
+    },
+    {
+      "id": "arg-mitre-21d79f3c",
+      "name": "Mitre",
+      "country": "ARG",
+      "players": 25,
+      "strength": 53,
+      "stadium": "Doctores Castiglione",
+      "csv": "data/m26/times/arg-mitre-21d79f3c.csv",
+      "badgePath": "data/m26/escudos/arg-mitre-21d79f3c.png"
+    },
+    {
+      "id": "arg-newell-s-old-boys-e43c49d7",
+      "name": "Newell's Old Boys",
+      "country": "ARG",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Marcelo Bielsa",
+      "csv": "data/m26/times/arg-newell-s-old-boys-e43c49d7.csv",
+      "badgePath": "data/m26/escudos/arg-newell-s-old-boys-e43c49d7.png"
+    },
+    {
+      "id": "arg-nueva-chicago-d53c1858",
+      "name": "Nueva Chicago",
+      "country": "ARG",
+      "players": 30,
+      "strength": 56,
+      "stadium": "Nueva Chicago",
+      "csv": "data/m26/times/arg-nueva-chicago-d53c1858.csv",
+      "badgePath": "data/m26/escudos/arg-nueva-chicago-d53c1858.png"
+    },
+    {
+      "id": "arg-patronato-ca7d1369",
+      "name": "Patronato",
+      "country": "ARG",
+      "players": 28,
+      "strength": 51,
+      "stadium": "Presbítero Bartolomé Grella",
+      "csv": "data/m26/times/arg-patronato-ca7d1369.csv",
+      "badgePath": "data/m26/escudos/arg-patronato-ca7d1369.png"
+    },
+    {
+      "id": "arg-platense-a3f9415b",
+      "name": "Platense",
+      "country": "ARG",
+      "players": 29,
+      "strength": 76,
+      "stadium": "Ciudad de Vicente López",
+      "csv": "data/m26/times/arg-platense-a3f9415b.csv",
+      "badgePath": "data/m26/escudos/arg-platense-a3f9415b.png"
+    },
+    {
+      "id": "arg-quilmes-91792f2d",
+      "name": "Quilmes",
+      "country": "ARG",
+      "players": 22,
+      "strength": 61,
+      "stadium": "Centenario Ciudad de Quilmes",
+      "csv": "data/m26/times/arg-quilmes-91792f2d.csv",
+      "badgePath": "data/m26/escudos/arg-quilmes-91792f2d.png"
+    },
+    {
+      "id": "arg-racing-eb644d18",
+      "name": "Racing",
+      "country": "ARG",
+      "players": 29,
+      "strength": 81,
+      "stadium": "El Cilindro",
+      "csv": "data/m26/times/arg-racing-eb644d18.csv",
+      "badgePath": "data/m26/escudos/arg-racing-eb644d18.png"
+    },
+    {
+      "id": "arg-racing-de-cordoba-4961dfad",
+      "name": "Racing de Córdoba",
+      "country": "ARG",
+      "players": 28,
+      "strength": 51,
+      "stadium": "Miguel Sancho",
+      "csv": "data/m26/times/arg-racing-de-cordoba-4961dfad.csv",
+      "badgePath": "data/m26/escudos/arg-racing-de-cordoba-4961dfad.png"
+    },
+    {
+      "id": "arg-river-plate-a85d67e9",
+      "name": "River Plate",
+      "country": "ARG",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Mâs Monumental",
+      "csv": "data/m26/times/arg-river-plate-a85d67e9.csv",
+      "badgePath": "data/m26/escudos/arg-river-plate-a85d67e9.png"
+    },
+    {
+      "id": "arg-rosario-central-7eff6d11",
+      "name": "Rosario Central",
+      "country": "ARG",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Gigante de Arroyito",
+      "csv": "data/m26/times/arg-rosario-central-7eff6d11.csv",
+      "badgePath": "data/m26/escudos/arg-rosario-central-7eff6d11.png"
+    },
+    {
+      "id": "arg-san-lorenzo-844c8306",
+      "name": "San Lorenzo",
+      "country": "ARG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Nuevo Gasómetro",
+      "csv": "data/m26/times/arg-san-lorenzo-844c8306.csv",
+      "badgePath": "data/m26/escudos/arg-san-lorenzo-844c8306.png"
+    },
+    {
+      "id": "arg-san-martin-de-tucuman-93b0671c",
+      "name": "San Martín de Tucumán",
+      "country": "ARG",
+      "players": 29,
+      "strength": 61,
+      "stadium": "La Ciudadela",
+      "csv": "data/m26/times/arg-san-martin-de-tucuman-93b0671c.csv",
+      "badgePath": "data/m26/escudos/arg-san-martin-de-tucuman-93b0671c.png"
+    },
+    {
+      "id": "arg-san-martin-san-juan-9b8fa4a2",
+      "name": "San Martín San Juan",
+      "country": "ARG",
+      "players": 30,
+      "strength": 59,
+      "stadium": "Ingeniero Hilario Sánchez",
+      "csv": "data/m26/times/arg-san-martin-san-juan-9b8fa4a2.csv",
+      "badgePath": "data/m26/escudos/arg-san-martin-san-juan-9b8fa4a2.png"
+    },
+    {
+      "id": "arg-san-miguel-18580545",
+      "name": "San Miguel",
+      "country": "ARG",
+      "players": 26,
+      "strength": 56,
+      "stadium": "Malvinas Argentinas",
+      "csv": "data/m26/times/arg-san-miguel-18580545.csv",
+      "badgePath": "data/m26/escudos/arg-san-miguel-18580545.png"
+    },
+    {
+      "id": "arg-san-telmo-f6431999",
+      "name": "San Telmo",
+      "country": "ARG",
+      "players": 28,
+      "strength": 49,
+      "stadium": "Dr. Osvaldo Baletto",
+      "csv": "data/m26/times/arg-san-telmo-f6431999.csv",
+      "badgePath": "data/m26/escudos/arg-san-telmo-f6431999.png"
+    },
+    {
+      "id": "arg-sarmiento-de-junin-db0c39bc",
+      "name": "Sarmiento de Junin",
+      "country": "ARG",
+      "players": 30,
+      "strength": 75,
+      "stadium": "Eva Perón",
+      "csv": "data/m26/times/arg-sarmiento-de-junin-db0c39bc.csv",
+      "badgePath": "data/m26/escudos/arg-sarmiento-de-junin-db0c39bc.png"
+    },
+    {
+      "id": "arg-talleres-ecc06d60",
+      "name": "Talleres",
+      "country": "ARG",
+      "players": 27,
+      "strength": 78,
+      "stadium": "Mario Alberto Kempes",
+      "csv": "data/m26/times/arg-talleres-ecc06d60.csv",
+      "badgePath": "data/m26/escudos/arg-talleres-ecc06d60.png"
+    },
+    {
+      "id": "arg-temperley-44395d5d",
+      "name": "Temperley",
+      "country": "ARG",
+      "players": 24,
+      "strength": 65,
+      "stadium": "Alfredo Martín Beranger",
+      "csv": "data/m26/times/arg-temperley-44395d5d.csv",
+      "badgePath": "data/m26/escudos/arg-temperley-44395d5d.png"
+    },
+    {
+      "id": "arg-tigre-f5832d76",
+      "name": "Tigre",
+      "country": "ARG",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Coliseo de Victoria",
+      "csv": "data/m26/times/arg-tigre-f5832d76.csv",
+      "badgePath": "data/m26/escudos/arg-tigre-f5832d76.png"
+    },
+    {
+      "id": "arg-tristan-suarez-bd44a0f9",
+      "name": "Tristan Suarez",
+      "country": "ARG",
+      "players": 29,
+      "strength": 68,
+      "stadium": "20 de Octubre",
+      "csv": "data/m26/times/arg-tristan-suarez-bd44a0f9.csv",
+      "badgePath": "data/m26/escudos/arg-tristan-suarez-bd44a0f9.png"
+    },
+    {
+      "id": "arg-union-santa-fe-b2c6b798",
+      "name": "Unión Santa Fe",
+      "country": "ARG",
+      "players": 23,
+      "strength": 77,
+      "stadium": "15 de Abril",
+      "csv": "data/m26/times/arg-union-santa-fe-b2c6b798.csv",
+      "badgePath": "data/m26/escudos/arg-union-santa-fe-b2c6b798.png"
+    },
+    {
+      "id": "arg-velez-sarsfield-a8f46661",
+      "name": "Vélez Sarsfield",
+      "country": "ARG",
+      "players": 21,
+      "strength": 83,
+      "stadium": "José Amalfitani",
+      "csv": "data/m26/times/arg-velez-sarsfield-a8f46661.csv",
+      "badgePath": "data/m26/escudos/arg-velez-sarsfield-a8f46661.png"
+    },
+    {
+      "id": "bra-abc-4f2e5a0b",
+      "name": "ABC",
+      "country": "BRA",
+      "players": 30,
+      "strength": 52,
+      "stadium": "Frasqueirão",
+      "csv": "data/m26/times/bra-abc-4f2e5a0b.csv",
+      "badgePath": "data/m26/escudos/bra-abc-4f2e5a0b.png"
+    },
+    {
+      "id": "bra-amazonas-c5b82b2a",
+      "name": "Amazonas",
+      "country": "BRA",
+      "players": 30,
+      "strength": 59,
+      "stadium": "Carlos Zamith",
+      "csv": "data/m26/times/bra-amazonas-c5b82b2a.csv",
+      "badgePath": "data/m26/escudos/bra-amazonas-c5b82b2a.png"
+    },
+    {
+      "id": "bra-america-mg-b3bbdb3d",
+      "name": "América-MG",
+      "country": "BRA",
+      "players": 30,
+      "strength": 67,
+      "stadium": "Independência",
+      "csv": "data/m26/times/bra-america-mg-b3bbdb3d.csv",
+      "badgePath": "data/m26/escudos/bra-america-mg-b3bbdb3d.png"
+    },
+    {
+      "id": "bra-america-rn-3bc6c4e2",
+      "name": "América-RN",
+      "country": "BRA",
+      "players": 30,
+      "strength": 54,
+      "stadium": "Arena das Dunas",
+      "csv": "data/m26/times/bra-america-rn-3bc6c4e2.csv",
+      "badgePath": "data/m26/escudos/bra-america-rn-3bc6c4e2.png"
+    },
+    {
+      "id": "bra-anapolis-e554a67b",
+      "name": "Anápolis",
+      "country": "BRA",
+      "players": 30,
+      "strength": 58,
+      "stadium": "Jonas Duarte",
+      "csv": "data/m26/times/bra-anapolis-e554a67b.csv",
+      "badgePath": "data/m26/escudos/bra-anapolis-e554a67b.png"
+    },
+    {
+      "id": "bra-araguaina-c47f8cf9",
+      "name": "Araguaína",
+      "country": "BRA",
+      "players": 29,
+      "strength": 46,
+      "stadium": "Mirandão",
+      "csv": "data/m26/times/bra-araguaina-c47f8cf9.csv",
+      "badgePath": "data/m26/escudos/bra-araguaina-c47f8cf9.png"
+    },
+    {
+      "id": "bra-asa-3b396795",
+      "name": "ASA",
+      "country": "BRA",
+      "players": 30,
+      "strength": 52,
+      "stadium": "Fumeirão",
+      "csv": "data/m26/times/bra-asa-3b396795.csv",
+      "badgePath": "data/m26/escudos/bra-asa-3b396795.png"
+    },
+    {
+      "id": "bra-athletic-club-ee924033",
+      "name": "Athletic Club",
+      "country": "BRA",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Joaquim Portugal",
+      "csv": "data/m26/times/bra-athletic-club-ee924033.csv",
+      "badgePath": "data/m26/escudos/bra-athletic-club-ee924033.png"
+    },
+    {
+      "id": "bra-athletico-paranaense-e0f9efbc",
+      "name": "Athletico Paranaense",
+      "country": "BRA",
+      "players": 30,
+      "strength": 85,
+      "stadium": "Ligga Arena",
+      "csv": "data/m26/times/bra-athletico-paranaense-e0f9efbc.csv",
+      "badgePath": "data/m26/escudos/bra-athletico-paranaense-e0f9efbc.png"
+    },
+    {
+      "id": "bra-atletico-goianiense-d8a7aabd",
+      "name": "Atlético Goianiense",
+      "country": "BRA",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Antonio Accioly",
+      "csv": "data/m26/times/bra-atletico-goianiense-d8a7aabd.csv",
+      "badgePath": "data/m26/escudos/bra-atletico-goianiense-d8a7aabd.png"
+    },
+    {
+      "id": "bra-atletico-mineiro-9ef337a3",
+      "name": "Atlético Mineiro",
+      "country": "BRA",
+      "players": 30,
+      "strength": 85,
+      "stadium": "Arena MRV",
+      "csv": "data/m26/times/bra-atletico-mineiro-9ef337a3.csv",
+      "badgePath": "data/m26/escudos/bra-atletico-mineiro-9ef337a3.png"
+    },
+    {
+      "id": "bra-avai-ae941577",
+      "name": "Avaí",
+      "country": "BRA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Ressacada",
+      "csv": "data/m26/times/bra-avai-ae941577.csv",
+      "badgePath": "data/m26/escudos/bra-avai-ae941577.png"
+    },
+    {
+      "id": "bra-bahia-33db511a",
+      "name": "Bahia",
+      "country": "BRA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Fonte Nova",
+      "csv": "data/m26/times/bra-bahia-33db511a.csv",
+      "badgePath": "data/m26/escudos/bra-bahia-33db511a.png"
+    },
+    {
+      "id": "bra-barra-2af7f55c",
+      "name": "Barra",
+      "country": "BRA",
+      "players": 30,
+      "strength": 59,
+      "stadium": "Arena Barra FC",
+      "csv": "data/m26/times/bra-barra-2af7f55c.csv",
+      "badgePath": "data/m26/escudos/bra-barra-2af7f55c.png"
+    },
+    {
+      "id": "bra-betim-94baebf4",
+      "name": "Betim",
+      "country": "BRA",
+      "players": 30,
+      "strength": 46,
+      "stadium": "Arena Vera Cruz",
+      "csv": "data/m26/times/bra-betim-94baebf4.csv",
+      "badgePath": "data/m26/escudos/bra-betim-94baebf4.png"
+    },
+    {
+      "id": "bra-blumenau-494e4b44",
+      "name": "Blumenau",
+      "country": "BRA",
+      "players": 30,
+      "strength": 47,
+      "stadium": "Monumental do SESI",
+      "csv": "data/m26/times/bra-blumenau-494e4b44.csv",
+      "badgePath": "data/m26/escudos/bra-blumenau-494e4b44.png"
+    },
+    {
+      "id": "bra-botafogo-0ef6df3b",
+      "name": "Botafogo",
+      "country": "BRA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Engenhão",
+      "csv": "data/m26/times/bra-botafogo-0ef6df3b.csv",
+      "badgePath": "data/m26/escudos/bra-botafogo-0ef6df3b.png"
+    },
+    {
+      "id": "bra-botafogo-pb-d49988e1",
+      "name": "Botafogo-PB",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Almeidão",
+      "csv": "data/m26/times/bra-botafogo-pb-d49988e1.csv",
+      "badgePath": "data/m26/escudos/bra-botafogo-pb-d49988e1.png"
+    },
+    {
+      "id": "bra-botafogo-sp-9dbc4855",
+      "name": "Botafogo-SP",
+      "country": "BRA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Santa Cruz",
+      "csv": "data/m26/times/bra-botafogo-sp-9dbc4855.csv",
+      "badgePath": "data/m26/escudos/bra-botafogo-sp-9dbc4855.png"
+    },
+    {
+      "id": "bra-brusque-0eab81b2",
+      "name": "Brusque",
+      "country": "BRA",
+      "players": 30,
+      "strength": 62,
+      "stadium": "Augusto Bauer",
+      "csv": "data/m26/times/bra-brusque-0eab81b2.csv",
+      "badgePath": "data/m26/escudos/bra-brusque-0eab81b2.png"
+    },
+    {
+      "id": "bra-capital-df-fa1ec487",
+      "name": "Capital-DF",
+      "country": "BRA",
+      "players": 29,
+      "strength": 50,
+      "stadium": "JK",
+      "csv": "data/m26/times/bra-capital-df-fa1ec487.csv",
+      "badgePath": "data/m26/escudos/bra-capital-df-fa1ec487.png"
+    },
+    {
+      "id": "bra-caxias-0a093ec0",
+      "name": "Caxias",
+      "country": "BRA",
+      "players": 30,
+      "strength": 61,
+      "stadium": "Centenário",
+      "csv": "data/m26/times/bra-caxias-0a093ec0.csv",
+      "badgePath": "data/m26/escudos/bra-caxias-0a093ec0.png"
+    },
+    {
+      "id": "bra-ceara-0007a070",
+      "name": "Ceará",
+      "country": "BRA",
+      "players": 29,
+      "strength": 69,
+      "stadium": "Castelão",
+      "csv": "data/m26/times/bra-ceara-0007a070.csv",
+      "badgePath": "data/m26/escudos/bra-ceara-0007a070.png"
+    },
+    {
+      "id": "bra-chapecoense-eb0ac951",
+      "name": "Chapecoense",
+      "country": "BRA",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Arena Condá",
+      "csv": "data/m26/times/bra-chapecoense-eb0ac951.csv",
+      "badgePath": "data/m26/escudos/bra-chapecoense-eb0ac951.png"
+    },
+    {
+      "id": "bra-cianorte-48220abd",
+      "name": "Cianorte",
+      "country": "BRA",
+      "players": 30,
+      "strength": 48,
+      "stadium": "Albino Turbay",
+      "csv": "data/m26/times/bra-cianorte-48220abd.csv",
+      "badgePath": "data/m26/escudos/bra-cianorte-48220abd.png"
+    },
+    {
+      "id": "bra-confianca-9f205ca8",
+      "name": "Confiança",
+      "country": "BRA",
+      "players": 30,
+      "strength": 56,
+      "stadium": "Batistão",
+      "csv": "data/m26/times/bra-confianca-9f205ca8.csv",
+      "badgePath": "data/m26/escudos/bra-confianca-9f205ca8.png"
+    },
+    {
+      "id": "bra-corinthians-e94dc1e1",
+      "name": "Corinthians",
+      "country": "BRA",
+      "players": 30,
+      "strength": 85,
+      "stadium": "Neo Química Arena",
+      "csv": "data/m26/times/bra-corinthians-e94dc1e1.csv",
+      "badgePath": "data/m26/escudos/bra-corinthians-e94dc1e1.png"
+    },
+    {
+      "id": "bra-coritiba-7ee1dad6",
+      "name": "Coritiba",
+      "country": "BRA",
+      "players": 29,
+      "strength": 82,
+      "stadium": "Couto Pereira",
+      "csv": "data/m26/times/bra-coritiba-7ee1dad6.csv",
+      "badgePath": "data/m26/escudos/bra-coritiba-7ee1dad6.png"
+    },
+    {
+      "id": "bra-crac-deee5a9f",
+      "name": "CRAC",
+      "country": "BRA",
+      "players": 21,
+      "strength": 46,
+      "stadium": "Genervino da Fonseca",
+      "csv": "data/m26/times/bra-crac-deee5a9f.csv",
+      "badgePath": "data/m26/escudos/bra-crac-deee5a9f.png"
+    },
+    {
+      "id": "bra-crb-5afd558a",
+      "name": "CRB",
+      "country": "BRA",
+      "players": 27,
+      "strength": 72,
+      "stadium": "Rei Pelé",
+      "csv": "data/m26/times/bra-crb-5afd558a.csv",
+      "badgePath": "data/m26/escudos/bra-crb-5afd558a.png"
+    },
+    {
+      "id": "bra-criciuma-0c83c01d",
+      "name": "Criciúma",
+      "country": "BRA",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Heriberto Hülse",
+      "csv": "data/m26/times/bra-criciuma-0c83c01d.csv",
+      "badgePath": "data/m26/escudos/bra-criciuma-0c83c01d.png"
+    },
+    {
+      "id": "bra-cruzeiro-a6fcc0c1",
+      "name": "Cruzeiro",
+      "country": "BRA",
+      "players": 30,
+      "strength": 87,
+      "stadium": "Mineirão",
+      "csv": "data/m26/times/bra-cruzeiro-a6fcc0c1.csv",
+      "badgePath": "data/m26/escudos/bra-cruzeiro-a6fcc0c1.png"
+    },
+    {
+      "id": "bra-csa-fc32dbd6",
+      "name": "CSA",
+      "country": "BRA",
+      "players": 26,
+      "strength": 50,
+      "stadium": "Rei Pelé",
+      "csv": "data/m26/times/bra-csa-fc32dbd6.csv",
+      "badgePath": "data/m26/escudos/bra-csa-fc32dbd6.png"
+    },
+    {
+      "id": "bra-cuiaba-67af8503",
+      "name": "Cuiabá",
+      "country": "BRA",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Arena Pantanal",
+      "csv": "data/m26/times/bra-cuiaba-67af8503.csv",
+      "badgePath": "data/m26/escudos/bra-cuiaba-67af8503.png"
+    },
+    {
+      "id": "bra-ferroviaria-a79b7215",
+      "name": "Ferroviária",
+      "country": "BRA",
+      "players": 30,
+      "strength": 62,
+      "stadium": "Fonte Luminosa",
+      "csv": "data/m26/times/bra-ferroviaria-a79b7215.csv",
+      "badgePath": "data/m26/escudos/bra-ferroviaria-a79b7215.png"
+    },
+    {
+      "id": "bra-ferroviario-4960a8ba",
+      "name": "Ferroviário",
+      "country": "BRA",
+      "players": 29,
+      "strength": 49,
+      "stadium": "Presidente Vargas",
+      "csv": "data/m26/times/bra-ferroviario-4960a8ba.csv",
+      "badgePath": "data/m26/escudos/bra-ferroviario-4960a8ba.png"
+    },
+    {
+      "id": "bra-figueirense-c31576e8",
+      "name": "Figueirense",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Orlando Scarpelli",
+      "csv": "data/m26/times/bra-figueirense-c31576e8.csv",
+      "badgePath": "data/m26/escudos/bra-figueirense-c31576e8.png"
+    },
+    {
+      "id": "bra-flamengo-7e7924df",
+      "name": "Flamengo",
+      "country": "BRA",
+      "players": 30,
+      "strength": 90,
+      "stadium": "Maracanã",
+      "csv": "data/m26/times/bra-flamengo-7e7924df.csv",
+      "badgePath": "data/m26/escudos/bra-flamengo-7e7924df.png"
+    },
+    {
+      "id": "bra-floresta-bce4a34b",
+      "name": "Floresta",
+      "country": "BRA",
+      "players": 29,
+      "strength": 59,
+      "stadium": "Domingão",
+      "csv": "data/m26/times/bra-floresta-bce4a34b.csv",
+      "badgePath": "data/m26/escudos/bra-floresta-bce4a34b.png"
+    },
+    {
+      "id": "bra-fluminense-1b5d0a91",
+      "name": "Fluminense",
+      "country": "BRA",
+      "players": 30,
+      "strength": 86,
+      "stadium": "Maracanã",
+      "csv": "data/m26/times/bra-fluminense-1b5d0a91.csv",
+      "badgePath": "data/m26/escudos/bra-fluminense-1b5d0a91.png"
+    },
+    {
+      "id": "bra-fortaleza-6f79d4a3",
+      "name": "Fortaleza",
+      "country": "BRA",
+      "players": 29,
+      "strength": 72,
+      "stadium": "Castelão",
+      "csv": "data/m26/times/bra-fortaleza-6f79d4a3.csv",
+      "badgePath": "data/m26/escudos/bra-fortaleza-6f79d4a3.png"
+    },
+    {
+      "id": "bra-gama-89bfec8b",
+      "name": "Gama",
+      "country": "BRA",
+      "players": 30,
+      "strength": 52,
+      "stadium": "Bezerrão",
+      "csv": "data/m26/times/bra-gama-89bfec8b.csv",
+      "badgePath": "data/m26/escudos/bra-gama-89bfec8b.png"
+    },
+    {
+      "id": "bra-goiatuba-72080d3c",
+      "name": "Goiatuba",
+      "country": "BRA",
+      "players": 30,
+      "strength": 50,
+      "stadium": "Divinão",
+      "csv": "data/m26/times/bra-goiatuba-72080d3c.csv",
+      "badgePath": "data/m26/escudos/bra-goiatuba-72080d3c.png"
+    },
+    {
+      "id": "bra-goias-2aa614fb",
+      "name": "Goiás",
+      "country": "BRA",
+      "players": 29,
+      "strength": 70,
+      "stadium": "Serrinha",
+      "csv": "data/m26/times/bra-goias-2aa614fb.csv",
+      "badgePath": "data/m26/escudos/bra-goias-2aa614fb.png"
+    },
+    {
+      "id": "bra-gremio-4411f86a",
+      "name": "Grêmio",
+      "country": "BRA",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Arena do Grêmio",
+      "csv": "data/m26/times/bra-gremio-4411f86a.csv",
+      "badgePath": "data/m26/escudos/bra-gremio-4411f86a.png"
+    },
+    {
+      "id": "bra-guapore-3591ca2a",
+      "name": "Guaporé",
+      "country": "BRA",
+      "players": 28,
+      "strength": 48,
+      "stadium": "Cassolão",
+      "csv": "data/m26/times/bra-guapore-3591ca2a.csv",
+      "badgePath": "data/m26/escudos/bra-guapore-3591ca2a.png"
+    },
+    {
+      "id": "bra-guarani-6f587eec",
+      "name": "Guarani",
+      "country": "BRA",
+      "players": 30,
+      "strength": 62,
+      "stadium": "Brinco de Ouro",
+      "csv": "data/m26/times/bra-guarani-6f587eec.csv",
+      "badgePath": "data/m26/escudos/bra-guarani-6f587eec.png"
+    },
+    {
+      "id": "bra-iguatu-ccd3f110",
+      "name": "Iguatu",
+      "country": "BRA",
+      "players": 30,
+      "strength": 51,
+      "stadium": "Morenão",
+      "csv": "data/m26/times/bra-iguatu-ccd3f110.csv",
+      "badgePath": "data/m26/escudos/bra-iguatu-ccd3f110.png"
+    },
+    {
+      "id": "bra-imperatriz-f930f76f",
+      "name": "Imperatriz",
+      "country": "BRA",
+      "players": 30,
+      "strength": 47,
+      "stadium": "Frei Epifânio",
+      "csv": "data/m26/times/bra-imperatriz-f930f76f.csv",
+      "badgePath": "data/m26/escudos/bra-imperatriz-f930f76f.png"
+    },
+    {
+      "id": "bra-inter-de-limeira-8d4bc9ea",
+      "name": "Inter de Limeira",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Limeirão",
+      "csv": "data/m26/times/bra-inter-de-limeira-8d4bc9ea.csv",
+      "badgePath": "data/m26/escudos/bra-inter-de-limeira-8d4bc9ea.png"
+    },
+    {
+      "id": "bra-internacional-ece1004f",
+      "name": "Internacional",
+      "country": "BRA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Beira-Rio",
+      "csv": "data/m26/times/bra-internacional-ece1004f.csv",
+      "badgePath": "data/m26/escudos/bra-internacional-ece1004f.png"
+    },
+    {
+      "id": "bra-itabaiana-6f6d96c4",
+      "name": "Itabaiana",
+      "country": "BRA",
+      "players": 29,
+      "strength": 57,
+      "stadium": "Mendonção",
+      "csv": "data/m26/times/bra-itabaiana-6f6d96c4.csv",
+      "badgePath": "data/m26/escudos/bra-itabaiana-6f6d96c4.png"
+    },
+    {
+      "id": "bra-ituano-7a7c57b4",
+      "name": "Ituano",
+      "country": "BRA",
+      "players": 28,
+      "strength": 60,
+      "stadium": "Novelli Júnior",
+      "csv": "data/m26/times/bra-ituano-7a7c57b4.csv",
+      "badgePath": "data/m26/escudos/bra-ituano-7a7c57b4.png"
+    },
+    {
+      "id": "bra-ivinhema-4c86894d",
+      "name": "Ivinhema",
+      "country": "BRA",
+      "players": 28,
+      "strength": 45,
+      "stadium": "Saraivão",
+      "csv": "data/m26/times/bra-ivinhema-4c86894d.csv",
+      "badgePath": "data/m26/escudos/bra-ivinhema-4c86894d.png"
+    },
+    {
+      "id": "bra-juventude-34449b18",
+      "name": "Juventude",
+      "country": "BRA",
+      "players": 30,
+      "strength": 73,
+      "stadium": "Alfredo Jaconi",
+      "csv": "data/m26/times/bra-juventude-34449b18.csv",
+      "badgePath": "data/m26/escudos/bra-juventude-34449b18.png"
+    },
+    {
+      "id": "bra-londrina-f1088b35",
+      "name": "Londrina",
+      "country": "BRA",
+      "players": 30,
+      "strength": 68,
+      "stadium": "Estádio do Café",
+      "csv": "data/m26/times/bra-londrina-f1088b35.csv",
+      "badgePath": "data/m26/escudos/bra-londrina-f1088b35.png"
+    },
+    {
+      "id": "bra-luverdense-15ef3e88",
+      "name": "Luverdense",
+      "country": "BRA",
+      "players": 26,
+      "strength": 48,
+      "stadium": "Passo das Emas",
+      "csv": "data/m26/times/bra-luverdense-15ef3e88.csv",
+      "badgePath": "data/m26/escudos/bra-luverdense-15ef3e88.png"
+    },
+    {
+      "id": "bra-maguary-d337e8bb",
+      "name": "Maguary",
+      "country": "BRA",
+      "players": 29,
+      "strength": 46,
+      "stadium": "Arthur Tavares",
+      "csv": "data/m26/times/bra-maguary-d337e8bb.csv",
+      "badgePath": "data/m26/escudos/bra-maguary-d337e8bb.png"
+    },
+    {
+      "id": "bra-manauara-5f1a7082",
+      "name": "Manauara",
+      "country": "BRA",
+      "players": 22,
+      "strength": 52,
+      "stadium": "Estádio da Colina",
+      "csv": "data/m26/times/bra-manauara-5f1a7082.csv",
+      "badgePath": "data/m26/escudos/bra-manauara-5f1a7082.png"
+    },
+    {
+      "id": "bra-manthiqueira-dd8f0567",
+      "name": "Manthiqueira",
+      "country": "BRA",
+      "players": 26,
+      "strength": 10,
+      "stadium": "Ninho da Garça",
+      "csv": "data/m26/times/bra-manthiqueira-dd8f0567.csv",
+      "badgePath": "data/m26/escudos/bra-manthiqueira-dd8f0567.png"
+    },
+    {
+      "id": "bra-maracana-def95e93",
+      "name": "Maracanã",
+      "country": "BRA",
+      "players": 28,
+      "strength": 47,
+      "stadium": "Almir Dutra",
+      "csv": "data/m26/times/bra-maracana-def95e93.csv",
+      "badgePath": "data/m26/escudos/bra-maracana-def95e93.png"
+    },
+    {
+      "id": "bra-maranhao-ddc0a063",
+      "name": "Maranhão",
+      "country": "BRA",
+      "players": 29,
+      "strength": 59,
+      "stadium": "Castelão",
+      "csv": "data/m26/times/bra-maranhao-ddc0a063.csv",
+      "badgePath": "data/m26/escudos/bra-maranhao-ddc0a063.png"
+    },
+    {
+      "id": "bra-marcilio-dias-b6e66bc8",
+      "name": "Marcílio Dias",
+      "country": "BRA",
+      "players": 24,
+      "strength": 48,
+      "stadium": "Gigantão das Avenidas",
+      "csv": "data/m26/times/bra-marcilio-dias-b6e66bc8.csv",
+      "badgePath": "data/m26/escudos/bra-marcilio-dias-b6e66bc8.png"
+    },
+    {
+      "id": "bra-maringa-80867ba1",
+      "name": "Maringá",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Willie Davids",
+      "csv": "data/m26/times/bra-maringa-80867ba1.csv",
+      "badgePath": "data/m26/escudos/bra-maringa-80867ba1.png"
+    },
+    {
+      "id": "bra-mirassol-8b8ec378",
+      "name": "Mirassol",
+      "country": "BRA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Maião",
+      "csv": "data/m26/times/bra-mirassol-8b8ec378.csv",
+      "badgePath": "data/m26/escudos/bra-mirassol-8b8ec378.png"
+    },
+    {
+      "id": "bra-nacional-am-6e2aa014",
+      "name": "Nacional-AM",
+      "country": "BRA",
+      "players": 30,
+      "strength": 50,
+      "stadium": "Arena da Amazônia",
+      "csv": "data/m26/times/bra-nacional-am-6e2aa014.csv",
+      "badgePath": "data/m26/escudos/bra-nacional-am-6e2aa014.png"
+    },
+    {
+      "id": "bra-novorizontino-ece9e507",
+      "name": "Novorizontino",
+      "country": "BRA",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Jorge Ismael de Biasi",
+      "csv": "data/m26/times/bra-novorizontino-ece9e507.csv",
+      "badgePath": "data/m26/escudos/bra-novorizontino-ece9e507.png"
+    },
+    {
+      "id": "bra-nautico-be945db3",
+      "name": "Náutico",
+      "country": "BRA",
+      "players": 29,
+      "strength": 70,
+      "stadium": "Aflitos",
+      "csv": "data/m26/times/bra-nautico-be945db3.csv",
+      "badgePath": "data/m26/escudos/bra-nautico-be945db3.png"
+    },
+    {
+      "id": "bra-operario-pr-2f99b9ee",
+      "name": "Operário-PR",
+      "country": "BRA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Germano Krüger",
+      "csv": "data/m26/times/bra-operario-pr-2f99b9ee.csv",
+      "badgePath": "data/m26/escudos/bra-operario-pr-2f99b9ee.png"
+    },
+    {
+      "id": "bra-palmeiras-f8f896ff",
+      "name": "Palmeiras",
+      "country": "BRA",
+      "players": 27,
+      "strength": 89,
+      "stadium": "Allianz Parque",
+      "csv": "data/m26/times/bra-palmeiras-f8f896ff.csv",
+      "badgePath": "data/m26/escudos/bra-palmeiras-f8f896ff.png"
+    },
+    {
+      "id": "bra-paysandu-13d13074",
+      "name": "Paysandu",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Curuzu",
+      "csv": "data/m26/times/bra-paysandu-13d13074.csv",
+      "badgePath": "data/m26/escudos/bra-paysandu-13d13074.png"
+    },
+    {
+      "id": "bra-piaui-a0c206e3",
+      "name": "Piauí",
+      "country": "BRA",
+      "players": 19,
+      "strength": 47,
+      "stadium": "Albertão",
+      "csv": "data/m26/times/bra-piaui-a0c206e3.csv",
+      "badgePath": "data/m26/escudos/bra-piaui-a0c206e3.png"
+    },
+    {
+      "id": "bra-ponte-preta-96d560fb",
+      "name": "Ponte Preta",
+      "country": "BRA",
+      "players": 21,
+      "strength": 64,
+      "stadium": "Moisés Lucarelli",
+      "csv": "data/m26/times/bra-ponte-preta-96d560fb.csv",
+      "badgePath": "data/m26/escudos/bra-ponte-preta-96d560fb.png"
+    },
+    {
+      "id": "bra-porto-velho-0c23a53b",
+      "name": "Porto Velho",
+      "country": "BRA",
+      "players": 26,
+      "strength": 47,
+      "stadium": "Aluizão",
+      "csv": "data/m26/times/bra-porto-velho-0c23a53b.csv",
+      "badgePath": "data/m26/escudos/bra-porto-velho-0c23a53b.png"
+    },
+    {
+      "id": "bra-portuguesa-a714fdc5",
+      "name": "Portuguesa",
+      "country": "BRA",
+      "players": 27,
+      "strength": 50,
+      "stadium": "Canindé",
+      "csv": "data/m26/times/bra-portuguesa-a714fdc5.csv",
+      "badgePath": "data/m26/escudos/bra-portuguesa-a714fdc5.png"
+    },
+    {
+      "id": "bra-portuguesa-rj-9ea1f256",
+      "name": "Portuguesa-RJ",
+      "country": "BRA",
+      "players": 30,
+      "strength": 47,
+      "stadium": "Luso Brasileiro",
+      "csv": "data/m26/times/bra-portuguesa-rj-9ea1f256.csv",
+      "badgePath": "data/m26/escudos/bra-portuguesa-rj-9ea1f256.png"
+    },
+    {
+      "id": "bra-red-bull-bragantino-0e27de4a",
+      "name": "Red Bull Bragantino",
+      "country": "BRA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Cicero De Souza Marques",
+      "csv": "data/m26/times/bra-red-bull-bragantino-0e27de4a.csv",
+      "badgePath": "data/m26/escudos/bra-red-bull-bragantino-0e27de4a.png"
+    },
+    {
+      "id": "bra-remo-420f3ee1",
+      "name": "Remo",
+      "country": "BRA",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Mangueirão",
+      "csv": "data/m26/times/bra-remo-420f3ee1.csv",
+      "badgePath": "data/m26/escudos/bra-remo-420f3ee1.png"
+    },
+    {
+      "id": "bra-santa-catarina-8af13f67",
+      "name": "Santa Catarina",
+      "country": "BRA",
+      "players": 30,
+      "strength": 48,
+      "stadium": "Alfredo João Krieck",
+      "csv": "data/m26/times/bra-santa-catarina-8af13f67.csv",
+      "badgePath": "data/m26/escudos/bra-santa-catarina-8af13f67.png"
+    },
+    {
+      "id": "bra-santa-cruz-a0679b00",
+      "name": "Santa Cruz",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Arruda",
+      "csv": "data/m26/times/bra-santa-cruz-a0679b00.csv",
+      "badgePath": "data/m26/escudos/bra-santa-cruz-a0679b00.png"
+    },
+    {
+      "id": "bra-santos-20728edb",
+      "name": "Santos",
+      "country": "BRA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Vila Belmiro",
+      "csv": "data/m26/times/bra-santos-20728edb.csv",
+      "badgePath": "data/m26/escudos/bra-santos-20728edb.png"
+    },
+    {
+      "id": "bra-serra-branca-fb3bb510",
+      "name": "Serra Branca",
+      "country": "BRA",
+      "players": 22,
+      "strength": 48,
+      "stadium": "Amigão",
+      "csv": "data/m26/times/bra-serra-branca-fb3bb510.csv",
+      "badgePath": "data/m26/escudos/bra-serra-branca-fb3bb510.png"
+    },
+    {
+      "id": "bra-sport-00ec8b85",
+      "name": "Sport",
+      "country": "BRA",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Ilha do Retiro",
+      "csv": "data/m26/times/bra-sport-00ec8b85.csv",
+      "badgePath": "data/m26/escudos/bra-sport-00ec8b85.png"
+    },
+    {
+      "id": "bra-sao-bernardo-35d97e92",
+      "name": "São Bernardo",
+      "country": "BRA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Primeiro de Maio",
+      "csv": "data/m26/times/bra-sao-bernardo-35d97e92.csv",
+      "badgePath": "data/m26/escudos/bra-sao-bernardo-35d97e92.png"
+    },
+    {
+      "id": "bra-sao-jose-rs-930121c7",
+      "name": "São José-RS",
+      "country": "BRA",
+      "players": 28,
+      "strength": 49,
+      "stadium": "Passo d'Areia",
+      "csv": "data/m26/times/bra-sao-jose-rs-930121c7.csv",
+      "badgePath": "data/m26/escudos/bra-sao-jose-rs-930121c7.png"
+    },
+    {
+      "id": "bra-sao-luiz-c380204d",
+      "name": "São Luiz",
+      "country": "BRA",
+      "players": 21,
+      "strength": 45,
+      "stadium": "19 de Outubro",
+      "csv": "data/m26/times/bra-sao-luiz-c380204d.csv",
+      "badgePath": "data/m26/escudos/bra-sao-luiz-c380204d.png"
+    },
+    {
+      "id": "bra-sao-paulo-a27b05d6",
+      "name": "São Paulo",
+      "country": "BRA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "MorumBIS",
+      "csv": "data/m26/times/bra-sao-paulo-a27b05d6.csv",
+      "badgePath": "data/m26/escudos/bra-sao-paulo-a27b05d6.png"
+    },
+    {
+      "id": "bra-trem-bec0361b",
+      "name": "Trem",
+      "country": "BRA",
+      "players": 24,
+      "strength": 47,
+      "stadium": "Zerão",
+      "csv": "data/m26/times/bra-trem-bec0361b.csv",
+      "badgePath": "data/m26/escudos/bra-trem-bec0361b.png"
+    },
+    {
+      "id": "bra-treze-9c419dc6",
+      "name": "Treze",
+      "country": "BRA",
+      "players": 30,
+      "strength": 48,
+      "stadium": "Amigão",
+      "csv": "data/m26/times/bra-treze-9c419dc6.csv",
+      "badgePath": "data/m26/escudos/bra-treze-9c419dc6.png"
+    },
+    {
+      "id": "bra-uberlandia-e6c3f2af",
+      "name": "Uberlândia",
+      "country": "BRA",
+      "players": 30,
+      "strength": 49,
+      "stadium": "Parque do Sabiá",
+      "csv": "data/m26/times/bra-uberlandia-e6c3f2af.csv",
+      "badgePath": "data/m26/escudos/bra-uberlandia-e6c3f2af.png"
+    },
+    {
+      "id": "bra-vasco-a6c5fee9",
+      "name": "Vasco",
+      "country": "BRA",
+      "players": 30,
+      "strength": 82,
+      "stadium": "São Januário",
+      "csv": "data/m26/times/bra-vasco-a6c5fee9.csv",
+      "badgePath": "data/m26/escudos/bra-vasco-a6c5fee9.png"
+    },
+    {
+      "id": "bra-velo-clube-e63d3e88",
+      "name": "Velo Clube",
+      "country": "BRA",
+      "players": 19,
+      "strength": 47,
+      "stadium": "Benitão",
+      "csv": "data/m26/times/bra-velo-clube-e63d3e88.csv",
+      "badgePath": "data/m26/escudos/bra-velo-clube-e63d3e88.png"
+    },
+    {
+      "id": "bra-vila-nova-0e0ef42b",
+      "name": "Vila Nova",
+      "country": "BRA",
+      "players": 30,
+      "strength": 71,
+      "stadium": "OBA",
+      "csv": "data/m26/times/bra-vila-nova-0e0ef42b.csv",
+      "badgePath": "data/m26/escudos/bra-vila-nova-0e0ef42b.png"
+    },
+    {
+      "id": "bra-vitoria-aa5bd5cb",
+      "name": "Vitória",
+      "country": "BRA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Barradão",
+      "csv": "data/m26/times/bra-vitoria-aa5bd5cb.csv",
+      "badgePath": "data/m26/escudos/bra-vitoria-aa5bd5cb.png"
+    },
+    {
+      "id": "bra-volta-redonda-7e1323d4",
+      "name": "Volta Redonda",
+      "country": "BRA",
+      "players": 30,
+      "strength": 59,
+      "stadium": "Raulino de Oliveira",
+      "csv": "data/m26/times/bra-volta-redonda-7e1323d4.csv",
+      "badgePath": "data/m26/escudos/bra-volta-redonda-7e1323d4.png"
+    },
+    {
+      "id": "bra-xv-de-piracicaba-97351479",
+      "name": "XV de Piracicaba",
+      "country": "BRA",
+      "players": 30,
+      "strength": 46,
+      "stadium": "Barão da Serra Negra",
+      "csv": "data/m26/times/bra-xv-de-piracicaba-97351479.csv",
+      "badgePath": "data/m26/escudos/bra-xv-de-piracicaba-97351479.png"
+    },
+    {
+      "id": "bra-ypiranga-de-erechim-c346ddbf",
+      "name": "Ypiranga de Erechim",
+      "country": "BRA",
+      "players": 30,
+      "strength": 60,
+      "stadium": "Colosso da Lagoa",
+      "csv": "data/m26/times/bra-ypiranga-de-erechim-c346ddbf.csv",
+      "badgePath": "data/m26/escudos/bra-ypiranga-de-erechim-c346ddbf.png"
+    },
+    {
+      "id": "bra-agua-santa-e41404b9",
+      "name": "Água Santa",
+      "country": "BRA",
+      "players": 24,
+      "strength": 48,
+      "stadium": "Arena Inamar",
+      "csv": "data/m26/times/bra-agua-santa-e41404b9.csv",
+      "badgePath": "data/m26/escudos/bra-agua-santa-e41404b9.png"
+    },
+    {
+      "id": "bra-aguia-de-maraba-4a5227c0",
+      "name": "Águia de Marabá",
+      "country": "BRA",
+      "players": 20,
+      "strength": 50,
+      "stadium": "Zinho de Oliveira",
+      "csv": "data/m26/times/bra-aguia-de-maraba-4a5227c0.csv",
+      "badgePath": "data/m26/escudos/bra-aguia-de-maraba-4a5227c0.png"
+    },
+    {
+      "id": "col-america-de-cali-380bb795",
+      "name": "América de Cali",
+      "country": "COL",
+      "players": 25,
+      "strength": 83,
+      "stadium": "Olímpico Pascual Guerrero",
+      "csv": "data/m26/times/col-america-de-cali-380bb795.csv",
+      "badgePath": "data/m26/escudos/col-america-de-cali-380bb795.png"
+    },
+    {
+      "id": "col-atletico-nacional-998bfac9",
+      "name": "Atlético Nacional",
+      "country": "COL",
+      "players": 25,
+      "strength": 85,
+      "stadium": "Atanasio Girardot",
+      "csv": "data/m26/times/col-atletico-nacional-998bfac9.csv",
+      "badgePath": "data/m26/escudos/col-atletico-nacional-998bfac9.png"
+    },
+    {
+      "id": "col-desportes-tolima-8192b6d0",
+      "name": "Desportes Tolima",
+      "country": "COL",
+      "players": 25,
+      "strength": 82,
+      "stadium": "Manuel Murillo Toro",
+      "csv": "data/m26/times/col-desportes-tolima-8192b6d0.csv",
+      "badgePath": "data/m26/escudos/col-desportes-tolima-8192b6d0.png"
+    },
+    {
+      "id": "col-independiente-medellin-b3435e94",
+      "name": "Independiente Medellín",
+      "country": "COL",
+      "players": 26,
+      "strength": 82,
+      "stadium": "Atanasio Girardot",
+      "csv": "data/m26/times/col-independiente-medellin-b3435e94.csv",
+      "badgePath": "data/m26/escudos/col-independiente-medellin-b3435e94.png"
+    },
+    {
+      "id": "col-independiente-santa-fe-9f3deac4",
+      "name": "Independiente Santa Fe",
+      "country": "COL",
+      "players": 27,
+      "strength": 82,
+      "stadium": "El Campín",
+      "csv": "data/m26/times/col-independiente-santa-fe-9f3deac4.csv",
+      "badgePath": "data/m26/escudos/col-independiente-santa-fe-9f3deac4.png"
+    },
+    {
+      "id": "col-junior-de-barranquilla-647729bc",
+      "name": "Junior de Barranquilla",
+      "country": "COL",
+      "players": 25,
+      "strength": 80,
+      "stadium": "Metropolitano Roberto Meléndez",
+      "csv": "data/m26/times/col-junior-de-barranquilla-647729bc.csv",
+      "badgePath": "data/m26/escudos/col-junior-de-barranquilla-647729bc.png"
+    },
+    {
+      "id": "col-millonarios-a0056317",
+      "name": "Millonarios",
+      "country": "COL",
+      "players": 28,
+      "strength": 82,
+      "stadium": "El Campín",
+      "csv": "data/m26/times/col-millonarios-a0056317.csv",
+      "badgePath": "data/m26/escudos/col-millonarios-a0056317.png"
+    },
+    {
+      "id": "col-once-caldas-e1c48431",
+      "name": "Once Caldas",
+      "country": "COL",
+      "players": 25,
+      "strength": 81,
+      "stadium": "Estadio Palogrande",
+      "csv": "data/m26/times/col-once-caldas-e1c48431.csv",
+      "badgePath": "data/m26/escudos/col-once-caldas-e1c48431.png"
+    },
+    {
+      "id": "deu-alemannia-aachen-68b65dbe",
+      "name": "Alemannia Aachen",
+      "country": "DEU",
+      "players": 26,
+      "strength": 67,
+      "stadium": "Tivoli",
+      "csv": "data/m26/times/deu-alemannia-aachen-68b65dbe.csv",
+      "badgePath": "data/m26/escudos/deu-alemannia-aachen-68b65dbe.png"
+    },
+    {
+      "id": "deu-arminia-bielefeld-5b68724e",
+      "name": "Arminia Bielefeld",
+      "country": "DEU",
+      "players": 27,
+      "strength": 74,
+      "stadium": "SchücoArena",
+      "csv": "data/m26/times/deu-arminia-bielefeld-5b68724e.csv",
+      "badgePath": "data/m26/escudos/deu-arminia-bielefeld-5b68724e.png"
+    },
+    {
+      "id": "deu-augsburg-d71b063f",
+      "name": "Augsburg",
+      "country": "DEU",
+      "players": 29,
+      "strength": 84,
+      "stadium": "WWK ARENA",
+      "csv": "data/m26/times/deu-augsburg-d71b063f.csv",
+      "badgePath": "data/m26/escudos/deu-augsburg-d71b063f.png"
+    },
+    {
+      "id": "deu-bayer-leverkusen-e57f2a95",
+      "name": "Bayer Leverkusen",
+      "country": "DEU",
+      "players": 30,
+      "strength": 91,
+      "stadium": "BayArena",
+      "csv": "data/m26/times/deu-bayer-leverkusen-e57f2a95.csv",
+      "badgePath": "data/m26/escudos/deu-bayer-leverkusen-e57f2a95.png"
+    },
+    {
+      "id": "deu-bayern-8ad87dba",
+      "name": "Bayern",
+      "country": "DEU",
+      "players": 26,
+      "strength": 99,
+      "stadium": "Allianz Arena",
+      "csv": "data/m26/times/deu-bayern-8ad87dba.csv",
+      "badgePath": "data/m26/escudos/deu-bayern-8ad87dba.png"
+    },
+    {
+      "id": "deu-bochum-c331ea14",
+      "name": "Bochum",
+      "country": "DEU",
+      "players": 28,
+      "strength": 74,
+      "stadium": "Vonovia Ruhrstadion",
+      "csv": "data/m26/times/deu-bochum-c331ea14.csv",
+      "badgePath": "data/m26/escudos/deu-bochum-c331ea14.png"
+    },
+    {
+      "id": "deu-borussia-dortmund-8737c509",
+      "name": "Borussia Dortmund",
+      "country": "DEU",
+      "players": 30,
+      "strength": 92,
+      "stadium": "Signal Iduna Park",
+      "csv": "data/m26/times/deu-borussia-dortmund-8737c509.csv",
+      "badgePath": "data/m26/escudos/deu-borussia-dortmund-8737c509.png"
+    },
+    {
+      "id": "deu-borussia-monchengladbach-0af26b49",
+      "name": "Borussia Mönchengladbach",
+      "country": "DEU",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Stadion im Borussia-Park",
+      "csv": "data/m26/times/deu-borussia-monchengladbach-0af26b49.csv",
+      "badgePath": "data/m26/escudos/deu-borussia-monchengladbach-0af26b49.png"
+    },
+    {
+      "id": "deu-darmstadt-98-b09e4cb9",
+      "name": "Darmstadt 98",
+      "country": "DEU",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Merck-Stadion am Böllenfalltor",
+      "csv": "data/m26/times/deu-darmstadt-98-b09e4cb9.csv",
+      "badgePath": "data/m26/escudos/deu-darmstadt-98-b09e4cb9.png"
+    },
+    {
+      "id": "deu-duisburg-abdea623",
+      "name": "Duisburg",
+      "country": "DEU",
+      "players": 26,
+      "strength": 67,
+      "stadium": "Schauinsland-Reisen-Arena",
+      "csv": "data/m26/times/deu-duisburg-abdea623.csv",
+      "badgePath": "data/m26/escudos/deu-duisburg-abdea623.png"
+    },
+    {
+      "id": "deu-dynamo-dresden-efd58ef5",
+      "name": "Dynamo Dresden",
+      "country": "DEU",
+      "players": 29,
+      "strength": 74,
+      "stadium": "Rudolf-Harbig-Stadion",
+      "csv": "data/m26/times/deu-dynamo-dresden-efd58ef5.csv",
+      "badgePath": "data/m26/escudos/deu-dynamo-dresden-efd58ef5.png"
+    },
+    {
+      "id": "deu-eintracht-braunschweig-ad7be2a7",
+      "name": "Eintracht Braunschweig",
+      "country": "DEU",
+      "players": 27,
+      "strength": 72,
+      "stadium": "EINTRACHT-Stadion",
+      "csv": "data/m26/times/deu-eintracht-braunschweig-ad7be2a7.csv",
+      "badgePath": "data/m26/escudos/deu-eintracht-braunschweig-ad7be2a7.png"
+    },
+    {
+      "id": "deu-eintracht-frankfurt-eab50ff6",
+      "name": "Eintracht Frankfurt",
+      "country": "DEU",
+      "players": 27,
+      "strength": 85,
+      "stadium": "Deutsche Bank Park",
+      "csv": "data/m26/times/deu-eintracht-frankfurt-eab50ff6.csv",
+      "badgePath": "data/m26/escudos/deu-eintracht-frankfurt-eab50ff6.png"
+    },
+    {
+      "id": "deu-elversberg-1b2ba977",
+      "name": "Elversberg",
+      "country": "DEU",
+      "players": 28,
+      "strength": 82,
+      "stadium": "Ursapharm-Arena",
+      "csv": "data/m26/times/deu-elversberg-1b2ba977.csv",
+      "badgePath": "data/m26/escudos/deu-elversberg-1b2ba977.png"
+    },
+    {
+      "id": "deu-energie-cottbus-fad1dc59",
+      "name": "Energie Cottbus",
+      "country": "DEU",
+      "players": 29,
+      "strength": 73,
+      "stadium": "LEAG Energie Stadion",
+      "csv": "data/m26/times/deu-energie-cottbus-fad1dc59.csv",
+      "badgePath": "data/m26/escudos/deu-energie-cottbus-fad1dc59.png"
+    },
+    {
+      "id": "deu-fortuna-dusseldorf-d9f133cd",
+      "name": "Fortuna Düsseldorf",
+      "country": "DEU",
+      "players": 30,
+      "strength": 65,
+      "stadium": "MERKUR SPIEL-ARENA",
+      "csv": "data/m26/times/deu-fortuna-dusseldorf-d9f133cd.csv",
+      "badgePath": "data/m26/escudos/deu-fortuna-dusseldorf-d9f133cd.png"
+    },
+    {
+      "id": "deu-freiburg-7cec1d47",
+      "name": "Freiburg",
+      "country": "DEU",
+      "players": 28,
+      "strength": 87,
+      "stadium": "Europa-Park Stadion",
+      "csv": "data/m26/times/deu-freiburg-7cec1d47.csv",
+      "badgePath": "data/m26/escudos/deu-freiburg-7cec1d47.png"
+    },
+    {
+      "id": "deu-greuther-furth-67fd390c",
+      "name": "Greuther Fürth",
+      "country": "DEU",
+      "players": 27,
+      "strength": 71,
+      "stadium": "Sportpark Ronhof",
+      "csv": "data/m26/times/deu-greuther-furth-67fd390c.csv",
+      "badgePath": "data/m26/escudos/deu-greuther-furth-67fd390c.png"
+    },
+    {
+      "id": "deu-hamburgo-21eab478",
+      "name": "Hamburgo",
+      "country": "DEU",
+      "players": 29,
+      "strength": 83,
+      "stadium": "Volksparkstadion",
+      "csv": "data/m26/times/deu-hamburgo-21eab478.csv",
+      "badgePath": "data/m26/escudos/deu-hamburgo-21eab478.png"
+    },
+    {
+      "id": "deu-hannover-96-26d1fb5c",
+      "name": "Hannover 96",
+      "country": "DEU",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Heinz-von-Heiden-Arena",
+      "csv": "data/m26/times/deu-hannover-96-26d1fb5c.csv",
+      "badgePath": "data/m26/escudos/deu-hannover-96-26d1fb5c.png"
+    },
+    {
+      "id": "deu-hansa-rostock-49b6acb2",
+      "name": "Hansa Rostock",
+      "country": "DEU",
+      "players": 30,
+      "strength": 67,
+      "stadium": "Ostseestadion",
+      "csv": "data/m26/times/deu-hansa-rostock-49b6acb2.csv",
+      "badgePath": "data/m26/escudos/deu-hansa-rostock-49b6acb2.png"
+    },
+    {
+      "id": "deu-heidenheim-95f32326",
+      "name": "Heidenheim",
+      "country": "DEU",
+      "players": 26,
+      "strength": 74,
+      "stadium": "Voith-Arena",
+      "csv": "data/m26/times/deu-heidenheim-95f32326.csv",
+      "badgePath": "data/m26/escudos/deu-heidenheim-95f32326.png"
+    },
+    {
+      "id": "deu-hertha-bsc-a0d249d6",
+      "name": "Hertha BSC",
+      "country": "DEU",
+      "players": 26,
+      "strength": 76,
+      "stadium": "Olympiastadion",
+      "csv": "data/m26/times/deu-hertha-bsc-a0d249d6.csv",
+      "badgePath": "data/m26/escudos/deu-hertha-bsc-a0d249d6.png"
+    },
+    {
+      "id": "deu-hoffenheim-7c5c9ffb",
+      "name": "Hoffenheim",
+      "country": "DEU",
+      "players": 29,
+      "strength": 87,
+      "stadium": "PreZero Arena",
+      "csv": "data/m26/times/deu-hoffenheim-7c5c9ffb.csv",
+      "badgePath": "data/m26/escudos/deu-hoffenheim-7c5c9ffb.png"
+    },
+    {
+      "id": "deu-holstein-kiel-2245e1d1",
+      "name": "Holstein Kiel",
+      "country": "DEU",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Holstein-Stadion",
+      "csv": "data/m26/times/deu-holstein-kiel-2245e1d1.csv",
+      "badgePath": "data/m26/escudos/deu-holstein-kiel-2245e1d1.png"
+    },
+    {
+      "id": "deu-ingolstadt-0b90dcc4",
+      "name": "Ingolstadt",
+      "country": "DEU",
+      "players": 29,
+      "strength": 64,
+      "stadium": "Audi Sportpark",
+      "csv": "data/m26/times/deu-ingolstadt-0b90dcc4.csv",
+      "badgePath": "data/m26/escudos/deu-ingolstadt-0b90dcc4.png"
+    },
+    {
+      "id": "deu-kaiserslautern-ff4eaa3c",
+      "name": "Kaiserslautern",
+      "country": "DEU",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Fritz-Walter-Stadion",
+      "csv": "data/m26/times/deu-kaiserslautern-ff4eaa3c.csv",
+      "badgePath": "data/m26/escudos/deu-kaiserslautern-ff4eaa3c.png"
+    },
+    {
+      "id": "deu-karlsruher-f2153828",
+      "name": "Karlsruher",
+      "country": "DEU",
+      "players": 24,
+      "strength": 73,
+      "stadium": "BBBank Wildpark",
+      "csv": "data/m26/times/deu-karlsruher-f2153828.csv",
+      "badgePath": "data/m26/escudos/deu-karlsruher-f2153828.png"
+    },
+    {
+      "id": "deu-koln-dd92ff6e",
+      "name": "Köln",
+      "country": "DEU",
+      "players": 30,
+      "strength": 82,
+      "stadium": "RheinEnergieSTADION",
+      "csv": "data/m26/times/deu-koln-dd92ff6e.csv",
+      "badgePath": "data/m26/escudos/deu-koln-dd92ff6e.png"
+    },
+    {
+      "id": "deu-magdeburg-86544f55",
+      "name": "Magdeburg",
+      "country": "DEU",
+      "players": 30,
+      "strength": 73,
+      "stadium": "Avnet-Arena",
+      "csv": "data/m26/times/deu-magdeburg-86544f55.csv",
+      "badgePath": "data/m26/escudos/deu-magdeburg-86544f55.png"
+    },
+    {
+      "id": "deu-mainz-05-eb0c36b2",
+      "name": "Mainz 05",
+      "country": "DEU",
+      "players": 28,
+      "strength": 86,
+      "stadium": "Mewa Arena",
+      "csv": "data/m26/times/deu-mainz-05-eb0c36b2.csv",
+      "badgePath": "data/m26/escudos/deu-mainz-05-eb0c36b2.png"
+    },
+    {
+      "id": "deu-nuremberg-e19bfbd9",
+      "name": "Nuremberg",
+      "country": "DEU",
+      "players": 26,
+      "strength": 75,
+      "stadium": "Max-Morlock-Stadion",
+      "csv": "data/m26/times/deu-nuremberg-e19bfbd9.csv",
+      "badgePath": "data/m26/escudos/deu-nuremberg-e19bfbd9.png"
+    },
+    {
+      "id": "deu-osnabruck-c48bc8dd",
+      "name": "Osnabrück",
+      "country": "DEU",
+      "players": 24,
+      "strength": 72,
+      "stadium": "Bremer Brücke",
+      "csv": "data/m26/times/deu-osnabruck-c48bc8dd.csv",
+      "badgePath": "data/m26/escudos/deu-osnabruck-c48bc8dd.png"
+    },
+    {
+      "id": "deu-paderborn-07-3f9f0b9c",
+      "name": "Paderborn 07",
+      "country": "DEU",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Home Deluxe Arena",
+      "csv": "data/m26/times/deu-paderborn-07-3f9f0b9c.csv",
+      "badgePath": "data/m26/escudos/deu-paderborn-07-3f9f0b9c.png"
+    },
+    {
+      "id": "deu-preuen-munster-36c8806f",
+      "name": "Preußen Münster",
+      "country": "DEU",
+      "players": 28,
+      "strength": 66,
+      "stadium": "LVM-Preußenstadion",
+      "csv": "data/m26/times/deu-preuen-munster-36c8806f.csv",
+      "badgePath": "data/m26/escudos/deu-preuen-munster-36c8806f.png"
+    },
+    {
+      "id": "deu-rb-leipzig-4ad2bf61",
+      "name": "RB Leipzig",
+      "country": "DEU",
+      "players": 30,
+      "strength": 89,
+      "stadium": "Red Bull Arena",
+      "csv": "data/m26/times/deu-rb-leipzig-4ad2bf61.csv",
+      "badgePath": "data/m26/escudos/deu-rb-leipzig-4ad2bf61.png"
+    },
+    {
+      "id": "deu-rot-weiss-essen-77bbe9d8",
+      "name": "Rot-Weiss Essen",
+      "country": "DEU",
+      "players": 24,
+      "strength": 65,
+      "stadium": "Stadion an der Hafenstraße",
+      "csv": "data/m26/times/deu-rot-weiss-essen-77bbe9d8.csv",
+      "badgePath": "data/m26/escudos/deu-rot-weiss-essen-77bbe9d8.png"
+    },
+    {
+      "id": "deu-saarbrucken-1dbd4e70",
+      "name": "Saarbrücken",
+      "country": "DEU",
+      "players": 28,
+      "strength": 65,
+      "stadium": "Ludwigsparkstadion",
+      "csv": "data/m26/times/deu-saarbrucken-1dbd4e70.csv",
+      "badgePath": "data/m26/escudos/deu-saarbrucken-1dbd4e70.png"
+    },
+    {
+      "id": "deu-schalke-04-a28fe1ea",
+      "name": "Schalke 04",
+      "country": "DEU",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Veltins-Arena",
+      "csv": "data/m26/times/deu-schalke-04-a28fe1ea.csv",
+      "badgePath": "data/m26/escudos/deu-schalke-04-a28fe1ea.png"
+    },
+    {
+      "id": "deu-st-pauli-8f74073b",
+      "name": "St. Pauli",
+      "country": "DEU",
+      "players": 29,
+      "strength": 74,
+      "stadium": "Millerntor-Stadion",
+      "csv": "data/m26/times/deu-st-pauli-8f74073b.csv",
+      "badgePath": "data/m26/escudos/deu-st-pauli-8f74073b.png"
+    },
+    {
+      "id": "deu-stuttgart-df8d56f9",
+      "name": "Stuttgart",
+      "country": "DEU",
+      "players": 30,
+      "strength": 89,
+      "stadium": "MHPArena Stuttgart",
+      "csv": "data/m26/times/deu-stuttgart-df8d56f9.csv",
+      "badgePath": "data/m26/escudos/deu-stuttgart-df8d56f9.png"
+    },
+    {
+      "id": "deu-union-berlin-d2961c64",
+      "name": "Union Berlin",
+      "country": "DEU",
+      "players": 30,
+      "strength": 84,
+      "stadium": "An der Alten Försterei",
+      "csv": "data/m26/times/deu-union-berlin-d2961c64.csv",
+      "badgePath": "data/m26/escudos/deu-union-berlin-d2961c64.png"
+    },
+    {
+      "id": "deu-werder-bremen-cdac8ce0",
+      "name": "Werder Bremen",
+      "country": "DEU",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Weserstadion",
+      "csv": "data/m26/times/deu-werder-bremen-cdac8ce0.csv",
+      "badgePath": "data/m26/escudos/deu-werder-bremen-cdac8ce0.png"
+    },
+    {
+      "id": "deu-wolfsburg-8a27de94",
+      "name": "Wolfsburg",
+      "country": "DEU",
+      "players": 30,
+      "strength": 75,
+      "stadium": "Volkswagen Arena",
+      "csv": "data/m26/times/deu-wolfsburg-8a27de94.csv",
+      "badgePath": "data/m26/escudos/deu-wolfsburg-8a27de94.png"
+    },
+    {
+      "id": "eng-arsenal-53477734",
+      "name": "Arsenal",
+      "country": "ENG",
+      "players": 26,
+      "strength": 99,
+      "stadium": "Emirates Stadium",
+      "csv": "data/m26/times/eng-arsenal-53477734.csv",
+      "badgePath": "data/m26/escudos/eng-arsenal-53477734.png"
+    },
+    {
+      "id": "eng-aston-villa-d0bdfdca",
+      "name": "Aston Villa",
+      "country": "ENG",
+      "players": 27,
+      "strength": 93,
+      "stadium": "Villa Park",
+      "csv": "data/m26/times/eng-aston-villa-d0bdfdca.csv",
+      "badgePath": "data/m26/escudos/eng-aston-villa-d0bdfdca.png"
+    },
+    {
+      "id": "eng-birmingham-city-60ac1a67",
+      "name": "Birmingham City",
+      "country": "ENG",
+      "players": 27,
+      "strength": 78,
+      "stadium": "St. Andrew’s",
+      "csv": "data/m26/times/eng-birmingham-city-60ac1a67.csv",
+      "badgePath": "data/m26/escudos/eng-birmingham-city-60ac1a67.png"
+    },
+    {
+      "id": "eng-blackburn-8c7b39b6",
+      "name": "Blackburn",
+      "country": "ENG",
+      "players": 25,
+      "strength": 76,
+      "stadium": "Ewood Park",
+      "csv": "data/m26/times/eng-blackburn-8c7b39b6.csv",
+      "badgePath": "data/m26/escudos/eng-blackburn-8c7b39b6.png"
+    },
+    {
+      "id": "eng-bolton-e25c405a",
+      "name": "Bolton",
+      "country": "ENG",
+      "players": 27,
+      "strength": 75,
+      "stadium": "Toughsheet Community Stadium",
+      "csv": "data/m26/times/eng-bolton-e25c405a.csv",
+      "badgePath": "data/m26/escudos/eng-bolton-e25c405a.png"
+    },
+    {
+      "id": "eng-bournemouth-327c976b",
+      "name": "Bournemouth",
+      "country": "ENG",
+      "players": 29,
+      "strength": 91,
+      "stadium": "Vitality Stadium",
+      "csv": "data/m26/times/eng-bournemouth-327c976b.csv",
+      "badgePath": "data/m26/escudos/eng-bournemouth-327c976b.png"
+    },
+    {
+      "id": "eng-brentford-8044917c",
+      "name": "Brentford",
+      "country": "ENG",
+      "players": 30,
+      "strength": 90,
+      "stadium": "Gtech Community Stadium",
+      "csv": "data/m26/times/eng-brentford-8044917c.csv",
+      "badgePath": "data/m26/escudos/eng-brentford-8044917c.png"
+    },
+    {
+      "id": "eng-brighton-f260df22",
+      "name": "Brighton",
+      "country": "ENG",
+      "players": 30,
+      "strength": 91,
+      "stadium": "AMEX Stadium",
+      "csv": "data/m26/times/eng-brighton-f260df22.csv",
+      "badgePath": "data/m26/escudos/eng-brighton-f260df22.png"
+    },
+    {
+      "id": "eng-bristol-city-4933da9b",
+      "name": "Bristol City",
+      "country": "ENG",
+      "players": 26,
+      "strength": 75,
+      "stadium": "Ashton Gate",
+      "csv": "data/m26/times/eng-bristol-city-4933da9b.csv",
+      "badgePath": "data/m26/escudos/eng-bristol-city-4933da9b.png"
+    },
+    {
+      "id": "eng-burnley-cfd0c196",
+      "name": "Burnley",
+      "country": "ENG",
+      "players": 30,
+      "strength": 79,
+      "stadium": "Turf Moor",
+      "csv": "data/m26/times/eng-burnley-cfd0c196.csv",
+      "badgePath": "data/m26/escudos/eng-burnley-cfd0c196.png"
+    },
+    {
+      "id": "eng-cardiff-city-03b07bcb",
+      "name": "Cardiff City",
+      "country": "ENG",
+      "players": 27,
+      "strength": 75,
+      "stadium": "Cardiff City Stadium",
+      "csv": "data/m26/times/eng-cardiff-city-03b07bcb.csv",
+      "badgePath": "data/m26/escudos/eng-cardiff-city-03b07bcb.png"
+    },
+    {
+      "id": "eng-charlton-athletic-7615c7e2",
+      "name": "Charlton Athletic",
+      "country": "ENG",
+      "players": 27,
+      "strength": 75,
+      "stadium": "The Valley",
+      "csv": "data/m26/times/eng-charlton-athletic-7615c7e2.csv",
+      "badgePath": "data/m26/escudos/eng-charlton-athletic-7615c7e2.png"
+    },
+    {
+      "id": "eng-chelsea-6ad1f488",
+      "name": "Chelsea",
+      "country": "ENG",
+      "players": 29,
+      "strength": 93,
+      "stadium": "Stamford Bridge",
+      "csv": "data/m26/times/eng-chelsea-6ad1f488.csv",
+      "badgePath": "data/m26/escudos/eng-chelsea-6ad1f488.png"
+    },
+    {
+      "id": "eng-coventry-city-76ebd2bf",
+      "name": "Coventry City",
+      "country": "ENG",
+      "players": 30,
+      "strength": 87,
+      "stadium": "CBS Arena",
+      "csv": "data/m26/times/eng-coventry-city-76ebd2bf.csv",
+      "badgePath": "data/m26/escudos/eng-coventry-city-76ebd2bf.png"
+    },
+    {
+      "id": "eng-crystal-palace-305876d9",
+      "name": "Crystal Palace",
+      "country": "ENG",
+      "players": 30,
+      "strength": 90,
+      "stadium": "Selhurst Park",
+      "csv": "data/m26/times/eng-crystal-palace-305876d9.csv",
+      "badgePath": "data/m26/escudos/eng-crystal-palace-305876d9.png"
+    },
+    {
+      "id": "eng-derby-county-728adc63",
+      "name": "Derby County",
+      "country": "ENG",
+      "players": 28,
+      "strength": 77,
+      "stadium": "Pride Park Stadium",
+      "csv": "data/m26/times/eng-derby-county-728adc63.csv",
+      "badgePath": "data/m26/escudos/eng-derby-county-728adc63.png"
+    },
+    {
+      "id": "eng-everton-306ea36c",
+      "name": "Everton",
+      "country": "ENG",
+      "players": 20,
+      "strength": 91,
+      "stadium": "Hill Dickinson Stadium",
+      "csv": "data/m26/times/eng-everton-306ea36c.csv",
+      "badgePath": "data/m26/escudos/eng-everton-306ea36c.png"
+    },
+    {
+      "id": "eng-fulham-c77b8011",
+      "name": "Fulham",
+      "country": "ENG",
+      "players": 22,
+      "strength": 89,
+      "stadium": "Craven Cottage",
+      "csv": "data/m26/times/eng-fulham-c77b8011.csv",
+      "badgePath": "data/m26/escudos/eng-fulham-c77b8011.png"
+    },
+    {
+      "id": "eng-hull-city-f69823e8",
+      "name": "Hull City",
+      "country": "ENG",
+      "players": 30,
+      "strength": 86,
+      "stadium": "MKM Stadium",
+      "csv": "data/m26/times/eng-hull-city-f69823e8.csv",
+      "badgePath": "data/m26/escudos/eng-hull-city-f69823e8.png"
+    },
+    {
+      "id": "eng-ipswich-town-f50934e0",
+      "name": "Ipswich Town",
+      "country": "ENG",
+      "players": 29,
+      "strength": 87,
+      "stadium": "Portman Road",
+      "csv": "data/m26/times/eng-ipswich-town-f50934e0.csv",
+      "badgePath": "data/m26/escudos/eng-ipswich-town-f50934e0.png"
+    },
+    {
+      "id": "eng-leeds-united-4ce208d5",
+      "name": "Leeds United",
+      "country": "ENG",
+      "players": 22,
+      "strength": 88,
+      "stadium": "Elland Road",
+      "csv": "data/m26/times/eng-leeds-united-4ce208d5.csv",
+      "badgePath": "data/m26/escudos/eng-leeds-united-4ce208d5.png"
+    },
+    {
+      "id": "eng-leicester-city-63b943ae",
+      "name": "Leicester City",
+      "country": "ENG",
+      "players": 26,
+      "strength": 67,
+      "stadium": "King Power Stadium",
+      "csv": "data/m26/times/eng-leicester-city-63b943ae.csv",
+      "badgePath": "data/m26/escudos/eng-leicester-city-63b943ae.png"
+    },
+    {
+      "id": "eng-lincoln-city-487a1d2f",
+      "name": "Lincoln City",
+      "country": "ENG",
+      "players": 27,
+      "strength": 76,
+      "stadium": "LNER Stadium",
+      "csv": "data/m26/times/eng-lincoln-city-487a1d2f.csv",
+      "badgePath": "data/m26/escudos/eng-lincoln-city-487a1d2f.png"
+    },
+    {
+      "id": "eng-liverpool-abb08475",
+      "name": "Liverpool",
+      "country": "ENG",
+      "players": 27,
+      "strength": 95,
+      "stadium": "Anfield",
+      "csv": "data/m26/times/eng-liverpool-abb08475.csv",
+      "badgePath": "data/m26/escudos/eng-liverpool-abb08475.png"
+    },
+    {
+      "id": "eng-luton-town-9c9f0228",
+      "name": "Luton Town",
+      "country": "ENG",
+      "players": 27,
+      "strength": 69,
+      "stadium": "Kenilworth Road",
+      "csv": "data/m26/times/eng-luton-town-9c9f0228.csv",
+      "badgePath": "data/m26/escudos/eng-luton-town-9c9f0228.png"
+    },
+    {
+      "id": "eng-manchester-city-5aa7edb5",
+      "name": "Manchester City",
+      "country": "ENG",
+      "players": 28,
+      "strength": 97,
+      "stadium": "Etihad Stadium",
+      "csv": "data/m26/times/eng-manchester-city-5aa7edb5.csv",
+      "badgePath": "data/m26/escudos/eng-manchester-city-5aa7edb5.png"
+    },
+    {
+      "id": "eng-manchester-united-daf8ca21",
+      "name": "Manchester United",
+      "country": "ENG",
+      "players": 30,
+      "strength": 94,
+      "stadium": "Old Trafford",
+      "csv": "data/m26/times/eng-manchester-united-daf8ca21.csv",
+      "badgePath": "data/m26/escudos/eng-manchester-united-daf8ca21.png"
+    },
+    {
+      "id": "eng-middlesbrough-948c1e81",
+      "name": "Middlesbrough",
+      "country": "ENG",
+      "players": 27,
+      "strength": 81,
+      "stadium": "Riverside Stadium",
+      "csv": "data/m26/times/eng-middlesbrough-948c1e81.csv",
+      "badgePath": "data/m26/escudos/eng-middlesbrough-948c1e81.png"
+    },
+    {
+      "id": "eng-millwall-f1d9e66a",
+      "name": "Millwall",
+      "country": "ENG",
+      "players": 29,
+      "strength": 80,
+      "stadium": "The Den",
+      "csv": "data/m26/times/eng-millwall-f1d9e66a.csv",
+      "badgePath": "data/m26/escudos/eng-millwall-f1d9e66a.png"
+    },
+    {
+      "id": "eng-newcastle-32a32974",
+      "name": "Newcastle",
+      "country": "ENG",
+      "players": 25,
+      "strength": 92,
+      "stadium": "St James' Park",
+      "csv": "data/m26/times/eng-newcastle-32a32974.csv",
+      "badgePath": "data/m26/escudos/eng-newcastle-32a32974.png"
+    },
+    {
+      "id": "eng-norwich-city-85536d5c",
+      "name": "Norwich City",
+      "country": "ENG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Carrow Road",
+      "csv": "data/m26/times/eng-norwich-city-85536d5c.csv",
+      "badgePath": "data/m26/escudos/eng-norwich-city-85536d5c.png"
+    },
+    {
+      "id": "eng-nottingham-forest-e7e8d1ed",
+      "name": "Nottingham Forest",
+      "country": "ENG",
+      "players": 24,
+      "strength": 90,
+      "stadium": "The City Ground",
+      "csv": "data/m26/times/eng-nottingham-forest-e7e8d1ed.csv",
+      "badgePath": "data/m26/escudos/eng-nottingham-forest-e7e8d1ed.png"
+    },
+    {
+      "id": "eng-oxford-united-7db71ceb",
+      "name": "Oxford United",
+      "country": "ENG",
+      "players": 23,
+      "strength": 67,
+      "stadium": "Kassam Stadium",
+      "csv": "data/m26/times/eng-oxford-united-7db71ceb.csv",
+      "badgePath": "data/m26/escudos/eng-oxford-united-7db71ceb.png"
+    },
+    {
+      "id": "eng-portsmouth-05bc61a4",
+      "name": "Portsmouth",
+      "country": "ENG",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Fratton Park",
+      "csv": "data/m26/times/eng-portsmouth-05bc61a4.csv",
+      "badgePath": "data/m26/escudos/eng-portsmouth-05bc61a4.png"
+    },
+    {
+      "id": "eng-preston-north-end-0524bd4d",
+      "name": "Preston North End",
+      "country": "ENG",
+      "players": 25,
+      "strength": 75,
+      "stadium": "Deepdale",
+      "csv": "data/m26/times/eng-preston-north-end-0524bd4d.csv",
+      "badgePath": "data/m26/escudos/eng-preston-north-end-0524bd4d.png"
+    },
+    {
+      "id": "eng-queens-park-rangers-a20c0683",
+      "name": "Queens Park Rangers",
+      "country": "ENG",
+      "players": 26,
+      "strength": 76,
+      "stadium": "Loftus Road Stadium",
+      "csv": "data/m26/times/eng-queens-park-rangers-a20c0683.csv",
+      "badgePath": "data/m26/escudos/eng-queens-park-rangers-a20c0683.png"
+    },
+    {
+      "id": "eng-sheffield-united-8c395185",
+      "name": "Sheffield United",
+      "country": "ENG",
+      "players": 24,
+      "strength": 78,
+      "stadium": "Bramall Lane",
+      "csv": "data/m26/times/eng-sheffield-united-8c395185.csv",
+      "badgePath": "data/m26/escudos/eng-sheffield-united-8c395185.png"
+    },
+    {
+      "id": "eng-sheffield-wednesday-92e65429",
+      "name": "Sheffield Wednesday",
+      "country": "ENG",
+      "players": 28,
+      "strength": 66,
+      "stadium": "Hillsborough",
+      "csv": "data/m26/times/eng-sheffield-wednesday-92e65429.csv",
+      "badgePath": "data/m26/escudos/eng-sheffield-wednesday-92e65429.png"
+    },
+    {
+      "id": "eng-southampton-d75af0b9",
+      "name": "Southampton",
+      "country": "ENG",
+      "players": 28,
+      "strength": 81,
+      "stadium": "St Mary's Stadium",
+      "csv": "data/m26/times/eng-southampton-d75af0b9.csv",
+      "badgePath": "data/m26/escudos/eng-southampton-d75af0b9.png"
+    },
+    {
+      "id": "eng-stoke-city-b6b3dfc1",
+      "name": "Stoke City",
+      "country": "ENG",
+      "players": 25,
+      "strength": 73,
+      "stadium": "bet365 Stadium",
+      "csv": "data/m26/times/eng-stoke-city-b6b3dfc1.csv",
+      "badgePath": "data/m26/escudos/eng-stoke-city-b6b3dfc1.png"
+    },
+    {
+      "id": "eng-sunderland-f0138324",
+      "name": "Sunderland",
+      "country": "ENG",
+      "players": 28,
+      "strength": 88,
+      "stadium": "Stadium of Light",
+      "csv": "data/m26/times/eng-sunderland-f0138324.csv",
+      "badgePath": "data/m26/escudos/eng-sunderland-f0138324.png"
+    },
+    {
+      "id": "eng-swansea-city-cd841d8b",
+      "name": "Swansea City",
+      "country": "ENG",
+      "players": 27,
+      "strength": 78,
+      "stadium": "Swansea.com Stadium",
+      "csv": "data/m26/times/eng-swansea-city-cd841d8b.csv",
+      "badgePath": "data/m26/escudos/eng-swansea-city-cd841d8b.png"
+    },
+    {
+      "id": "eng-tottenham-2532525a",
+      "name": "Tottenham",
+      "country": "ENG",
+      "players": 27,
+      "strength": 91,
+      "stadium": "Tottenham Hotspur Stadium",
+      "csv": "data/m26/times/eng-tottenham-2532525a.csv",
+      "badgePath": "data/m26/escudos/eng-tottenham-2532525a.png"
+    },
+    {
+      "id": "eng-watford-4e91252f",
+      "name": "Watford",
+      "country": "ENG",
+      "players": 23,
+      "strength": 75,
+      "stadium": "Vicarage Road",
+      "csv": "data/m26/times/eng-watford-4e91252f.csv",
+      "badgePath": "data/m26/escudos/eng-watford-4e91252f.png"
+    },
+    {
+      "id": "eng-west-bromwich-e9ceea51",
+      "name": "West Bromwich",
+      "country": "ENG",
+      "players": 24,
+      "strength": 78,
+      "stadium": "The Hawthorns",
+      "csv": "data/m26/times/eng-west-bromwich-e9ceea51.csv",
+      "badgePath": "data/m26/escudos/eng-west-bromwich-e9ceea51.png"
+    },
+    {
+      "id": "eng-west-ham-united-680511e2",
+      "name": "West Ham United",
+      "country": "ENG",
+      "players": 27,
+      "strength": 82,
+      "stadium": "London Stadium",
+      "csv": "data/m26/times/eng-west-ham-united-680511e2.csv",
+      "badgePath": "data/m26/escudos/eng-west-ham-united-680511e2.png"
+    },
+    {
+      "id": "eng-wolverhampton-107fd3a0",
+      "name": "Wolverhampton",
+      "country": "ENG",
+      "players": 28,
+      "strength": 80,
+      "stadium": "Molineux Stadium",
+      "csv": "data/m26/times/eng-wolverhampton-107fd3a0.csv",
+      "badgePath": "data/m26/escudos/eng-wolverhampton-107fd3a0.png"
+    },
+    {
+      "id": "eng-wrexham-3655317d",
+      "name": "Wrexham",
+      "country": "ENG",
+      "players": 30,
+      "strength": 78,
+      "stadium": "STōK Cae Ras",
+      "csv": "data/m26/times/eng-wrexham-3655317d.csv",
+      "badgePath": "data/m26/escudos/eng-wrexham-3655317d.png"
+    },
+    {
+      "id": "esp-albacete-a4dcd8b2",
+      "name": "Albacete",
+      "country": "ESP",
+      "players": 27,
+      "strength": 75,
+      "stadium": "Carlos Belmonte",
+      "csv": "data/m26/times/esp-albacete-a4dcd8b2.csv",
+      "badgePath": "data/m26/escudos/esp-albacete-a4dcd8b2.png"
+    },
+    {
+      "id": "esp-almeria-2dd87618",
+      "name": "Almería",
+      "country": "ESP",
+      "players": 27,
+      "strength": 77,
+      "stadium": "UD Almería Stadium",
+      "csv": "data/m26/times/esp-almeria-2dd87618.csv",
+      "badgePath": "data/m26/escudos/esp-almeria-2dd87618.png"
+    },
+    {
+      "id": "esp-andorra-f64a1766",
+      "name": "Andorra",
+      "country": "ESP",
+      "players": 29,
+      "strength": 76,
+      "stadium": "Nou Estadi Encamp",
+      "csv": "data/m26/times/esp-andorra-f64a1766.csv",
+      "badgePath": "data/m26/escudos/esp-andorra-f64a1766.png"
+    },
+    {
+      "id": "esp-athletic-bilbao-9ec2b905",
+      "name": "Athletic Bilbao",
+      "country": "ESP",
+      "players": 28,
+      "strength": 85,
+      "stadium": "San Mamés",
+      "csv": "data/m26/times/esp-athletic-bilbao-9ec2b905.csv",
+      "badgePath": "data/m26/escudos/esp-athletic-bilbao-9ec2b905.png"
+    },
+    {
+      "id": "esp-atletico-de-madrid-780b373c",
+      "name": "Atlético de Madrid",
+      "country": "ESP",
+      "players": 24,
+      "strength": 91,
+      "stadium": "Riyadh Air Metropolitano",
+      "csv": "data/m26/times/esp-atletico-de-madrid-780b373c.csv",
+      "badgePath": "data/m26/escudos/esp-atletico-de-madrid-780b373c.png"
+    },
+    {
+      "id": "esp-barcelona-7600ead3",
+      "name": "Barcelona",
+      "country": "ESP",
+      "players": 28,
+      "strength": 96,
+      "stadium": "Spotify Camp Nou",
+      "csv": "data/m26/times/esp-barcelona-7600ead3.csv",
+      "badgePath": "data/m26/escudos/esp-barcelona-7600ead3.png"
+    },
+    {
+      "id": "esp-burgos-8cf34e29",
+      "name": "Burgos",
+      "country": "ESP",
+      "players": 21,
+      "strength": 77,
+      "stadium": "El Plantío",
+      "csv": "data/m26/times/esp-burgos-8cf34e29.csv",
+      "badgePath": "data/m26/escudos/esp-burgos-8cf34e29.png"
+    },
+    {
+      "id": "esp-castellon-583dfa0a",
+      "name": "Castellón",
+      "country": "ESP",
+      "players": 27,
+      "strength": 78,
+      "stadium": "SkyFi Castalia",
+      "csv": "data/m26/times/esp-castellon-583dfa0a.csv",
+      "badgePath": "data/m26/escudos/esp-castellon-583dfa0a.png"
+    },
+    {
+      "id": "esp-celta-de-vigo-e09fa626",
+      "name": "Celta de Vigo",
+      "country": "ESP",
+      "players": 26,
+      "strength": 86,
+      "stadium": "Abanca Balaídos",
+      "csv": "data/m26/times/esp-celta-de-vigo-e09fa626.csv",
+      "badgePath": "data/m26/escudos/esp-celta-de-vigo-e09fa626.png"
+    },
+    {
+      "id": "esp-celta-fortuna-fa33b6fb",
+      "name": "Celta Fortuna",
+      "country": "ESP",
+      "players": 25,
+      "strength": 72,
+      "stadium": "Barreiro",
+      "csv": "data/m26/times/esp-celta-fortuna-fa33b6fb.csv",
+      "badgePath": "data/m26/escudos/esp-celta-fortuna-fa33b6fb.png"
+    },
+    {
+      "id": "esp-ceuta-40af5ef4",
+      "name": "Ceuta",
+      "country": "ESP",
+      "players": 24,
+      "strength": 73,
+      "stadium": "Alfonso Murube",
+      "csv": "data/m26/times/esp-ceuta-40af5ef4.csv",
+      "badgePath": "data/m26/escudos/esp-ceuta-40af5ef4.png"
+    },
+    {
+      "id": "esp-cultural-leonesa-05e75abb",
+      "name": "Cultural Leonesa",
+      "country": "ESP",
+      "players": 21,
+      "strength": 66,
+      "stadium": "Reino de León",
+      "csv": "data/m26/times/esp-cultural-leonesa-05e75abb.csv",
+      "badgePath": "data/m26/escudos/esp-cultural-leonesa-05e75abb.png"
+    },
+    {
+      "id": "esp-cadiz-5bb37d02",
+      "name": "Cádiz",
+      "country": "ESP",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Nuevo Mirandilla",
+      "csv": "data/m26/times/esp-cadiz-5bb37d02.csv",
+      "badgePath": "data/m26/escudos/esp-cadiz-5bb37d02.png"
+    },
+    {
+      "id": "esp-cordoba-c9dfda3e",
+      "name": "Córdoba",
+      "country": "ESP",
+      "players": 26,
+      "strength": 75,
+      "stadium": "Victorious Nuevo Arcángel",
+      "csv": "data/m26/times/esp-cordoba-c9dfda3e.csv",
+      "badgePath": "data/m26/escudos/esp-cordoba-c9dfda3e.png"
+    },
+    {
+      "id": "esp-deportivo-alaves-4479b589",
+      "name": "Deportivo Alavés",
+      "country": "ESP",
+      "players": 25,
+      "strength": 85,
+      "stadium": "Mendizorroza",
+      "csv": "data/m26/times/esp-deportivo-alaves-4479b589.csv",
+      "badgePath": "data/m26/escudos/esp-deportivo-alaves-4479b589.png"
+    },
+    {
+      "id": "esp-deportivo-la-coruna-0e60ed78",
+      "name": "Deportivo La Coruña",
+      "country": "ESP",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Abanca Riazor",
+      "csv": "data/m26/times/esp-deportivo-la-coruna-0e60ed78.csv",
+      "badgePath": "data/m26/escudos/esp-deportivo-la-coruna-0e60ed78.png"
+    },
+    {
+      "id": "esp-eibar-2bce5a27",
+      "name": "Eibar",
+      "country": "ESP",
+      "players": 24,
+      "strength": 76,
+      "stadium": "Ipurua",
+      "csv": "data/m26/times/esp-eibar-2bce5a27.csv",
+      "badgePath": "data/m26/escudos/esp-eibar-2bce5a27.png"
+    },
+    {
+      "id": "esp-elche-fe486c10",
+      "name": "Elche",
+      "country": "ESP",
+      "players": 27,
+      "strength": 83,
+      "stadium": "Martínez Valero",
+      "csv": "data/m26/times/esp-elche-fe486c10.csv",
+      "badgePath": "data/m26/escudos/esp-elche-fe486c10.png"
+    },
+    {
+      "id": "esp-eldense-6640264e",
+      "name": "Eldense",
+      "country": "ESP",
+      "players": 24,
+      "strength": 72,
+      "stadium": "Nuevo Pepico Amat",
+      "csv": "data/m26/times/esp-eldense-6640264e.csv",
+      "badgePath": "data/m26/escudos/esp-eldense-6640264e.png"
+    },
+    {
+      "id": "esp-espanyol-5c92abef",
+      "name": "Espanyol",
+      "country": "ESP",
+      "players": 25,
+      "strength": 84,
+      "stadium": "RCDE Stadium",
+      "csv": "data/m26/times/esp-espanyol-5c92abef.csv",
+      "badgePath": "data/m26/escudos/esp-espanyol-5c92abef.png"
+    },
+    {
+      "id": "esp-getafe-94f6c183",
+      "name": "Getafe",
+      "country": "ESP",
+      "players": 25,
+      "strength": 84,
+      "stadium": "Coliseum",
+      "csv": "data/m26/times/esp-getafe-94f6c183.csv",
+      "badgePath": "data/m26/escudos/esp-getafe-94f6c183.png"
+    },
+    {
+      "id": "esp-girona-e022cb85",
+      "name": "Girona",
+      "country": "ESP",
+      "players": 23,
+      "strength": 77,
+      "stadium": "Montilivi",
+      "csv": "data/m26/times/esp-girona-e022cb85.csv",
+      "badgePath": "data/m26/escudos/esp-girona-e022cb85.png"
+    },
+    {
+      "id": "esp-granada-cdf4101b",
+      "name": "Granada",
+      "country": "ESP",
+      "players": 20,
+      "strength": 74,
+      "stadium": "Nuevo Los Cármenes",
+      "csv": "data/m26/times/esp-granada-cdf4101b.csv",
+      "badgePath": "data/m26/escudos/esp-granada-cdf4101b.png"
+    },
+    {
+      "id": "esp-huesca-51ca54a4",
+      "name": "Huesca",
+      "country": "ESP",
+      "players": 25,
+      "strength": 66,
+      "stadium": "El Alcoraz",
+      "csv": "data/m26/times/esp-huesca-51ca54a4.csv",
+      "badgePath": "data/m26/escudos/esp-huesca-51ca54a4.png"
+    },
+    {
+      "id": "esp-las-palmas-ae8cf660",
+      "name": "Las Palmas",
+      "country": "ESP",
+      "players": 26,
+      "strength": 77,
+      "stadium": "Estadio Gran Canaria",
+      "csv": "data/m26/times/esp-las-palmas-ae8cf660.csv",
+      "badgePath": "data/m26/escudos/esp-las-palmas-ae8cf660.png"
+    },
+    {
+      "id": "esp-leganes-5269101c",
+      "name": "Leganés",
+      "country": "ESP",
+      "players": 25,
+      "strength": 73,
+      "stadium": "Butarque",
+      "csv": "data/m26/times/esp-leganes-5269101c.csv",
+      "badgePath": "data/m26/escudos/esp-leganes-5269101c.png"
+    },
+    {
+      "id": "esp-levante-352e78ad",
+      "name": "Levante",
+      "country": "ESP",
+      "players": 26,
+      "strength": 84,
+      "stadium": "Ciutat de València",
+      "csv": "data/m26/times/esp-levante-352e78ad.csv",
+      "badgePath": "data/m26/escudos/esp-levante-352e78ad.png"
+    },
+    {
+      "id": "esp-mallorca-d7296189",
+      "name": "Mallorca",
+      "country": "ESP",
+      "players": 27,
+      "strength": 77,
+      "stadium": "Mallorca Son Moix",
+      "csv": "data/m26/times/esp-mallorca-d7296189.csv",
+      "badgePath": "data/m26/escudos/esp-mallorca-d7296189.png"
+    },
+    {
+      "id": "esp-mirandes-c03acf04",
+      "name": "Mirandés",
+      "country": "ESP",
+      "players": 21,
+      "strength": 67,
+      "stadium": "Anduva",
+      "csv": "data/m26/times/esp-mirandes-c03acf04.csv",
+      "badgePath": "data/m26/escudos/esp-mirandes-c03acf04.png"
+    },
+    {
+      "id": "esp-malaga-723d568d",
+      "name": "Málaga",
+      "country": "ESP",
+      "players": 28,
+      "strength": 83,
+      "stadium": "La Rosaleda",
+      "csv": "data/m26/times/esp-malaga-723d568d.csv",
+      "badgePath": "data/m26/escudos/esp-malaga-723d568d.png"
+    },
+    {
+      "id": "esp-osasuna-97691ba1",
+      "name": "Osasuna",
+      "country": "ESP",
+      "players": 23,
+      "strength": 85,
+      "stadium": "El Sadar",
+      "csv": "data/m26/times/esp-osasuna-97691ba1.csv",
+      "badgePath": "data/m26/escudos/esp-osasuna-97691ba1.png"
+    },
+    {
+      "id": "esp-racing-santander-d71afc66",
+      "name": "Racing Santander",
+      "country": "ESP",
+      "players": 23,
+      "strength": 83,
+      "stadium": "El Sardinero",
+      "csv": "data/m26/times/esp-racing-santander-d71afc66.csv",
+      "badgePath": "data/m26/escudos/esp-racing-santander-d71afc66.png"
+    },
+    {
+      "id": "esp-rayo-vallecano-2cb0b83a",
+      "name": "Rayo Vallecano",
+      "country": "ESP",
+      "players": 25,
+      "strength": 86,
+      "stadium": "Estadio de Vallecas",
+      "csv": "data/m26/times/esp-rayo-vallecano-2cb0b83a.csv",
+      "badgePath": "data/m26/escudos/esp-rayo-vallecano-2cb0b83a.png"
+    },
+    {
+      "id": "esp-real-betis-20c9e372",
+      "name": "Real Betis",
+      "country": "ESP",
+      "players": 25,
+      "strength": 88,
+      "stadium": "La Cartuja",
+      "csv": "data/m26/times/esp-real-betis-20c9e372.csv",
+      "badgePath": "data/m26/escudos/esp-real-betis-20c9e372.png"
+    },
+    {
+      "id": "esp-real-madrid-eda6369c",
+      "name": "Real Madrid",
+      "country": "ESP",
+      "players": 27,
+      "strength": 94,
+      "stadium": "Santiago Bernabéu",
+      "csv": "data/m26/times/esp-real-madrid-eda6369c.csv",
+      "badgePath": "data/m26/escudos/esp-real-madrid-eda6369c.png"
+    },
+    {
+      "id": "esp-real-oviedo-276f582c",
+      "name": "Real Oviedo",
+      "country": "ESP",
+      "players": 25,
+      "strength": 76,
+      "stadium": "Carlos Tartiere",
+      "csv": "data/m26/times/esp-real-oviedo-276f582c.csv",
+      "badgePath": "data/m26/escudos/esp-real-oviedo-276f582c.png"
+    },
+    {
+      "id": "esp-real-sociedad-cf09d360",
+      "name": "Real Sociedad",
+      "country": "ESP",
+      "players": 25,
+      "strength": 86,
+      "stadium": "Reale Arena",
+      "csv": "data/m26/times/esp-real-sociedad-cf09d360.csv",
+      "badgePath": "data/m26/escudos/esp-real-sociedad-cf09d360.png"
+    },
+    {
+      "id": "esp-real-sociedad-b-66a4f028",
+      "name": "Real Sociedad B",
+      "country": "ESP",
+      "players": 25,
+      "strength": 72,
+      "stadium": "Instalaciones de Zubieta",
+      "csv": "data/m26/times/esp-real-sociedad-b-66a4f028.csv",
+      "badgePath": "data/m26/escudos/esp-real-sociedad-b-66a4f028.png"
+    },
+    {
+      "id": "esp-real-valladolid-e03158e0",
+      "name": "Real Valladolid",
+      "country": "ESP",
+      "players": 29,
+      "strength": 73,
+      "stadium": "José Zorrilla",
+      "csv": "data/m26/times/esp-real-valladolid-e03158e0.csv",
+      "badgePath": "data/m26/escudos/esp-real-valladolid-e03158e0.png"
+    },
+    {
+      "id": "esp-real-zaragoza-2c07760f",
+      "name": "Real Zaragoza",
+      "country": "ESP",
+      "players": 23,
+      "strength": 66,
+      "stadium": "Ibercaja Estadio",
+      "csv": "data/m26/times/esp-real-zaragoza-2c07760f.csv",
+      "badgePath": "data/m26/escudos/esp-real-zaragoza-2c07760f.png"
+    },
+    {
+      "id": "esp-sabadell-046b993a",
+      "name": "Sabadell",
+      "country": "ESP",
+      "players": 28,
+      "strength": 73,
+      "stadium": "Nova Creu Alta",
+      "csv": "data/m26/times/esp-sabadell-046b993a.csv",
+      "badgePath": "data/m26/escudos/esp-sabadell-046b993a.png"
+    },
+    {
+      "id": "esp-sevilla-f5e8c165",
+      "name": "Sevilla",
+      "country": "ESP",
+      "players": 24,
+      "strength": 84,
+      "stadium": "Ramón Sánchez-Pizjuán",
+      "csv": "data/m26/times/esp-sevilla-f5e8c165.csv",
+      "badgePath": "data/m26/escudos/esp-sevilla-f5e8c165.png"
+    },
+    {
+      "id": "esp-sporting-gijon-cbe8aa7e",
+      "name": "Sporting Gijón",
+      "country": "ESP",
+      "players": 22,
+      "strength": 75,
+      "stadium": "El Molinón",
+      "csv": "data/m26/times/esp-sporting-gijon-cbe8aa7e.csv",
+      "badgePath": "data/m26/escudos/esp-sporting-gijon-cbe8aa7e.png"
+    },
+    {
+      "id": "esp-tenerife-6235b243",
+      "name": "Tenerife",
+      "country": "ESP",
+      "players": 27,
+      "strength": 74,
+      "stadium": "Heliodoro Rodríguez López",
+      "csv": "data/m26/times/esp-tenerife-6235b243.csv",
+      "badgePath": "data/m26/escudos/esp-tenerife-6235b243.png"
+    },
+    {
+      "id": "esp-valencia-bdc1307c",
+      "name": "Valencia",
+      "country": "ESP",
+      "players": 26,
+      "strength": 87,
+      "stadium": "Mestalla",
+      "csv": "data/m26/times/esp-valencia-bdc1307c.csv",
+      "badgePath": "data/m26/escudos/esp-valencia-bdc1307c.png"
+    },
+    {
+      "id": "esp-villarreal-465ea94f",
+      "name": "Villarreal",
+      "country": "ESP",
+      "players": 24,
+      "strength": 88,
+      "stadium": "La Cerámica",
+      "csv": "data/m26/times/esp-villarreal-465ea94f.csv",
+      "badgePath": "data/m26/escudos/esp-villarreal-465ea94f.png"
+    },
+    {
+      "id": "fra-amiens-b00f0224",
+      "name": "Amiens",
+      "country": "FRA",
+      "players": 30,
+      "strength": 61,
+      "stadium": "Stade de la Licorne",
+      "csv": "data/m26/times/fra-amiens-b00f0224.csv",
+      "badgePath": "data/m26/escudos/fra-amiens-b00f0224.png"
+    },
+    {
+      "id": "fra-angers-eef95b38",
+      "name": "Angers",
+      "country": "FRA",
+      "players": 21,
+      "strength": 80,
+      "stadium": "Stade Raymond Kopa",
+      "csv": "data/m26/times/fra-angers-eef95b38.csv",
+      "badgePath": "data/m26/escudos/fra-angers-eef95b38.png"
+    },
+    {
+      "id": "fra-annecy-74c866ba",
+      "name": "Annecy",
+      "country": "FRA",
+      "players": 29,
+      "strength": 74,
+      "stadium": "Parc des Sports d’Annecy",
+      "csv": "data/m26/times/fra-annecy-74c866ba.csv",
+      "badgePath": "data/m26/escudos/fra-annecy-74c866ba.png"
+    },
+    {
+      "id": "fra-auxerre-322765ed",
+      "name": "Auxerre",
+      "country": "FRA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Stade de l'Abbé-Deschamps",
+      "csv": "data/m26/times/fra-auxerre-322765ed.csv",
+      "badgePath": "data/m26/escudos/fra-auxerre-322765ed.png"
+    },
+    {
+      "id": "fra-bastia-f89dbf6f",
+      "name": "Bastia",
+      "country": "FRA",
+      "players": 21,
+      "strength": 63,
+      "stadium": "Stade Armand-Cesari",
+      "csv": "data/m26/times/fra-bastia-f89dbf6f.csv",
+      "badgePath": "data/m26/escudos/fra-bastia-f89dbf6f.png"
+    },
+    {
+      "id": "fra-boulogne-7c0cae95",
+      "name": "Boulogne",
+      "country": "FRA",
+      "players": 25,
+      "strength": 68,
+      "stadium": "Stade de la Libération",
+      "csv": "data/m26/times/fra-boulogne-7c0cae95.csv",
+      "badgePath": "data/m26/escudos/fra-boulogne-7c0cae95.png"
+    },
+    {
+      "id": "fra-brest-642a7635",
+      "name": "Brest",
+      "country": "FRA",
+      "players": 22,
+      "strength": 83,
+      "stadium": "Stade Francis-Le Blé",
+      "csv": "data/m26/times/fra-brest-642a7635.csv",
+      "badgePath": "data/m26/escudos/fra-brest-642a7635.png"
+    },
+    {
+      "id": "fra-caen-37da12c8",
+      "name": "Caen",
+      "country": "FRA",
+      "players": 24,
+      "strength": 62,
+      "stadium": "Stade Michel-d'Ornano",
+      "csv": "data/m26/times/fra-caen-37da12c8.csv",
+      "badgePath": "data/m26/escudos/fra-caen-37da12c8.png"
+    },
+    {
+      "id": "fra-clermont-b734c07d",
+      "name": "Clermont",
+      "country": "FRA",
+      "players": 27,
+      "strength": 69,
+      "stadium": "Stade Gabriel-Montpied",
+      "csv": "data/m26/times/fra-clermont-b734c07d.csv",
+      "badgePath": "data/m26/escudos/fra-clermont-b734c07d.png"
+    },
+    {
+      "id": "fra-dijon-d62a9a0e",
+      "name": "Dijon",
+      "country": "FRA",
+      "players": 22,
+      "strength": 69,
+      "stadium": "Stade Gaston-Gérard",
+      "csv": "data/m26/times/fra-dijon-d62a9a0e.csv",
+      "badgePath": "data/m26/escudos/fra-dijon-d62a9a0e.png"
+    },
+    {
+      "id": "fra-dunkerque-f674ba93",
+      "name": "Dunkerque",
+      "country": "FRA",
+      "players": 23,
+      "strength": 72,
+      "stadium": "Stade Marcel-Tribut",
+      "csv": "data/m26/times/fra-dunkerque-f674ba93.csv",
+      "badgePath": "data/m26/escudos/fra-dunkerque-f674ba93.png"
+    },
+    {
+      "id": "fra-grenoble-c6341f0f",
+      "name": "Grenoble",
+      "country": "FRA",
+      "players": 26,
+      "strength": 70,
+      "stadium": "Stade des Alpes",
+      "csv": "data/m26/times/fra-grenoble-c6341f0f.csv",
+      "badgePath": "data/m26/escudos/fra-grenoble-c6341f0f.png"
+    },
+    {
+      "id": "fra-guingamp-c3f308c3",
+      "name": "Guingamp",
+      "country": "FRA",
+      "players": 24,
+      "strength": 71,
+      "stadium": "Stade de Roudourou",
+      "csv": "data/m26/times/fra-guingamp-c3f308c3.csv",
+      "badgePath": "data/m26/escudos/fra-guingamp-c3f308c3.png"
+    },
+    {
+      "id": "fra-le-havre-4ad247b9",
+      "name": "Le Havre",
+      "country": "FRA",
+      "players": 26,
+      "strength": 82,
+      "stadium": "Stade Océane",
+      "csv": "data/m26/times/fra-le-havre-4ad247b9.csv",
+      "badgePath": "data/m26/escudos/fra-le-havre-4ad247b9.png"
+    },
+    {
+      "id": "fra-le-mans-ab35e2a9",
+      "name": "Le Mans",
+      "country": "FRA",
+      "players": 29,
+      "strength": 81,
+      "stadium": "Stade Marie-Marvingt",
+      "csv": "data/m26/times/fra-le-mans-ab35e2a9.csv",
+      "badgePath": "data/m26/escudos/fra-le-mans-ab35e2a9.png"
+    },
+    {
+      "id": "fra-le-puy-af37f1fd",
+      "name": "Le Puy",
+      "country": "FRA",
+      "players": 23,
+      "strength": 63,
+      "stadium": "Stade Charles-Massot",
+      "csv": "data/m26/times/fra-le-puy-af37f1fd.csv",
+      "badgePath": "data/m26/escudos/fra-le-puy-af37f1fd.png"
+    },
+    {
+      "id": "fra-lens-c7b12e7c",
+      "name": "Lens",
+      "country": "FRA",
+      "players": 29,
+      "strength": 90,
+      "stadium": "Stade Bollaert-Delelis",
+      "csv": "data/m26/times/fra-lens-c7b12e7c.csv",
+      "badgePath": "data/m26/escudos/fra-lens-c7b12e7c.png"
+    },
+    {
+      "id": "fra-lille-00b5c008",
+      "name": "Lille",
+      "country": "FRA",
+      "players": 27,
+      "strength": 88,
+      "stadium": "Stade Pierre-Mauroy",
+      "csv": "data/m26/times/fra-lille-00b5c008.csv",
+      "badgePath": "data/m26/escudos/fra-lille-00b5c008.png"
+    },
+    {
+      "id": "fra-lorient-43be4658",
+      "name": "Lorient",
+      "country": "FRA",
+      "players": 25,
+      "strength": 84,
+      "stadium": "Stade du Moustoir",
+      "csv": "data/m26/times/fra-lorient-43be4658.csv",
+      "badgePath": "data/m26/escudos/fra-lorient-43be4658.png"
+    },
+    {
+      "id": "fra-lyon-f73e7fcd",
+      "name": "Lyon",
+      "country": "FRA",
+      "players": 28,
+      "strength": 88,
+      "stadium": "Groupama Stadium",
+      "csv": "data/m26/times/fra-lyon-f73e7fcd.csv",
+      "badgePath": "data/m26/escudos/fra-lyon-f73e7fcd.png"
+    },
+    {
+      "id": "fra-metz-4b2fcd53",
+      "name": "Metz",
+      "country": "FRA",
+      "players": 25,
+      "strength": 73,
+      "stadium": "Stade Saint-Symphorien",
+      "csv": "data/m26/times/fra-metz-4b2fcd53.csv",
+      "badgePath": "data/m26/escudos/fra-metz-4b2fcd53.png"
+    },
+    {
+      "id": "fra-monaco-378cbd0a",
+      "name": "Monaco",
+      "country": "FRA",
+      "players": 23,
+      "strength": 88,
+      "stadium": "Stade Louis II",
+      "csv": "data/m26/times/fra-monaco-378cbd0a.csv",
+      "badgePath": "data/m26/escudos/fra-monaco-378cbd0a.png"
+    },
+    {
+      "id": "fra-montpellier-0ce41ea6",
+      "name": "Montpellier",
+      "country": "FRA",
+      "players": 25,
+      "strength": 73,
+      "stadium": "Stade de la Mosson",
+      "csv": "data/m26/times/fra-montpellier-0ce41ea6.csv",
+      "badgePath": "data/m26/escudos/fra-montpellier-0ce41ea6.png"
+    },
+    {
+      "id": "fra-nancy-c41a3752",
+      "name": "Nancy",
+      "country": "FRA",
+      "players": 30,
+      "strength": 68,
+      "stadium": "Stade Marcel-Picot",
+      "csv": "data/m26/times/fra-nancy-c41a3752.csv",
+      "badgePath": "data/m26/escudos/fra-nancy-c41a3752.png"
+    },
+    {
+      "id": "fra-nantes-75a24860",
+      "name": "Nantes",
+      "country": "FRA",
+      "players": 30,
+      "strength": 72,
+      "stadium": "Stade de la Beaujoire",
+      "csv": "data/m26/times/fra-nantes-75a24860.csv",
+      "badgePath": "data/m26/escudos/fra-nantes-75a24860.png"
+    },
+    {
+      "id": "fra-nice-699980dd",
+      "name": "Nice",
+      "country": "FRA",
+      "players": 26,
+      "strength": 83,
+      "stadium": "Allianz Riviera",
+      "csv": "data/m26/times/fra-nice-699980dd.csv",
+      "badgePath": "data/m26/escudos/fra-nice-699980dd.png"
+    },
+    {
+      "id": "fra-olympique-marseille-abf7629f",
+      "name": "Olympique Marseille",
+      "country": "FRA",
+      "players": 20,
+      "strength": 87,
+      "stadium": "Orange Vélodrome",
+      "csv": "data/m26/times/fra-olympique-marseille-abf7629f.csv",
+      "badgePath": "data/m26/escudos/fra-olympique-marseille-abf7629f.png"
+    },
+    {
+      "id": "fra-orleans-6a809e86",
+      "name": "Orléans",
+      "country": "FRA",
+      "players": 21,
+      "strength": 63,
+      "stadium": "Stade de la Source",
+      "csv": "data/m26/times/fra-orleans-6a809e86.csv",
+      "badgePath": "data/m26/escudos/fra-orleans-6a809e86.png"
+    },
+    {
+      "id": "fra-paris-0babedab",
+      "name": "Paris",
+      "country": "FRA",
+      "players": 25,
+      "strength": 84,
+      "stadium": "Stade Jean Bouin",
+      "csv": "data/m26/times/fra-paris-0babedab.csv",
+      "badgePath": "data/m26/escudos/fra-paris-0babedab.png"
+    },
+    {
+      "id": "fra-paris-saint-germain-3dbf33ea",
+      "name": "Paris Saint-Germain",
+      "country": "FRA",
+      "players": 25,
+      "strength": 97,
+      "stadium": "Parc des Princes",
+      "csv": "data/m26/times/fra-paris-saint-germain-3dbf33ea.csv",
+      "badgePath": "data/m26/escudos/fra-paris-saint-germain-3dbf33ea.png"
+    },
+    {
+      "id": "fra-pau-e8356de7",
+      "name": "Pau",
+      "country": "FRA",
+      "players": 26,
+      "strength": 70,
+      "stadium": "Nouste Camp",
+      "csv": "data/m26/times/fra-pau-e8356de7.csv",
+      "badgePath": "data/m26/escudos/fra-pau-e8356de7.png"
+    },
+    {
+      "id": "fra-red-star-ba9e6ace",
+      "name": "Red Star",
+      "country": "FRA",
+      "players": 25,
+      "strength": 73,
+      "stadium": "Stade Bauer",
+      "csv": "data/m26/times/fra-red-star-ba9e6ace.csv",
+      "badgePath": "data/m26/escudos/fra-red-star-ba9e6ace.png"
+    },
+    {
+      "id": "fra-rennes-0824066b",
+      "name": "Rennes",
+      "country": "FRA",
+      "players": 26,
+      "strength": 87,
+      "stadium": "Roazhon Park",
+      "csv": "data/m26/times/fra-rennes-0824066b.csv",
+      "badgePath": "data/m26/escudos/fra-rennes-0824066b.png"
+    },
+    {
+      "id": "fra-rodez-474891bb",
+      "name": "Rodez",
+      "country": "FRA",
+      "players": 24,
+      "strength": 74,
+      "stadium": "Stade Paul-Lignon",
+      "csv": "data/m26/times/fra-rodez-474891bb.csv",
+      "badgePath": "data/m26/escudos/fra-rodez-474891bb.png"
+    },
+    {
+      "id": "fra-rouen-6e8fd4a4",
+      "name": "Rouen",
+      "country": "FRA",
+      "players": 21,
+      "strength": 64,
+      "stadium": "Stade Robert Diochon",
+      "csv": "data/m26/times/fra-rouen-6e8fd4a4.csv",
+      "badgePath": "data/m26/escudos/fra-rouen-6e8fd4a4.png"
+    },
+    {
+      "id": "fra-saint-etienne-f5760422",
+      "name": "Saint-Étienne",
+      "country": "FRA",
+      "players": 25,
+      "strength": 75,
+      "stadium": "Stade Geoffroy-Guichard",
+      "csv": "data/m26/times/fra-saint-etienne-f5760422.csv",
+      "badgePath": "data/m26/escudos/fra-saint-etienne-f5760422.png"
+    },
+    {
+      "id": "fra-sochaux-ab9218d1",
+      "name": "Sochaux",
+      "country": "FRA",
+      "players": 23,
+      "strength": 69,
+      "stadium": "Stade Auguste-Bonal",
+      "csv": "data/m26/times/fra-sochaux-ab9218d1.csv",
+      "badgePath": "data/m26/escudos/fra-sochaux-ab9218d1.png"
+    },
+    {
+      "id": "fra-stade-de-reims-8f783592",
+      "name": "Stade de Reims",
+      "country": "FRA",
+      "players": 26,
+      "strength": 74,
+      "stadium": "Stade Auguste-Delaune",
+      "csv": "data/m26/times/fra-stade-de-reims-8f783592.csv",
+      "badgePath": "data/m26/escudos/fra-stade-de-reims-8f783592.png"
+    },
+    {
+      "id": "fra-stade-lavallois-3fcbc163",
+      "name": "Stade Lavallois",
+      "country": "FRA",
+      "players": 22,
+      "strength": 70,
+      "stadium": "Stade Francis Le Basser",
+      "csv": "data/m26/times/fra-stade-lavallois-3fcbc163.csv",
+      "badgePath": "data/m26/escudos/fra-stade-lavallois-3fcbc163.png"
+    },
+    {
+      "id": "fra-strasbourg-3e382925",
+      "name": "Strasbourg",
+      "country": "FRA",
+      "players": 30,
+      "strength": 86,
+      "stadium": "Stade de la Meinau",
+      "csv": "data/m26/times/fra-strasbourg-3e382925.csv",
+      "badgePath": "data/m26/escudos/fra-strasbourg-3e382925.png"
+    },
+    {
+      "id": "fra-toulouse-aa1dd4ea",
+      "name": "Toulouse",
+      "country": "FRA",
+      "players": 25,
+      "strength": 85,
+      "stadium": "Stadium Municipal",
+      "csv": "data/m26/times/fra-toulouse-aa1dd4ea.csv",
+      "badgePath": "data/m26/escudos/fra-toulouse-aa1dd4ea.png"
+    },
+    {
+      "id": "fra-troyes-6b467321",
+      "name": "Troyes",
+      "country": "FRA",
+      "players": 26,
+      "strength": 81,
+      "stadium": "Stade de l'Aube",
+      "csv": "data/m26/times/fra-troyes-6b467321.csv",
+      "badgePath": "data/m26/escudos/fra-troyes-6b467321.png"
+    },
+    {
+      "id": "fra-valenciennes-6fcc148f",
+      "name": "Valenciennes",
+      "country": "FRA",
+      "players": 24,
+      "strength": 61,
+      "stadium": "Stade du Hainaut",
+      "csv": "data/m26/times/fra-valenciennes-6fcc148f.csv",
+      "badgePath": "data/m26/escudos/fra-valenciennes-6fcc148f.png"
+    },
+    {
+      "id": "fra-versailles-aa5a1b49",
+      "name": "Versailles",
+      "country": "FRA",
+      "players": 25,
+      "strength": 63,
+      "stadium": "Stade Georges Lefèvre",
+      "csv": "data/m26/times/fra-versailles-aa5a1b49.csv",
+      "badgePath": "data/m26/escudos/fra-versailles-aa5a1b49.png"
+    },
+    {
+      "id": "ita-arezzo-d57549f1",
+      "name": "Arezzo",
+      "country": "ITA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Città di Arezzo",
+      "csv": "data/m26/times/ita-arezzo-d57549f1.csv",
+      "badgePath": "data/m26/escudos/ita-arezzo-d57549f1.png"
+    },
+    {
+      "id": "ita-ascoli-73793d87",
+      "name": "Ascoli",
+      "country": "ITA",
+      "players": 27,
+      "strength": 70,
+      "stadium": "Cino e Lillo Del Duca",
+      "csv": "data/m26/times/ita-ascoli-73793d87.csv",
+      "badgePath": "data/m26/escudos/ita-ascoli-73793d87.png"
+    },
+    {
+      "id": "ita-atalanta-39cbb03b",
+      "name": "Atalanta",
+      "country": "ITA",
+      "players": 24,
+      "strength": 89,
+      "stadium": "New Balance Arena",
+      "csv": "data/m26/times/ita-atalanta-39cbb03b.csv",
+      "badgePath": "data/m26/escudos/ita-atalanta-39cbb03b.png"
+    },
+    {
+      "id": "ita-avellino-6fbffb04",
+      "name": "Avellino",
+      "country": "ITA",
+      "players": 29,
+      "strength": 70,
+      "stadium": "Partenio-Adriano Lombardi",
+      "csv": "data/m26/times/ita-avellino-6fbffb04.csv",
+      "badgePath": "data/m26/escudos/ita-avellino-6fbffb04.png"
+    },
+    {
+      "id": "ita-bari-98e87d96",
+      "name": "Bari",
+      "country": "ITA",
+      "players": 23,
+      "strength": 61,
+      "stadium": "San Nicola",
+      "csv": "data/m26/times/ita-bari-98e87d96.csv",
+      "badgePath": "data/m26/escudos/ita-bari-98e87d96.png"
+    },
+    {
+      "id": "ita-benevento-78cbf284",
+      "name": "Benevento",
+      "country": "ITA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Ciro Vigorito",
+      "csv": "data/m26/times/ita-benevento-78cbf284.csv",
+      "badgePath": "data/m26/escudos/ita-benevento-78cbf284.png"
+    },
+    {
+      "id": "ita-bologna-92de417f",
+      "name": "Bologna",
+      "country": "ITA",
+      "players": 28,
+      "strength": 86,
+      "stadium": "Stadio Renato Dall’Ara",
+      "csv": "data/m26/times/ita-bologna-92de417f.csv",
+      "badgePath": "data/m26/escudos/ita-bologna-92de417f.png"
+    },
+    {
+      "id": "ita-cagliari-d2eac054",
+      "name": "Cagliari",
+      "country": "ITA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Unipol Domus",
+      "csv": "data/m26/times/ita-cagliari-d2eac054.csv",
+      "badgePath": "data/m26/escudos/ita-cagliari-d2eac054.png"
+    },
+    {
+      "id": "ita-carrarese-b4ef136a",
+      "name": "Carrarese",
+      "country": "ITA",
+      "players": 27,
+      "strength": 71,
+      "stadium": "Comunale dei Marmi",
+      "csv": "data/m26/times/ita-carrarese-b4ef136a.csv",
+      "badgePath": "data/m26/escudos/ita-carrarese-b4ef136a.png"
+    },
+    {
+      "id": "ita-catanzaro-76b1cc46",
+      "name": "Catanzaro",
+      "country": "ITA",
+      "players": 26,
+      "strength": 74,
+      "stadium": "Nicola Ceravolo",
+      "csv": "data/m26/times/ita-catanzaro-76b1cc46.csv",
+      "badgePath": "data/m26/escudos/ita-catanzaro-76b1cc46.png"
+    },
+    {
+      "id": "ita-cesena-283b03cb",
+      "name": "Cesena",
+      "country": "ITA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Dino Manuzzi",
+      "csv": "data/m26/times/ita-cesena-283b03cb.csv",
+      "badgePath": "data/m26/escudos/ita-cesena-283b03cb.png"
+    },
+    {
+      "id": "ita-como-3b7c7a9f",
+      "name": "Como",
+      "country": "ITA",
+      "players": 30,
+      "strength": 90,
+      "stadium": "Giuseppe Sinigaglia",
+      "csv": "data/m26/times/ita-como-3b7c7a9f.csv",
+      "badgePath": "data/m26/escudos/ita-como-3b7c7a9f.png"
+    },
+    {
+      "id": "ita-cremonese-d3041747",
+      "name": "Cremonese",
+      "country": "ITA",
+      "players": 29,
+      "strength": 73,
+      "stadium": "Giovanni Zini",
+      "csv": "data/m26/times/ita-cremonese-d3041747.csv",
+      "badgePath": "data/m26/escudos/ita-cremonese-d3041747.png"
+    },
+    {
+      "id": "ita-empoli-a8e51404",
+      "name": "Empoli",
+      "country": "ITA",
+      "players": 23,
+      "strength": 71,
+      "stadium": "Carlo Castellani",
+      "csv": "data/m26/times/ita-empoli-a8e51404.csv",
+      "badgePath": "data/m26/escudos/ita-empoli-a8e51404.png"
+    },
+    {
+      "id": "ita-fiorentina-b325aa37",
+      "name": "Fiorentina",
+      "country": "ITA",
+      "players": 24,
+      "strength": 86,
+      "stadium": "Artemio Franchi",
+      "csv": "data/m26/times/ita-fiorentina-b325aa37.csv",
+      "badgePath": "data/m26/escudos/ita-fiorentina-b325aa37.png"
+    },
+    {
+      "id": "ita-frosinone-3b00361c",
+      "name": "Frosinone",
+      "country": "ITA",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Benito Stirpe",
+      "csv": "data/m26/times/ita-frosinone-3b00361c.csv",
+      "badgePath": "data/m26/escudos/ita-frosinone-3b00361c.png"
+    },
+    {
+      "id": "ita-genoa-a8e46d5a",
+      "name": "Genoa",
+      "country": "ITA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Luigi Ferraris",
+      "csv": "data/m26/times/ita-genoa-a8e46d5a.csv",
+      "badgePath": "data/m26/escudos/ita-genoa-a8e46d5a.png"
+    },
+    {
+      "id": "ita-hellas-verona-13675d5c",
+      "name": "Hellas Verona",
+      "country": "ITA",
+      "players": 30,
+      "strength": 73,
+      "stadium": "Marcantonio Bentegodi",
+      "csv": "data/m26/times/ita-hellas-verona-13675d5c.csv",
+      "badgePath": "data/m26/escudos/ita-hellas-verona-13675d5c.png"
+    },
+    {
+      "id": "ita-internazionale-50873cd5",
+      "name": "Internazionale",
+      "country": "ITA",
+      "players": 24,
+      "strength": 94,
+      "stadium": "Giuseppe Meazza",
+      "csv": "data/m26/times/ita-internazionale-50873cd5.csv",
+      "badgePath": "data/m26/escudos/ita-internazionale-50873cd5.png"
+    },
+    {
+      "id": "ita-juve-stabia-cf3064c6",
+      "name": "Juve Stabia",
+      "country": "ITA",
+      "players": 29,
+      "strength": 72,
+      "stadium": "Romeo Menti",
+      "csv": "data/m26/times/ita-juve-stabia-cf3064c6.csv",
+      "badgePath": "data/m26/escudos/ita-juve-stabia-cf3064c6.png"
+    },
+    {
+      "id": "ita-juventus-b414c103",
+      "name": "Juventus",
+      "country": "ITA",
+      "players": 28,
+      "strength": 91,
+      "stadium": "Allianz Stadium",
+      "csv": "data/m26/times/ita-juventus-b414c103.csv",
+      "badgePath": "data/m26/escudos/ita-juventus-b414c103.png"
+    },
+    {
+      "id": "ita-lazio-a271ed65",
+      "name": "Lazio",
+      "country": "ITA",
+      "players": 30,
+      "strength": 86,
+      "stadium": "Olimpico di Roma",
+      "csv": "data/m26/times/ita-lazio-a271ed65.csv",
+      "badgePath": "data/m26/escudos/ita-lazio-a271ed65.png"
+    },
+    {
+      "id": "ita-lecce-10f5229f",
+      "name": "Lecce",
+      "country": "ITA",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Ettore Giardiniero",
+      "csv": "data/m26/times/ita-lecce-10f5229f.csv",
+      "badgePath": "data/m26/escudos/ita-lecce-10f5229f.png"
+    },
+    {
+      "id": "ita-mantova-c6cefe75",
+      "name": "Mantova",
+      "country": "ITA",
+      "players": 30,
+      "strength": 72,
+      "stadium": "Danilo Martelli",
+      "csv": "data/m26/times/ita-mantova-c6cefe75.csv",
+      "badgePath": "data/m26/escudos/ita-mantova-c6cefe75.png"
+    },
+    {
+      "id": "ita-milan-1d0e7130",
+      "name": "Milan",
+      "country": "ITA",
+      "players": 27,
+      "strength": 89,
+      "stadium": "San Siro",
+      "csv": "data/m26/times/ita-milan-1d0e7130.csv",
+      "badgePath": "data/m26/escudos/ita-milan-1d0e7130.png"
+    },
+    {
+      "id": "ita-modena-acf15424",
+      "name": "Modena",
+      "country": "ITA",
+      "players": 27,
+      "strength": 72,
+      "stadium": "Alberto Braglia",
+      "csv": "data/m26/times/ita-modena-acf15424.csv",
+      "badgePath": "data/m26/escudos/ita-modena-acf15424.png"
+    },
+    {
+      "id": "ita-monza-54fa17f8",
+      "name": "Monza",
+      "country": "ITA",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Brianteo",
+      "csv": "data/m26/times/ita-monza-54fa17f8.csv",
+      "badgePath": "data/m26/escudos/ita-monza-54fa17f8.png"
+    },
+    {
+      "id": "ita-napoli-dae863dc",
+      "name": "Napoli",
+      "country": "ITA",
+      "players": 28,
+      "strength": 90,
+      "stadium": "Diego Armando Maradona",
+      "csv": "data/m26/times/ita-napoli-dae863dc.csv",
+      "badgePath": "data/m26/escudos/ita-napoli-dae863dc.png"
+    },
+    {
+      "id": "ita-padova-8ee49ed9",
+      "name": "Padova",
+      "country": "ITA",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Euganeo",
+      "csv": "data/m26/times/ita-padova-8ee49ed9.csv",
+      "badgePath": "data/m26/escudos/ita-padova-8ee49ed9.png"
+    },
+    {
+      "id": "ita-palermo-3192644f",
+      "name": "Palermo",
+      "country": "ITA",
+      "players": 26,
+      "strength": 76,
+      "stadium": "La Favorita",
+      "csv": "data/m26/times/ita-palermo-3192644f.csv",
+      "badgePath": "data/m26/escudos/ita-palermo-3192644f.png"
+    },
+    {
+      "id": "ita-parma-0bff2d47",
+      "name": "Parma",
+      "country": "ITA",
+      "players": 28,
+      "strength": 83,
+      "stadium": "Ennio Tardini",
+      "csv": "data/m26/times/ita-parma-0bff2d47.csv",
+      "badgePath": "data/m26/escudos/ita-parma-0bff2d47.png"
+    },
+    {
+      "id": "ita-pescara-b110313b",
+      "name": "Pescara",
+      "country": "ITA",
+      "players": 30,
+      "strength": 61,
+      "stadium": "Adriatico",
+      "csv": "data/m26/times/ita-pescara-b110313b.csv",
+      "badgePath": "data/m26/escudos/ita-pescara-b110313b.png"
+    },
+    {
+      "id": "ita-pisa-98dd0737",
+      "name": "Pisa",
+      "country": "ITA",
+      "players": 30,
+      "strength": 72,
+      "stadium": "Cetilar Arena",
+      "csv": "data/m26/times/ita-pisa-98dd0737.csv",
+      "badgePath": "data/m26/escudos/ita-pisa-98dd0737.png"
+    },
+    {
+      "id": "ita-reggiana-24a8649b",
+      "name": "Reggiana",
+      "country": "ITA",
+      "players": 27,
+      "strength": 61,
+      "stadium": "Stadio Città del Tricolore",
+      "csv": "data/m26/times/ita-reggiana-24a8649b.csv",
+      "badgePath": "data/m26/escudos/ita-reggiana-24a8649b.png"
+    },
+    {
+      "id": "ita-roma-387accde",
+      "name": "Roma",
+      "country": "ITA",
+      "players": 25,
+      "strength": 91,
+      "stadium": "Olimpico di Roma",
+      "csv": "data/m26/times/ita-roma-387accde.csv",
+      "badgePath": "data/m26/escudos/ita-roma-387accde.png"
+    },
+    {
+      "id": "ita-sampdoria-de2259d8",
+      "name": "Sampdoria",
+      "country": "ITA",
+      "players": 25,
+      "strength": 71,
+      "stadium": "Luigi Ferraris",
+      "csv": "data/m26/times/ita-sampdoria-de2259d8.csv",
+      "badgePath": "data/m26/escudos/ita-sampdoria-de2259d8.png"
+    },
+    {
+      "id": "ita-sassuolo-d8d4c77c",
+      "name": "Sassuolo",
+      "country": "ITA",
+      "players": 30,
+      "strength": 84,
+      "stadium": "Mapei Stadium",
+      "csv": "data/m26/times/ita-sassuolo-d8d4c77c.csv",
+      "badgePath": "data/m26/escudos/ita-sassuolo-d8d4c77c.png"
+    },
+    {
+      "id": "ita-spezia-ee549ca3",
+      "name": "Spezia",
+      "country": "ITA",
+      "players": 30,
+      "strength": 62,
+      "stadium": "Alberto Picco",
+      "csv": "data/m26/times/ita-spezia-ee549ca3.csv",
+      "badgePath": "data/m26/escudos/ita-spezia-ee549ca3.png"
+    },
+    {
+      "id": "ita-sudtirol-b17bc107",
+      "name": "Südtirol",
+      "country": "ITA",
+      "players": 25,
+      "strength": 70,
+      "stadium": "Druso",
+      "csv": "data/m26/times/ita-sudtirol-b17bc107.csv",
+      "badgePath": "data/m26/escudos/ita-sudtirol-b17bc107.png"
+    },
+    {
+      "id": "ita-torino-288db370",
+      "name": "Torino",
+      "country": "ITA",
+      "players": 29,
+      "strength": 84,
+      "stadium": "Olimpico Grande Torino",
+      "csv": "data/m26/times/ita-torino-288db370.csv",
+      "badgePath": "data/m26/escudos/ita-torino-288db370.png"
+    },
+    {
+      "id": "ita-udinese-c1f5dfcc",
+      "name": "Udinese",
+      "country": "ITA",
+      "players": 29,
+      "strength": 85,
+      "stadium": "Bluenergy Stadium",
+      "csv": "data/m26/times/ita-udinese-c1f5dfcc.csv",
+      "badgePath": "data/m26/escudos/ita-udinese-c1f5dfcc.png"
+    },
+    {
+      "id": "ita-venezia-5e73f583",
+      "name": "Venezia",
+      "country": "ITA",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Pier Luigi Penzo",
+      "csv": "data/m26/times/ita-venezia-5e73f583.csv",
+      "badgePath": "data/m26/escudos/ita-venezia-5e73f583.png"
+    },
+    {
+      "id": "ita-vicenza-1ac20225",
+      "name": "Vicenza",
+      "country": "ITA",
+      "players": 26,
+      "strength": 70,
+      "stadium": "Romeo Menti",
+      "csv": "data/m26/times/ita-vicenza-1ac20225.csv",
+      "badgePath": "data/m26/escudos/ita-vicenza-1ac20225.png"
+    },
+    {
+      "id": "ita-virtus-entella-2bd01225",
+      "name": "Virtus Entella",
+      "country": "ITA",
+      "players": 26,
+      "strength": 70,
+      "stadium": "Enrico Sannazzari",
+      "csv": "data/m26/times/ita-virtus-entella-2bd01225.csv",
+      "badgePath": "data/m26/escudos/ita-virtus-entella-2bd01225.png"
+    },
+    {
+      "id": "jpn-gamba-osaka-18dc490f",
+      "name": "Gamba Osaka",
+      "country": "JPN",
+      "players": 30,
+      "strength": 78,
+      "stadium": "PANASONIC Stadium Suita",
+      "csv": "data/m26/times/jpn-gamba-osaka-18dc490f.csv",
+      "badgePath": "data/m26/escudos/jpn-gamba-osaka-18dc490f.png"
+    },
+    {
+      "id": "jpn-kashima-antlers-d6679555",
+      "name": "Kashima Antlers",
+      "country": "JPN",
+      "players": 29,
+      "strength": 82,
+      "stadium": "Kashima Soccer Stadium",
+      "csv": "data/m26/times/jpn-kashima-antlers-d6679555.csv",
+      "badgePath": "data/m26/escudos/jpn-kashima-antlers-d6679555.png"
+    },
+    {
+      "id": "jpn-kashiwa-reysol-472b84b6",
+      "name": "Kashiwa Reysol",
+      "country": "JPN",
+      "players": 30,
+      "strength": 80,
+      "stadium": "SANKYOFRONTIER Kashiwa Stadium",
+      "csv": "data/m26/times/jpn-kashiwa-reysol-472b84b6.csv",
+      "badgePath": "data/m26/escudos/jpn-kashiwa-reysol-472b84b6.png"
+    },
+    {
+      "id": "jpn-kawasaki-frontale-9e7156c0",
+      "name": "Kawasaki Frontale",
+      "country": "JPN",
+      "players": 30,
+      "strength": 77,
+      "stadium": "Uvance Todoroki Stadium",
+      "csv": "data/m26/times/jpn-kawasaki-frontale-9e7156c0.csv",
+      "badgePath": "data/m26/escudos/jpn-kawasaki-frontale-9e7156c0.png"
+    },
+    {
+      "id": "jpn-machida-zelvia-8c1a42a9",
+      "name": "Machida Zelvia",
+      "country": "JPN",
+      "players": 29,
+      "strength": 80,
+      "stadium": "Machida GION Stadium",
+      "csv": "data/m26/times/jpn-machida-zelvia-8c1a42a9.csv",
+      "badgePath": "data/m26/escudos/jpn-machida-zelvia-8c1a42a9.png"
+    },
+    {
+      "id": "jpn-sanfrecce-hiroshima-63d1dde4",
+      "name": "Sanfrecce Hiroshima",
+      "country": "JPN",
+      "players": 27,
+      "strength": 82,
+      "stadium": "EDION Peace Wing Hiroshima",
+      "csv": "data/m26/times/jpn-sanfrecce-hiroshima-63d1dde4.csv",
+      "badgePath": "data/m26/escudos/jpn-sanfrecce-hiroshima-63d1dde4.png"
+    },
+    {
+      "id": "jpn-urawa-red-diamonds-277a73b4",
+      "name": "Urawa Red Diamonds",
+      "country": "JPN",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Saitama Stadium 2002",
+      "csv": "data/m26/times/jpn-urawa-red-diamonds-277a73b4.csv",
+      "badgePath": "data/m26/escudos/jpn-urawa-red-diamonds-277a73b4.png"
+    },
+    {
+      "id": "jpn-vissel-kobe-5dd362b2",
+      "name": "Vissel Kobe",
+      "country": "JPN",
+      "players": 30,
+      "strength": 80,
+      "stadium": "NOEVIR Stadium Kobe",
+      "csv": "data/m26/times/jpn-vissel-kobe-5dd362b2.csv",
+      "badgePath": "data/m26/escudos/jpn-vissel-kobe-5dd362b2.png"
+    },
+    {
+      "id": "mex-america-mex-bdaf9af4",
+      "name": "América-MEX",
+      "country": "MEX",
+      "players": 30,
+      "strength": 83,
+      "stadium": "Estadio Azteca",
+      "csv": "data/m26/times/mex-america-mex-bdaf9af4.csv",
+      "badgePath": "data/m26/escudos/mex-america-mex-bdaf9af4.png"
+    },
+    {
+      "id": "mex-cruz-azul-75048617",
+      "name": "Cruz Azul",
+      "country": "MEX",
+      "players": 28,
+      "strength": 84,
+      "stadium": "Estadio Azteca",
+      "csv": "data/m26/times/mex-cruz-azul-75048617.csv",
+      "badgePath": "data/m26/escudos/mex-cruz-azul-75048617.png"
+    },
+    {
+      "id": "mex-deportivo-guadalajara-74ee0767",
+      "name": "Deportivo Guadalajara",
+      "country": "MEX",
+      "players": 24,
+      "strength": 82,
+      "stadium": "Estadio Akron",
+      "csv": "data/m26/times/mex-deportivo-guadalajara-74ee0767.csv",
+      "badgePath": "data/m26/escudos/mex-deportivo-guadalajara-74ee0767.png"
+    },
+    {
+      "id": "mex-monterrey-17df7d59",
+      "name": "Monterrey",
+      "country": "MEX",
+      "players": 27,
+      "strength": 80,
+      "stadium": "Estadio BBVA",
+      "csv": "data/m26/times/mex-monterrey-17df7d59.csv",
+      "badgePath": "data/m26/escudos/mex-monterrey-17df7d59.png"
+    },
+    {
+      "id": "mex-pachuca-13228321",
+      "name": "Pachuca",
+      "country": "MEX",
+      "players": 23,
+      "strength": 80,
+      "stadium": "Estadio Hidalgo",
+      "csv": "data/m26/times/mex-pachuca-13228321.csv",
+      "badgePath": "data/m26/escudos/mex-pachuca-13228321.png"
+    },
+    {
+      "id": "mex-pumas-unam-862d1d0b",
+      "name": "Pumas UNAM",
+      "country": "MEX",
+      "players": 29,
+      "strength": 80,
+      "stadium": "Olímpico Universitario",
+      "csv": "data/m26/times/mex-pumas-unam-862d1d0b.csv",
+      "badgePath": "data/m26/escudos/mex-pumas-unam-862d1d0b.png"
+    },
+    {
+      "id": "mex-tigres-uanl-3c67325d",
+      "name": "Tigres UANL",
+      "country": "MEX",
+      "players": 25,
+      "strength": 82,
+      "stadium": "Estadio Universitario",
+      "csv": "data/m26/times/mex-tigres-uanl-3c67325d.csv",
+      "badgePath": "data/m26/escudos/mex-tigres-uanl-3c67325d.png"
+    },
+    {
+      "id": "mex-toluca-eed82cd4",
+      "name": "Toluca",
+      "country": "MEX",
+      "players": 29,
+      "strength": 85,
+      "stadium": "Estadio Nemesio Diez",
+      "csv": "data/m26/times/mex-toluca-eed82cd4.csv",
+      "badgePath": "data/m26/escudos/mex-toluca-eed82cd4.png"
+    },
+    {
+      "id": "nld-ajax-964020dc",
+      "name": "Ajax",
+      "country": "NLD",
+      "players": 25,
+      "strength": 83,
+      "stadium": "Johan Cruijff ArenA",
+      "csv": "data/m26/times/nld-ajax-964020dc.csv",
+      "badgePath": "data/m26/escudos/nld-ajax-964020dc.png"
+    },
+    {
+      "id": "nld-az-alkmaar-27adcef2",
+      "name": "AZ Alkmaar",
+      "country": "NLD",
+      "players": 30,
+      "strength": 84,
+      "stadium": "AFAS Stadion",
+      "csv": "data/m26/times/nld-az-alkmaar-27adcef2.csv",
+      "badgePath": "data/m26/escudos/nld-az-alkmaar-27adcef2.png"
+    },
+    {
+      "id": "nld-feyenoord-1da19db6",
+      "name": "Feyenoord",
+      "country": "NLD",
+      "players": 29,
+      "strength": 84,
+      "stadium": "Stadion De Kuip",
+      "csv": "data/m26/times/nld-feyenoord-1da19db6.csv",
+      "badgePath": "data/m26/escudos/nld-feyenoord-1da19db6.png"
+    },
+    {
+      "id": "nld-heerenveen-31d93edf",
+      "name": "Heerenveen",
+      "country": "NLD",
+      "players": 23,
+      "strength": 80,
+      "stadium": "Abe Lenstra Stadion",
+      "csv": "data/m26/times/nld-heerenveen-31d93edf.csv",
+      "badgePath": "data/m26/escudos/nld-heerenveen-31d93edf.png"
+    },
+    {
+      "id": "nld-nec-nijmegen-951a8545",
+      "name": "NEC Nijmegen",
+      "country": "NLD",
+      "players": 28,
+      "strength": 81,
+      "stadium": "Goffertstadion",
+      "csv": "data/m26/times/nld-nec-nijmegen-951a8545.csv",
+      "badgePath": "data/m26/escudos/nld-nec-nijmegen-951a8545.png"
+    },
+    {
+      "id": "nld-psv-6a472592",
+      "name": "PSV",
+      "country": "NLD",
+      "players": 28,
+      "strength": 88,
+      "stadium": "Philips Stadion",
+      "csv": "data/m26/times/nld-psv-6a472592.csv",
+      "badgePath": "data/m26/escudos/nld-psv-6a472592.png"
+    },
+    {
+      "id": "nld-twente-8fa07953",
+      "name": "Twente",
+      "country": "NLD",
+      "players": 30,
+      "strength": 83,
+      "stadium": "De Grolsch Veste",
+      "csv": "data/m26/times/nld-twente-8fa07953.csv",
+      "badgePath": "data/m26/escudos/nld-twente-8fa07953.png"
+    },
+    {
+      "id": "nld-utrecht-a3bdc0cf",
+      "name": "Utrecht",
+      "country": "NLD",
+      "players": 27,
+      "strength": 80,
+      "stadium": "Stadion Galgenwaard",
+      "csv": "data/m26/times/nld-utrecht-a3bdc0cf.csv",
+      "badgePath": "data/m26/escudos/nld-utrecht-a3bdc0cf.png"
+    },
+    {
+      "id": "prt-academica-coimbra-f592f314",
+      "name": "Académica Coimbra",
+      "country": "PRT",
+      "players": 24,
+      "strength": 68,
+      "stadium": "Estádio Cidade de Coimbra",
+      "csv": "data/m26/times/prt-academica-coimbra-f592f314.csv",
+      "badgePath": "data/m26/escudos/prt-academica-coimbra-f592f314.png"
+    },
+    {
+      "id": "prt-academico-viseu-9530adb8",
+      "name": "Académico Viseu",
+      "country": "PRT",
+      "players": 29,
+      "strength": 77,
+      "stadium": "Municipal do Fontelo",
+      "csv": "data/m26/times/prt-academico-viseu-9530adb8.csv",
+      "badgePath": "data/m26/escudos/prt-academico-viseu-9530adb8.png"
+    },
+    {
+      "id": "prt-ad-fafe-00c2267e",
+      "name": "AD Fafe",
+      "country": "PRT",
+      "players": 23,
+      "strength": 58,
+      "stadium": "Estádio Municipal de Fafe",
+      "csv": "data/m26/times/prt-ad-fafe-00c2267e.csv",
+      "badgePath": "data/m26/escudos/prt-ad-fafe-00c2267e.png"
+    },
+    {
+      "id": "prt-alverca-254829ad",
+      "name": "Alverca",
+      "country": "PRT",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Cpx. Desportivo FC Alverca",
+      "csv": "data/m26/times/prt-alverca-254829ad.csv",
+      "badgePath": "data/m26/escudos/prt-alverca-254829ad.png"
+    },
+    {
+      "id": "prt-amarante-c036ef15",
+      "name": "Amarante",
+      "country": "PRT",
+      "players": 23,
+      "strength": 67,
+      "stadium": "Estádio Municipal de Amarante",
+      "csv": "data/m26/times/prt-amarante-c036ef15.csv",
+      "badgePath": "data/m26/escudos/prt-amarante-c036ef15.png"
+    },
+    {
+      "id": "prt-arouca-3afbee3e",
+      "name": "Arouca",
+      "country": "PRT",
+      "players": 26,
+      "strength": 81,
+      "stadium": "Municipal de Arouca",
+      "csv": "data/m26/times/prt-arouca-3afbee3e.csv",
+      "badgePath": "data/m26/escudos/prt-arouca-3afbee3e.png"
+    },
+    {
+      "id": "prt-atletico-cp-86cddd2b",
+      "name": "Atlético CP",
+      "country": "PRT",
+      "players": 25,
+      "strength": 58,
+      "stadium": "Estádio da Tapadinha",
+      "csv": "data/m26/times/prt-atletico-cp-86cddd2b.csv",
+      "badgePath": "data/m26/escudos/prt-atletico-cp-86cddd2b.png"
+    },
+    {
+      "id": "prt-avs-4b1e80ed",
+      "name": "AVS",
+      "country": "PRT",
+      "players": 24,
+      "strength": 69,
+      "stadium": "Clube Desportivo das Aves",
+      "csv": "data/m26/times/prt-avs-4b1e80ed.csv",
+      "badgePath": "data/m26/escudos/prt-avs-4b1e80ed.png"
+    },
+    {
+      "id": "prt-benfica-91e388e1",
+      "name": "Benfica",
+      "country": "PRT",
+      "players": 25,
+      "strength": 91,
+      "stadium": "Estádio da Luz",
+      "csv": "data/m26/times/prt-benfica-91e388e1.csv",
+      "badgePath": "data/m26/escudos/prt-benfica-91e388e1.png"
+    },
+    {
+      "id": "prt-benfica-b-eecda5c1",
+      "name": "Benfica B",
+      "country": "PRT",
+      "players": 24,
+      "strength": 70,
+      "stadium": "Benfica Campus",
+      "csv": "data/m26/times/prt-benfica-b-eecda5c1.csv",
+      "badgePath": "data/m26/escudos/prt-benfica-b-eecda5c1.png"
+    },
+    {
+      "id": "prt-braga-d71791db",
+      "name": "Braga",
+      "country": "PRT",
+      "players": 30,
+      "strength": 86,
+      "stadium": "Municipal de Braga",
+      "csv": "data/m26/times/prt-braga-d71791db.csv",
+      "badgePath": "data/m26/escudos/prt-braga-d71791db.png"
+    },
+    {
+      "id": "prt-casa-pia-1eb63a0a",
+      "name": "Casa Pia",
+      "country": "PRT",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Municipal de Rio Maior",
+      "csv": "data/m26/times/prt-casa-pia-1eb63a0a.csv",
+      "badgePath": "data/m26/escudos/prt-casa-pia-1eb63a0a.png"
+    },
+    {
+      "id": "prt-cd-nacional-81af11e1",
+      "name": "CD Nacional",
+      "country": "PRT",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Estádio da Madeira",
+      "csv": "data/m26/times/prt-cd-nacional-81af11e1.csv",
+      "badgePath": "data/m26/escudos/prt-cd-nacional-81af11e1.png"
+    },
+    {
+      "id": "prt-chaves-746a389a",
+      "name": "Chaves",
+      "country": "PRT",
+      "players": 30,
+      "strength": 69,
+      "stadium": "Eng. Manuel Branco Teixeira",
+      "csv": "data/m26/times/prt-chaves-746a389a.csv",
+      "badgePath": "data/m26/escudos/prt-chaves-746a389a.png"
+    },
+    {
+      "id": "prt-estoril-praia-6f3b3c08",
+      "name": "Estoril Praia",
+      "country": "PRT",
+      "players": 27,
+      "strength": 78,
+      "stadium": "António Coimbra da Mota",
+      "csv": "data/m26/times/prt-estoril-praia-6f3b3c08.csv",
+      "badgePath": "data/m26/escudos/prt-estoril-praia-6f3b3c08.png"
+    },
+    {
+      "id": "prt-estrela-amadora-fd86c035",
+      "name": "Estrela Amadora",
+      "country": "PRT",
+      "players": 24,
+      "strength": 77,
+      "stadium": "José Gomes",
+      "csv": "data/m26/times/prt-estrela-amadora-fd86c035.csv",
+      "badgePath": "data/m26/escudos/prt-estrela-amadora-fd86c035.png"
+    },
+    {
+      "id": "prt-famalicao-a6537d24",
+      "name": "Famalicão",
+      "country": "PRT",
+      "players": 23,
+      "strength": 83,
+      "stadium": "Municipal de Famalicão",
+      "csv": "data/m26/times/prt-famalicao-a6537d24.csv",
+      "badgePath": "data/m26/escudos/prt-famalicao-a6537d24.png"
+    },
+    {
+      "id": "prt-farense-d9b30f7f",
+      "name": "Farense",
+      "country": "PRT",
+      "players": 28,
+      "strength": 70,
+      "stadium": "Estádio de São Luís",
+      "csv": "data/m26/times/prt-farense-d9b30f7f.csv",
+      "badgePath": "data/m26/escudos/prt-farense-d9b30f7f.png"
+    },
+    {
+      "id": "prt-feirense-d32ed15c",
+      "name": "Feirense",
+      "country": "PRT",
+      "players": 27,
+      "strength": 69,
+      "stadium": "Marcolino de Castro",
+      "csv": "data/m26/times/prt-feirense-d32ed15c.csv",
+      "badgePath": "data/m26/escudos/prt-feirense-d32ed15c.png"
+    },
+    {
+      "id": "prt-felgueiras-41e27260",
+      "name": "Felgueiras",
+      "country": "PRT",
+      "players": 29,
+      "strength": 69,
+      "stadium": "Doutor Machado de Matos",
+      "csv": "data/m26/times/prt-felgueiras-41e27260.csv",
+      "badgePath": "data/m26/escudos/prt-felgueiras-41e27260.png"
+    },
+    {
+      "id": "prt-gil-vicente-eb643057",
+      "name": "Gil Vicente",
+      "country": "PRT",
+      "players": 29,
+      "strength": 81,
+      "stadium": "Cidade de Barcelos",
+      "csv": "data/m26/times/prt-gil-vicente-eb643057.csv",
+      "badgePath": "data/m26/escudos/prt-gil-vicente-eb643057.png"
+    },
+    {
+      "id": "prt-leixoes-d672b7f1",
+      "name": "Leixões",
+      "country": "PRT",
+      "players": 26,
+      "strength": 69,
+      "stadium": "Estádio do Mar",
+      "csv": "data/m26/times/prt-leixoes-d672b7f1.csv",
+      "badgePath": "data/m26/escudos/prt-leixoes-d672b7f1.png"
+    },
+    {
+      "id": "prt-lusitania-lourosa-c6ad0e1b",
+      "name": "Lusitânia Lourosa",
+      "country": "PRT",
+      "players": 26,
+      "strength": 68,
+      "stadium": "Lusitânia de Lourosa FC",
+      "csv": "data/m26/times/prt-lusitania-lourosa-c6ad0e1b.csv",
+      "badgePath": "data/m26/escudos/prt-lusitania-lourosa-c6ad0e1b.png"
+    },
+    {
+      "id": "prt-mafra-989d55fd",
+      "name": "Mafra",
+      "country": "PRT",
+      "players": 28,
+      "strength": 60,
+      "stadium": "Estádio Municipal de Mafra",
+      "csv": "data/m26/times/prt-mafra-989d55fd.csv",
+      "badgePath": "data/m26/escudos/prt-mafra-989d55fd.png"
+    },
+    {
+      "id": "prt-maritimo-186a8a8a",
+      "name": "Marítimo",
+      "country": "PRT",
+      "players": 30,
+      "strength": 79,
+      "stadium": "Estádio do Marítimo",
+      "csv": "data/m26/times/prt-maritimo-186a8a8a.csv",
+      "badgePath": "data/m26/escudos/prt-maritimo-186a8a8a.png"
+    },
+    {
+      "id": "prt-moreirense-74dd2b05",
+      "name": "Moreirense",
+      "country": "PRT",
+      "players": 27,
+      "strength": 77,
+      "stadium": "C. J. de Almeida Freitas",
+      "csv": "data/m26/times/prt-moreirense-74dd2b05.csv",
+      "badgePath": "data/m26/escudos/prt-moreirense-74dd2b05.png"
+    },
+    {
+      "id": "prt-oliveirense-11b5b908",
+      "name": "Oliveirense",
+      "country": "PRT",
+      "players": 30,
+      "strength": 57,
+      "stadium": "Carlos Osório",
+      "csv": "data/m26/times/prt-oliveirense-11b5b908.csv",
+      "badgePath": "data/m26/escudos/prt-oliveirense-11b5b908.png"
+    },
+    {
+      "id": "prt-os-belenenses-eea31c91",
+      "name": "Os Belenenses",
+      "country": "PRT",
+      "players": 29,
+      "strength": 63,
+      "stadium": "Estádio do Restelo",
+      "csv": "data/m26/times/prt-os-belenenses-eea31c91.csv",
+      "badgePath": "data/m26/escudos/prt-os-belenenses-eea31c91.png"
+    },
+    {
+      "id": "prt-pacos-de-ferreira-0d9d93c8",
+      "name": "Paços de Ferreira",
+      "country": "PRT",
+      "players": 23,
+      "strength": 57,
+      "stadium": "Capital do Móvel",
+      "csv": "data/m26/times/prt-pacos-de-ferreira-0d9d93c8.csv",
+      "badgePath": "data/m26/escudos/prt-pacos-de-ferreira-0d9d93c8.png"
+    },
+    {
+      "id": "prt-penafiel-68737bea",
+      "name": "Penafiel",
+      "country": "PRT",
+      "players": 26,
+      "strength": 68,
+      "stadium": "Municipal 25 de Abril",
+      "csv": "data/m26/times/prt-penafiel-68737bea.csv",
+      "badgePath": "data/m26/escudos/prt-penafiel-68737bea.png"
+    },
+    {
+      "id": "prt-portimonense-da86e1e1",
+      "name": "Portimonense",
+      "country": "PRT",
+      "players": 30,
+      "strength": 68,
+      "stadium": "Municipal de Portimão",
+      "csv": "data/m26/times/prt-portimonense-da86e1e1.csv",
+      "badgePath": "data/m26/escudos/prt-portimonense-da86e1e1.png"
+    },
+    {
+      "id": "prt-porto-f2ea5a5b",
+      "name": "Porto",
+      "country": "PRT",
+      "players": 28,
+      "strength": 90,
+      "stadium": "Estádio do Dragão",
+      "csv": "data/m26/times/prt-porto-f2ea5a5b.csv",
+      "badgePath": "data/m26/escudos/prt-porto-f2ea5a5b.png"
+    },
+    {
+      "id": "prt-porto-b-113805d4",
+      "name": "Porto B",
+      "country": "PRT",
+      "players": 27,
+      "strength": 67,
+      "stadium": "Luís Filipe Menezes",
+      "csv": "data/m26/times/prt-porto-b-113805d4.csv",
+      "badgePath": "data/m26/escudos/prt-porto-b-113805d4.png"
+    },
+    {
+      "id": "prt-rio-ave-0d05d7c2",
+      "name": "Rio Ave",
+      "country": "PRT",
+      "players": 28,
+      "strength": 77,
+      "stadium": "Estadio dos Arcos",
+      "csv": "data/m26/times/prt-rio-ave-0d05d7c2.csv",
+      "badgePath": "data/m26/escudos/prt-rio-ave-0d05d7c2.png"
+    },
+    {
+      "id": "prt-santa-clara-43fd5ab2",
+      "name": "Santa Clara",
+      "country": "PRT",
+      "players": 30,
+      "strength": 80,
+      "stadium": "Estádio de São Miguel",
+      "csv": "data/m26/times/prt-santa-clara-43fd5ab2.csv",
+      "badgePath": "data/m26/escudos/prt-santa-clara-43fd5ab2.png"
+    },
+    {
+      "id": "prt-sporting-83cbd3c7",
+      "name": "Sporting",
+      "country": "PRT",
+      "players": 29,
+      "strength": 91,
+      "stadium": "José Alvalade",
+      "csv": "data/m26/times/prt-sporting-83cbd3c7.csv",
+      "badgePath": "data/m26/escudos/prt-sporting-83cbd3c7.png"
+    },
+    {
+      "id": "prt-sporting-b-4228ac3e",
+      "name": "Sporting B",
+      "country": "PRT",
+      "players": 25,
+      "strength": 68,
+      "stadium": "Aurélio Pereira",
+      "csv": "data/m26/times/prt-sporting-b-4228ac3e.csv",
+      "badgePath": "data/m26/escudos/prt-sporting-b-4228ac3e.png"
+    },
+    {
+      "id": "prt-tondela-e3eb8d0c",
+      "name": "Tondela",
+      "country": "PRT",
+      "players": 28,
+      "strength": 70,
+      "stadium": "João Cardoso",
+      "csv": "data/m26/times/prt-tondela-e3eb8d0c.csv",
+      "badgePath": "data/m26/escudos/prt-tondela-e3eb8d0c.png"
+    },
+    {
+      "id": "prt-torreense-eeb14da5",
+      "name": "Torreense",
+      "country": "PRT",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Manuel Marques",
+      "csv": "data/m26/times/prt-torreense-eeb14da5.csv",
+      "badgePath": "data/m26/escudos/prt-torreense-eeb14da5.png"
+    },
+    {
+      "id": "prt-trofense-535f30f3",
+      "name": "Trofense",
+      "country": "PRT",
+      "players": 30,
+      "strength": 56,
+      "stadium": "Estádio do CD Trofense",
+      "csv": "data/m26/times/prt-trofense-535f30f3.csv",
+      "badgePath": "data/m26/escudos/prt-trofense-535f30f3.png"
+    },
+    {
+      "id": "prt-uniao-de-leiria-efe3d434",
+      "name": "União de Leiria",
+      "country": "PRT",
+      "players": 30,
+      "strength": 70,
+      "stadium": "Dr. Magalhães Pessoa",
+      "csv": "data/m26/times/prt-uniao-de-leiria-efe3d434.csv",
+      "badgePath": "data/m26/escudos/prt-uniao-de-leiria-efe3d434.png"
+    },
+    {
+      "id": "prt-varzim-3cfd40c1",
+      "name": "Varzim",
+      "country": "PRT",
+      "players": 26,
+      "strength": 59,
+      "stadium": "Estádio do Varzim SC",
+      "csv": "data/m26/times/prt-varzim-3cfd40c1.csv",
+      "badgePath": "data/m26/escudos/prt-varzim-3cfd40c1.png"
+    },
+    {
+      "id": "prt-vitoria-guimaraes-7ec969db",
+      "name": "Vitória Guimarães",
+      "country": "PRT",
+      "players": 30,
+      "strength": 80,
+      "stadium": "D. Afonso Henriques",
+      "csv": "data/m26/times/prt-vitoria-guimaraes-7ec969db.csv",
+      "badgePath": "data/m26/escudos/prt-vitoria-guimaraes-7ec969db.png"
+    },
+    {
+      "id": "prt-vizela-f8aac1f3",
+      "name": "Vizela",
+      "country": "PRT",
+      "players": 30,
+      "strength": 69,
+      "stadium": "Futebol Clube de Vizela",
+      "csv": "data/m26/times/prt-vizela-f8aac1f3.csv",
+      "badgePath": "data/m26/escudos/prt-vizela-f8aac1f3.png"
+    },
+    {
+      "id": "pry-2-de-mayo-3abf0c64",
+      "name": "2 de Mayo",
+      "country": "PRY",
+      "players": 29,
+      "strength": 77,
+      "stadium": "Río Parapití",
+      "csv": "data/m26/times/pry-2-de-mayo-3abf0c64.csv",
+      "badgePath": "data/m26/escudos/pry-2-de-mayo-3abf0c64.png"
+    },
+    {
+      "id": "pry-cerro-porteno-1bdd59a2",
+      "name": "Cerro Porteño",
+      "country": "PRY",
+      "players": 30,
+      "strength": 81,
+      "stadium": "General Pablo Rojas",
+      "csv": "data/m26/times/pry-cerro-porteno-1bdd59a2.csv",
+      "badgePath": "data/m26/escudos/pry-cerro-porteno-1bdd59a2.png"
+    },
+    {
+      "id": "pry-guarani-par-23da47e7",
+      "name": "Guaraní-PAR",
+      "country": "PRY",
+      "players": 29,
+      "strength": 78,
+      "stadium": "Rogelio Silvino Livieres",
+      "csv": "data/m26/times/pry-guarani-par-23da47e7.csv",
+      "badgePath": "data/m26/escudos/pry-guarani-par-23da47e7.png"
+    },
+    {
+      "id": "pry-libertad-b5b6d54f",
+      "name": "Libertad",
+      "country": "PRY",
+      "players": 30,
+      "strength": 80,
+      "stadium": "La Huerta",
+      "csv": "data/m26/times/pry-libertad-b5b6d54f.csv",
+      "badgePath": "data/m26/escudos/pry-libertad-b5b6d54f.png"
+    },
+    {
+      "id": "pry-nacional-par-7b0273ca",
+      "name": "Nacional-PAR",
+      "country": "PRY",
+      "players": 27,
+      "strength": 79,
+      "stadium": "Arsenio Erico",
+      "csv": "data/m26/times/pry-nacional-par-7b0273ca.csv",
+      "badgePath": "data/m26/escudos/pry-nacional-par-7b0273ca.png"
+    },
+    {
+      "id": "pry-olimpia-9969b456",
+      "name": "Olimpia",
+      "country": "PRY",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Defensores del Chaco",
+      "csv": "data/m26/times/pry-olimpia-9969b456.csv",
+      "badgePath": "data/m26/escudos/pry-olimpia-9969b456.png"
+    },
+    {
+      "id": "pry-recoleta-5b9759d6",
+      "name": "Recoleta",
+      "country": "PRY",
+      "players": 29,
+      "strength": 77,
+      "stadium": "Ricardo Gregor",
+      "csv": "data/m26/times/pry-recoleta-5b9759d6.csv",
+      "badgePath": "data/m26/escudos/pry-recoleta-5b9759d6.png"
+    },
+    {
+      "id": "pry-sportivo-trinidense-5a4e77fd",
+      "name": "Sportivo Trinidense",
+      "country": "PRY",
+      "players": 29,
+      "strength": 79,
+      "stadium": "Martín Torres",
+      "csv": "data/m26/times/pry-sportivo-trinidense-5a4e77fd.csv",
+      "badgePath": "data/m26/escudos/pry-sportivo-trinidense-5a4e77fd.png"
+    },
+    {
+      "id": "rus-baltika-8b618ea0",
+      "name": "Baltika",
+      "country": "RUS",
+      "players": 30,
+      "strength": 78,
+      "stadium": "Rostec Arena",
+      "csv": "data/m26/times/rus-baltika-8b618ea0.csv",
+      "badgePath": "data/m26/escudos/rus-baltika-8b618ea0.png"
+    },
+    {
+      "id": "rus-cska-fba5dc43",
+      "name": "CSKA",
+      "country": "RUS",
+      "players": 28,
+      "strength": 79,
+      "stadium": "VEB Arena",
+      "csv": "data/m26/times/rus-cska-fba5dc43.csv",
+      "badgePath": "data/m26/escudos/rus-cska-fba5dc43.png"
+    },
+    {
+      "id": "rus-dinamo-moscou-010c0ec3",
+      "name": "Dínamo Moscou",
+      "country": "RUS",
+      "players": 28,
+      "strength": 79,
+      "stadium": "VTB-Arena",
+      "csv": "data/m26/times/rus-dinamo-moscou-010c0ec3.csv",
+      "badgePath": "data/m26/escudos/rus-dinamo-moscou-010c0ec3.png"
+    },
+    {
+      "id": "rus-krasnodar-8b694465",
+      "name": "Krasnodar",
+      "country": "RUS",
+      "players": 29,
+      "strength": 85,
+      "stadium": "OZON Arena",
+      "csv": "data/m26/times/rus-krasnodar-8b694465.csv",
+      "badgePath": "data/m26/escudos/rus-krasnodar-8b694465.png"
+    },
+    {
+      "id": "rus-lokomotiv-moscow-d66efb58",
+      "name": "Lokomotiv Moscow",
+      "country": "RUS",
+      "players": 27,
+      "strength": 78,
+      "stadium": "RZD Arena",
+      "csv": "data/m26/times/rus-lokomotiv-moscow-d66efb58.csv",
+      "badgePath": "data/m26/escudos/rus-lokomotiv-moscow-d66efb58.png"
+    },
+    {
+      "id": "rus-rubin-kazan-f52efc22",
+      "name": "Rubin Kazan",
+      "country": "RUS",
+      "players": 27,
+      "strength": 76,
+      "stadium": "Ak Bars Arena",
+      "csv": "data/m26/times/rus-rubin-kazan-f52efc22.csv",
+      "badgePath": "data/m26/escudos/rus-rubin-kazan-f52efc22.png"
+    },
+    {
+      "id": "rus-spartak-moscow-267e8419",
+      "name": "Spartak Moscow",
+      "country": "RUS",
+      "players": 26,
+      "strength": 82,
+      "stadium": "Lukoil Arena",
+      "csv": "data/m26/times/rus-spartak-moscow-267e8419.csv",
+      "badgePath": "data/m26/escudos/rus-spartak-moscow-267e8419.png"
+    },
+    {
+      "id": "rus-zenit-71d796ce",
+      "name": "Zenit",
+      "country": "RUS",
+      "players": 25,
+      "strength": 86,
+      "stadium": "Gazprom Arena",
+      "csv": "data/m26/times/rus-zenit-71d796ce.csv",
+      "badgePath": "data/m26/escudos/rus-zenit-71d796ce.png"
+    },
+    {
+      "id": "sau-al-ahli-90156bfc",
+      "name": "Al-Ahli",
+      "country": "SAU",
+      "players": 27,
+      "strength": 83,
+      "stadium": "King Abdullah Sports City",
+      "csv": "data/m26/times/sau-al-ahli-90156bfc.csv",
+      "badgePath": "data/m26/escudos/sau-al-ahli-90156bfc.png"
+    },
+    {
+      "id": "sau-al-ettifaq-002e7fc7",
+      "name": "Al-Ettifaq",
+      "country": "SAU",
+      "players": 27,
+      "strength": 74,
+      "stadium": "EGO Stadium",
+      "csv": "data/m26/times/sau-al-ettifaq-002e7fc7.csv",
+      "badgePath": "data/m26/escudos/sau-al-ettifaq-002e7fc7.png"
+    },
+    {
+      "id": "sau-al-hilal-a31e89b5",
+      "name": "Al-Hilal",
+      "country": "SAU",
+      "players": 27,
+      "strength": 86,
+      "stadium": "Kingdom Arena",
+      "csv": "data/m26/times/sau-al-hilal-a31e89b5.csv",
+      "badgePath": "data/m26/escudos/sau-al-hilal-a31e89b5.png"
+    },
+    {
+      "id": "sau-al-ittihad-f6f0b9d6",
+      "name": "Al-Ittihad",
+      "country": "SAU",
+      "players": 30,
+      "strength": 77,
+      "stadium": "King Abdullah Sports City",
+      "csv": "data/m26/times/sau-al-ittihad-f6f0b9d6.csv",
+      "badgePath": "data/m26/escudos/sau-al-ittihad-f6f0b9d6.png"
+    },
+    {
+      "id": "sau-al-nassr-23f63783",
+      "name": "Al-Nassr",
+      "country": "SAU",
+      "players": 27,
+      "strength": 85,
+      "stadium": "Al-Awwal Park",
+      "csv": "data/m26/times/sau-al-nassr-23f63783.csv",
+      "badgePath": "data/m26/escudos/sau-al-nassr-23f63783.png"
+    },
+    {
+      "id": "sau-al-qadsiah-59906967",
+      "name": "Al-Qadsiah",
+      "country": "SAU",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Prince Mohamed Fahd Stadium",
+      "csv": "data/m26/times/sau-al-qadsiah-59906967.csv",
+      "badgePath": "data/m26/escudos/sau-al-qadsiah-59906967.png"
+    },
+    {
+      "id": "sau-al-taawoun-af8f468c",
+      "name": "Al-Taawoun",
+      "country": "SAU",
+      "players": 27,
+      "strength": 74,
+      "stadium": "Al-Taawoun Club Stadium",
+      "csv": "data/m26/times/sau-al-taawoun-af8f468c.csv",
+      "badgePath": "data/m26/escudos/sau-al-taawoun-af8f468c.png"
+    },
+    {
+      "id": "sau-neom-ee0861e5",
+      "name": "NEOM",
+      "country": "SAU",
+      "players": 28,
+      "strength": 74,
+      "stadium": "King Khalid Sport City Stadium",
+      "csv": "data/m26/times/sau-neom-ee0861e5.csv",
+      "badgePath": "data/m26/escudos/sau-neom-ee0861e5.png"
+    },
+    {
+      "id": "tur-adana-demirspor-14441ae1",
+      "name": "Adana Demirspor",
+      "country": "TUR",
+      "players": 26,
+      "strength": 50,
+      "stadium": "Yeni Adana Stadyumu",
+      "csv": "data/m26/times/tur-adana-demirspor-14441ae1.csv",
+      "badgePath": "data/m26/escudos/tur-adana-demirspor-14441ae1.png"
+    },
+    {
+      "id": "tur-alanyaspor-be792171",
+      "name": "Alanyaspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 77,
+      "stadium": "Alanya Oba Stadyumu",
+      "csv": "data/m26/times/tur-alanyaspor-be792171.csv",
+      "badgePath": "data/m26/escudos/tur-alanyaspor-be792171.png"
+    },
+    {
+      "id": "tur-amedspor-48a61397",
+      "name": "Amedspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 76,
+      "stadium": "Diyarbakır Stadyumu",
+      "csv": "data/m26/times/tur-amedspor-48a61397.csv",
+      "badgePath": "data/m26/escudos/tur-amedspor-48a61397.png"
+    },
+    {
+      "id": "tur-antalyaspor-481ce1b7",
+      "name": "Antalyaspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 65,
+      "stadium": "Antalya Stadı",
+      "csv": "data/m26/times/tur-antalyaspor-481ce1b7.csv",
+      "badgePath": "data/m26/escudos/tur-antalyaspor-481ce1b7.png"
+    },
+    {
+      "id": "tur-bandirmaspor-0ddfe91d",
+      "name": "Bandirmaspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 66,
+      "stadium": "Bandırma 17 Eylül",
+      "csv": "data/m26/times/tur-bandirmaspor-0ddfe91d.csv",
+      "badgePath": "data/m26/escudos/tur-bandirmaspor-0ddfe91d.png"
+    },
+    {
+      "id": "tur-batman-petrolspor-3d259d70",
+      "name": "Batman Petrolspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 63,
+      "stadium": "Batman Stadyumu",
+      "csv": "data/m26/times/tur-batman-petrolspor-3d259d70.csv",
+      "badgePath": "data/m26/escudos/tur-batman-petrolspor-3d259d70.png"
+    },
+    {
+      "id": "tur-basaksehir-4443c8f6",
+      "name": "Başakşehir",
+      "country": "TUR",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Başakşehir Fatih Terim",
+      "csv": "data/m26/times/tur-basaksehir-4443c8f6.csv",
+      "badgePath": "data/m26/escudos/tur-basaksehir-4443c8f6.png"
+    },
+    {
+      "id": "tur-besiktas-7e81a301",
+      "name": "Besiktas",
+      "country": "TUR",
+      "players": 30,
+      "strength": 85,
+      "stadium": "Beşiktaş Park",
+      "csv": "data/m26/times/tur-besiktas-7e81a301.csv",
+      "badgePath": "data/m26/escudos/tur-besiktas-7e81a301.png"
+    },
+    {
+      "id": "tur-bodrum-cc70f58e",
+      "name": "Bodrum",
+      "country": "TUR",
+      "players": 30,
+      "strength": 66,
+      "stadium": "Bodrum İlçe Stadyumu",
+      "csv": "data/m26/times/tur-bodrum-cc70f58e.csv",
+      "badgePath": "data/m26/escudos/tur-bodrum-cc70f58e.png"
+    },
+    {
+      "id": "tur-boluspor-ec9118db",
+      "name": "Boluspor",
+      "country": "TUR",
+      "players": 29,
+      "strength": 61,
+      "stadium": "Bolu Atatürk",
+      "csv": "data/m26/times/tur-boluspor-ec9118db.csv",
+      "badgePath": "data/m26/escudos/tur-boluspor-ec9118db.png"
+    },
+    {
+      "id": "tur-bursaspor-4455f971",
+      "name": "Bursaspor",
+      "country": "TUR",
+      "players": 29,
+      "strength": 63,
+      "stadium": "Atatürk Spor Kompleksi",
+      "csv": "data/m26/times/tur-bursaspor-4455f971.csv",
+      "badgePath": "data/m26/escudos/tur-bursaspor-4455f971.png"
+    },
+    {
+      "id": "tur-elazigspor-1223c343",
+      "name": "Elazigspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 57,
+      "stadium": "Elazığ Stadyumu",
+      "csv": "data/m26/times/tur-elazigspor-1223c343.csv",
+      "badgePath": "data/m26/escudos/tur-elazigspor-1223c343.png"
+    },
+    {
+      "id": "tur-erzurumspor-f8e239b1",
+      "name": "Erzurumspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Erzurum Kazım Karabekir",
+      "csv": "data/m26/times/tur-erzurumspor-f8e239b1.csv",
+      "badgePath": "data/m26/escudos/tur-erzurumspor-f8e239b1.png"
+    },
+    {
+      "id": "tur-esenler-erokspor-ec12f5bb",
+      "name": "Esenler Erokspor",
+      "country": "TUR",
+      "players": 27,
+      "strength": 68,
+      "stadium": "Esenler Erokspor Stadyumu",
+      "csv": "data/m26/times/tur-esenler-erokspor-ec12f5bb.csv",
+      "badgePath": "data/m26/escudos/tur-esenler-erokspor-ec12f5bb.png"
+    },
+    {
+      "id": "tur-eyupspor-e8148de6",
+      "name": "Eyüpspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Recep Tayyip Erdoğan Stadyumu",
+      "csv": "data/m26/times/tur-eyupspor-e8148de6.csv",
+      "badgePath": "data/m26/escudos/tur-eyupspor-e8148de6.png"
+    },
+    {
+      "id": "tur-fatih-karagumruk-5653f5fa",
+      "name": "Fatih Karagümrük",
+      "country": "TUR",
+      "players": 27,
+      "strength": 66,
+      "stadium": "Atatürk Olimpiyat",
+      "csv": "data/m26/times/tur-fatih-karagumruk-5653f5fa.csv",
+      "badgePath": "data/m26/escudos/tur-fatih-karagumruk-5653f5fa.png"
+    },
+    {
+      "id": "tur-fenerbahce-efc65a2a",
+      "name": "Fenerbahce",
+      "country": "TUR",
+      "players": 30,
+      "strength": 88,
+      "stadium": "Şükrü Saracoğlu Stadium",
+      "csv": "data/m26/times/tur-fenerbahce-efc65a2a.csv",
+      "badgePath": "data/m26/escudos/tur-fenerbahce-efc65a2a.png"
+    },
+    {
+      "id": "tur-galatasaray-0db636f9",
+      "name": "Galatasaray",
+      "country": "TUR",
+      "players": 30,
+      "strength": 87,
+      "stadium": "Ali Sami Yen Spor Kompleksi",
+      "csv": "data/m26/times/tur-galatasaray-0db636f9.csv",
+      "badgePath": "data/m26/escudos/tur-galatasaray-0db636f9.png"
+    },
+    {
+      "id": "tur-gaziantep-6994351c",
+      "name": "Gaziantep",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Gaziantep Stadyumu",
+      "csv": "data/m26/times/tur-gaziantep-6994351c.csv",
+      "badgePath": "data/m26/escudos/tur-gaziantep-6994351c.png"
+    },
+    {
+      "id": "tur-genclerbirligi-b326f967",
+      "name": "Genclerbirligi",
+      "country": "TUR",
+      "players": 30,
+      "strength": 77,
+      "stadium": "Eryaman Stadyumu",
+      "csv": "data/m26/times/tur-genclerbirligi-b326f967.csv",
+      "badgePath": "data/m26/escudos/tur-genclerbirligi-b326f967.png"
+    },
+    {
+      "id": "tur-goztepe-b724ac88",
+      "name": "Göztepe",
+      "country": "TUR",
+      "players": 25,
+      "strength": 81,
+      "stadium": "Gürsel Aksel Stadyumu",
+      "csv": "data/m26/times/tur-goztepe-b724ac88.csv",
+      "badgePath": "data/m26/escudos/tur-goztepe-b724ac88.png"
+    },
+    {
+      "id": "tur-hatayspor-9ad94175",
+      "name": "Hatayspor",
+      "country": "TUR",
+      "players": 21,
+      "strength": 52,
+      "stadium": "Fuat Tosyalı Spor Kompleksi",
+      "csv": "data/m26/times/tur-hatayspor-9ad94175.csv",
+      "badgePath": "data/m26/escudos/tur-hatayspor-9ad94175.png"
+    },
+    {
+      "id": "tur-igdir-658d5fc7",
+      "name": "Igdir",
+      "country": "TUR",
+      "players": 29,
+      "strength": 63,
+      "stadium": "Iğdır Şehir Stadı",
+      "csv": "data/m26/times/tur-igdir-658d5fc7.csv",
+      "badgePath": "data/m26/escudos/tur-igdir-658d5fc7.png"
+    },
+    {
+      "id": "tur-istanbulspor-5d16d263",
+      "name": "Istanbulspor",
+      "country": "TUR",
+      "players": 29,
+      "strength": 64,
+      "stadium": "Necmi Kadıoğlu Stadyumu",
+      "csv": "data/m26/times/tur-istanbulspor-5d16d263.csv",
+      "badgePath": "data/m26/escudos/tur-istanbulspor-5d16d263.png"
+    },
+    {
+      "id": "tur-kasimpasa-60983368",
+      "name": "Kasimpasa",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Recep Tayyip Erdoğan Stadyumu",
+      "csv": "data/m26/times/tur-kasimpasa-60983368.csv",
+      "badgePath": "data/m26/escudos/tur-kasimpasa-60983368.png"
+    },
+    {
+      "id": "tur-kayserispor-a13de7c3",
+      "name": "Kayserispor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 67,
+      "stadium": "Kadir Has Stadyumu",
+      "csv": "data/m26/times/tur-kayserispor-a13de7c3.csv",
+      "badgePath": "data/m26/escudos/tur-kayserispor-a13de7c3.png"
+    },
+    {
+      "id": "tur-keciorengucu-aba984bc",
+      "name": "Keciörengücü",
+      "country": "TUR",
+      "players": 30,
+      "strength": 66,
+      "stadium": "Aktepe Stadı",
+      "csv": "data/m26/times/tur-keciorengucu-aba984bc.csv",
+      "badgePath": "data/m26/escudos/tur-keciorengucu-aba984bc.png"
+    },
+    {
+      "id": "tur-kocaelispor-e5145266",
+      "name": "Kocaelispor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Kocaeli Stadyumu",
+      "csv": "data/m26/times/tur-kocaelispor-e5145266.csv",
+      "badgePath": "data/m26/escudos/tur-kocaelispor-e5145266.png"
+    },
+    {
+      "id": "tur-konyaspor-0b8434b3",
+      "name": "Konyaspor",
+      "country": "TUR",
+      "players": 24,
+      "strength": 78,
+      "stadium": "MedaşKonya Büyükşehir Stadyumu",
+      "csv": "data/m26/times/tur-konyaspor-0b8434b3.csv",
+      "badgePath": "data/m26/escudos/tur-konyaspor-0b8434b3.png"
+    },
+    {
+      "id": "tur-manisa-d10036fb",
+      "name": "Manisa",
+      "country": "TUR",
+      "players": 27,
+      "strength": 63,
+      "stadium": "Manisa 19 Mayıs Stadyumu",
+      "csv": "data/m26/times/tur-manisa-d10036fb.csv",
+      "badgePath": "data/m26/escudos/tur-manisa-d10036fb.png"
+    },
+    {
+      "id": "tur-mardin-1969-1ee723a3",
+      "name": "Mardin 1969",
+      "country": "TUR",
+      "players": 30,
+      "strength": 62,
+      "stadium": "21 Kasım Şehir Stadyumu",
+      "csv": "data/m26/times/tur-mardin-1969-1ee723a3.csv",
+      "badgePath": "data/m26/escudos/tur-mardin-1969-1ee723a3.png"
+    },
+    {
+      "id": "tur-muglaspor-5225dbc3",
+      "name": "Muglaspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 61,
+      "stadium": "Muğla Atatürk",
+      "csv": "data/m26/times/tur-muglaspor-5225dbc3.csv",
+      "badgePath": "data/m26/escudos/tur-muglaspor-5225dbc3.png"
+    },
+    {
+      "id": "tur-pendikspor-1d9ef61e",
+      "name": "Pendikspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 64,
+      "stadium": "Pendik Stadı",
+      "csv": "data/m26/times/tur-pendikspor-1d9ef61e.csv",
+      "badgePath": "data/m26/escudos/tur-pendikspor-1d9ef61e.png"
+    },
+    {
+      "id": "tur-rizespor-94b572f2",
+      "name": "Rizespor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 79,
+      "stadium": "Çaykur Didi",
+      "csv": "data/m26/times/tur-rizespor-94b572f2.csv",
+      "badgePath": "data/m26/escudos/tur-rizespor-94b572f2.png"
+    },
+    {
+      "id": "tur-sakaryaspor-1f1b7b53",
+      "name": "Sakaryaspor",
+      "country": "TUR",
+      "players": 19,
+      "strength": 53,
+      "stadium": "Yeni Sakarya Atatürk Stadyumu",
+      "csv": "data/m26/times/tur-sakaryaspor-1f1b7b53.csv",
+      "badgePath": "data/m26/escudos/tur-sakaryaspor-1f1b7b53.png"
+    },
+    {
+      "id": "tur-samsunspor-36d0b7a4",
+      "name": "Samsunspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 81,
+      "stadium": "Samsun Yeni 19 Mayıs",
+      "csv": "data/m26/times/tur-samsunspor-36d0b7a4.csv",
+      "badgePath": "data/m26/escudos/tur-samsunspor-36d0b7a4.png"
+    },
+    {
+      "id": "tur-sanliurfaspor-6f958855",
+      "name": "Sanliurfaspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 53,
+      "stadium": "11 Nisan Stadyumu",
+      "csv": "data/m26/times/tur-sanliurfaspor-6f958855.csv",
+      "badgePath": "data/m26/escudos/tur-sanliurfaspor-6f958855.png"
+    },
+    {
+      "id": "tur-sariyer-9a05cd5f",
+      "name": "Sariyer",
+      "country": "TUR",
+      "players": 30,
+      "strength": 64,
+      "stadium": "Yusuf Ziya Öniş Stadyumu",
+      "csv": "data/m26/times/tur-sariyer-9a05cd5f.csv",
+      "badgePath": "data/m26/escudos/tur-sariyer-9a05cd5f.png"
+    },
+    {
+      "id": "tur-serikspor-ee2e4ff1",
+      "name": "Serikspor",
+      "country": "TUR",
+      "players": 28,
+      "strength": 53,
+      "stadium": "Serik İsmail Oğan",
+      "csv": "data/m26/times/tur-serikspor-ee2e4ff1.csv",
+      "badgePath": "data/m26/escudos/tur-serikspor-ee2e4ff1.png"
+    },
+    {
+      "id": "tur-sivasspor-7d50322e",
+      "name": "Sivasspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 63,
+      "stadium": "Eylül Stadyumu",
+      "csv": "data/m26/times/tur-sivasspor-7d50322e.csv",
+      "badgePath": "data/m26/escudos/tur-sivasspor-7d50322e.png"
+    },
+    {
+      "id": "tur-trabzonspor-c9cbae5a",
+      "name": "Trabzonspor",
+      "country": "TUR",
+      "players": 30,
+      "strength": 82,
+      "stadium": "Papara Park",
+      "csv": "data/m26/times/tur-trabzonspor-c9cbae5a.csv",
+      "badgePath": "data/m26/escudos/tur-trabzonspor-c9cbae5a.png"
+    },
+    {
+      "id": "tur-vanspor-d22f9c72",
+      "name": "Vanspor",
+      "country": "TUR",
+      "players": 29,
+      "strength": 61,
+      "stadium": "Van Atatürk Stadyumu",
+      "csv": "data/m26/times/tur-vanspor-d22f9c72.csv",
+      "badgePath": "data/m26/escudos/tur-vanspor-d22f9c72.png"
+    },
+    {
+      "id": "tur-corum-89c4da80",
+      "name": "Çorum",
+      "country": "TUR",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Çorum Şehir Stadyumu",
+      "csv": "data/m26/times/tur-corum-89c4da80.csv",
+      "badgePath": "data/m26/escudos/tur-corum-89c4da80.png"
+    },
+    {
+      "id": "tur-umraniyespor-ed9d3c17",
+      "name": "Ümraniyespor",
+      "country": "TUR",
+      "players": 27,
+      "strength": 61,
+      "stadium": "Ümraniye Şehir Stadyumu",
+      "csv": "data/m26/times/tur-umraniyespor-ed9d3c17.csv",
+      "badgePath": "data/m26/escudos/tur-umraniyespor-ed9d3c17.png"
+    },
+    {
+      "id": "ury-albion-366bebfc",
+      "name": "Albion",
+      "country": "URY",
+      "players": 23,
+      "strength": 75,
+      "stadium": "Luis Franzini",
+      "csv": "data/m26/times/ury-albion-366bebfc.csv",
+      "badgePath": "data/m26/escudos/ury-albion-366bebfc.png"
+    },
+    {
+      "id": "ury-boston-river-cd198e6b",
+      "name": "Boston River",
+      "country": "URY",
+      "players": 28,
+      "strength": 75,
+      "stadium": "Campeones Olímpicos de Florida",
+      "csv": "data/m26/times/ury-boston-river-cd198e6b.csv",
+      "badgePath": "data/m26/escudos/ury-boston-river-cd198e6b.png"
+    },
+    {
+      "id": "ury-central-espanol-7be8074c",
+      "name": "Central Español",
+      "country": "URY",
+      "players": 30,
+      "strength": 76,
+      "stadium": "Parque Palermo",
+      "csv": "data/m26/times/ury-central-espanol-7be8074c.csv",
+      "badgePath": "data/m26/escudos/ury-central-espanol-7be8074c.png"
+    },
+    {
+      "id": "ury-cerro-536f6289",
+      "name": "Cerro",
+      "country": "URY",
+      "players": 30,
+      "strength": 74,
+      "stadium": "Estadio Luis Tróccoli",
+      "csv": "data/m26/times/ury-cerro-536f6289.csv",
+      "badgePath": "data/m26/escudos/ury-cerro-536f6289.png"
+    },
+    {
+      "id": "ury-cerro-largo-83092b35",
+      "name": "Cerro Largo",
+      "country": "URY",
+      "players": 30,
+      "strength": 77,
+      "stadium": "Arq. Antonio Eleuterio Ubilla",
+      "csv": "data/m26/times/ury-cerro-largo-83092b35.csv",
+      "badgePath": "data/m26/escudos/ury-cerro-largo-83092b35.png"
+    },
+    {
+      "id": "ury-danubio-51950c29",
+      "name": "Danubio",
+      "country": "URY",
+      "players": 29,
+      "strength": 75,
+      "stadium": "Jardines del Hipódromo",
+      "csv": "data/m26/times/ury-danubio-51950c29.csv",
+      "badgePath": "data/m26/escudos/ury-danubio-51950c29.png"
+    },
+    {
+      "id": "ury-defensor-sporting-a1be464a",
+      "name": "Defensor Sporting",
+      "country": "URY",
+      "players": 28,
+      "strength": 75,
+      "stadium": "Luis Franzini",
+      "csv": "data/m26/times/ury-defensor-sporting-a1be464a.csv",
+      "badgePath": "data/m26/escudos/ury-defensor-sporting-a1be464a.png"
+    },
+    {
+      "id": "ury-deportivo-maldonado-ee0db05f",
+      "name": "Deportivo Maldonado",
+      "country": "URY",
+      "players": 29,
+      "strength": 78,
+      "stadium": "Domingo Burgueño Miguel",
+      "csv": "data/m26/times/ury-deportivo-maldonado-ee0db05f.csv",
+      "badgePath": "data/m26/escudos/ury-deportivo-maldonado-ee0db05f.png"
+    },
+    {
+      "id": "ury-juventud-13aa6e18",
+      "name": "Juventud",
+      "country": "URY",
+      "players": 28,
+      "strength": 75,
+      "stadium": "Juventud Parque Artigas",
+      "csv": "data/m26/times/ury-juventud-13aa6e18.csv",
+      "badgePath": "data/m26/escudos/ury-juventud-13aa6e18.png"
+    },
+    {
+      "id": "ury-liverpool-uru-7796a294",
+      "name": "Liverpool-URU",
+      "country": "URY",
+      "players": 24,
+      "strength": 79,
+      "stadium": "Estadio Belvedere",
+      "csv": "data/m26/times/ury-liverpool-uru-7796a294.csv",
+      "badgePath": "data/m26/escudos/ury-liverpool-uru-7796a294.png"
+    },
+    {
+      "id": "ury-montevideo-city-torque-9fe94821",
+      "name": "Montevideo City Torque",
+      "country": "URY",
+      "players": 26,
+      "strength": 80,
+      "stadium": "Estadio Charrúa",
+      "csv": "data/m26/times/ury-montevideo-city-torque-9fe94821.csv",
+      "badgePath": "data/m26/escudos/ury-montevideo-city-torque-9fe94821.png"
+    },
+    {
+      "id": "ury-montevideo-wanderers-5942c221",
+      "name": "Montevideo Wanderers",
+      "country": "URY",
+      "players": 28,
+      "strength": 77,
+      "stadium": "Parque Alfredo Victor Viera",
+      "csv": "data/m26/times/ury-montevideo-wanderers-5942c221.csv",
+      "badgePath": "data/m26/escudos/ury-montevideo-wanderers-5942c221.png"
+    },
+    {
+      "id": "ury-nacional-uru-b1cbb335",
+      "name": "Nacional-URU",
+      "country": "URY",
+      "players": 29,
+      "strength": 79,
+      "stadium": "Gran Parque Central",
+      "csv": "data/m26/times/ury-nacional-uru-b1cbb335.csv",
+      "badgePath": "data/m26/escudos/ury-nacional-uru-b1cbb335.png"
+    },
+    {
+      "id": "ury-penarol-ffd59ff0",
+      "name": "Peñarol",
+      "country": "URY",
+      "players": 27,
+      "strength": 83,
+      "stadium": "Campeón del Siglo",
+      "csv": "data/m26/times/ury-penarol-ffd59ff0.csv",
+      "badgePath": "data/m26/escudos/ury-penarol-ffd59ff0.png"
+    },
+    {
+      "id": "ury-progreso-418a90a0",
+      "name": "Progreso",
+      "country": "URY",
+      "players": 30,
+      "strength": 71,
+      "stadium": "Parque Abraham Paladino",
+      "csv": "data/m26/times/ury-progreso-418a90a0.csv",
+      "badgePath": "data/m26/escudos/ury-progreso-418a90a0.png"
+    },
+    {
+      "id": "ury-racing-uru-b69ec68a",
+      "name": "Racing-URU",
+      "country": "URY",
+      "players": 25,
+      "strength": 79,
+      "stadium": "Parque Osvaldo Roberto",
+      "csv": "data/m26/times/ury-racing-uru-b69ec68a.csv",
+      "badgePath": "data/m26/escudos/ury-racing-uru-b69ec68a.png"
+    },
+    {
+      "id": "usa-cincinnati-72617bac",
+      "name": "Cincinnati",
+      "country": "USA",
+      "players": 27,
+      "strength": 81,
+      "stadium": "TQL Stadium",
+      "csv": "data/m26/times/usa-cincinnati-72617bac.csv",
+      "badgePath": "data/m26/escudos/usa-cincinnati-72617bac.png"
+    },
+    {
+      "id": "usa-inter-miami-73856b48",
+      "name": "Inter Miami",
+      "country": "USA",
+      "players": 29,
+      "strength": 84,
+      "stadium": "Nu Stadium",
+      "csv": "data/m26/times/usa-inter-miami-73856b48.csv",
+      "badgePath": "data/m26/escudos/usa-inter-miami-73856b48.png"
+    },
+    {
+      "id": "usa-los-angeles-b13ee94f",
+      "name": "Los Angeles",
+      "country": "USA",
+      "players": 27,
+      "strength": 83,
+      "stadium": "BMO Stadium",
+      "csv": "data/m26/times/usa-los-angeles-b13ee94f.csv",
+      "badgePath": "data/m26/escudos/usa-los-angeles-b13ee94f.png"
+    },
+    {
+      "id": "usa-nashville-f3b1a797",
+      "name": "Nashville",
+      "country": "USA",
+      "players": 30,
+      "strength": 82,
+      "stadium": "GEODIS Park",
+      "csv": "data/m26/times/usa-nashville-f3b1a797.csv",
+      "badgePath": "data/m26/escudos/usa-nashville-f3b1a797.png"
+    },
+    {
+      "id": "usa-new-york-city-43644260",
+      "name": "New York City",
+      "country": "USA",
+      "players": 30,
+      "strength": 80,
+      "stadium": "Yankee Stadium",
+      "csv": "data/m26/times/usa-new-york-city-43644260.csv",
+      "badgePath": "data/m26/escudos/usa-new-york-city-43644260.png"
+    },
+    {
+      "id": "usa-philadelphia-union-3b762650",
+      "name": "Philadelphia Union",
+      "country": "USA",
+      "players": 29,
+      "strength": 80,
+      "stadium": "Subaru Park",
+      "csv": "data/m26/times/usa-philadelphia-union-3b762650.csv",
+      "badgePath": "data/m26/escudos/usa-philadelphia-union-3b762650.png"
+    },
+    {
+      "id": "usa-seattle-sounders-54f59aeb",
+      "name": "Seattle Sounders",
+      "country": "USA",
+      "players": 26,
+      "strength": 80,
+      "stadium": "Lumen Field",
+      "csv": "data/m26/times/usa-seattle-sounders-54f59aeb.csv",
+      "badgePath": "data/m26/escudos/usa-seattle-sounders-54f59aeb.png"
+    },
+    {
+      "id": "usa-vancouver-whitecaps-0663ee54",
+      "name": "Vancouver Whitecaps",
+      "country": "USA",
+      "players": 30,
+      "strength": 83,
+      "stadium": "BC Place",
+      "csv": "data/m26/times/usa-vancouver-whitecaps-0663ee54.csv",
+      "badgePath": "data/m26/escudos/usa-vancouver-whitecaps-0663ee54.png"
+    }
+  ]
+}

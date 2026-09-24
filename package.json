@@ -1,0 +1,13 @@
+{
+  "name": "footcore-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "node --test",
+    "test:m26": "python3 scripts/test_m26.py",
+    "convert:m26": "python3 scripts/convert_m26.py",
+    "build:world": "python3 scripts/build_world.py && node scripts/build_world.mjs"
+  }
+}
