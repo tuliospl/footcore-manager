@@ -34,7 +34,7 @@ test("creates a complete league and schedule", () => {
   assert.equal(getUserClub(game).squad.length, 16);
 });
 
-test("team of the season excludes one-match ratings and requires regular participation", () => {
+test("team of the season requires participation in at least 40 percent of league rounds", () => {
   const game = createGame(43);
   for (const player of game.clubs.flatMap(club => club.squad)) {
     player.appearances = 10;
@@ -42,9 +42,9 @@ test("team of the season excludes one-match ratings and requires regular partici
     player.ratingTotal = 65;
   }
   const cameo = game.clubs[0].squad.find(player => player.position === "GOL");
-  cameo.appearances = 1;
-  cameo.ratedMatches = 1;
-  cameo.ratingTotal = 10;
+  cameo.appearances = 5;
+  cameo.ratedMatches = 5;
+  cameo.ratingTotal = 50;
   const selected = seasonTeam(game);
   assert.equal(selected.length, 11);
   assert.ok(selected.every(player => player.appearances >= 6));

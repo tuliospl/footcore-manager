@@ -660,7 +660,7 @@ function applyPromotionAndRelegation(game) {
 
 function seasonTeamMinimumAppearances(game, league) {
   const rounds = league.schedule?.length ?? game.schedule.length;
-  return Math.max(3, Math.ceil(rounds * 0.4));
+  return Math.max(1, Math.ceil(rounds * 0.4));
 }
 
 export function seasonTeam(game, leagueId) {
