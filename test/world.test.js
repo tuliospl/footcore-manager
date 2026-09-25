@@ -109,9 +109,18 @@ test('adjacent divisions exchange clubs and award placement prizes at season end
     assert.ok(award.potentialGain>=0&&award.potentialGain<=1);
   }
   for(const club of game.clubs){assert.ok(club.history[0].prizeMoney>0);assert.equal(club.history[0].prizeMoney,game.lastSeasonAwards.clubs[club.id].prize);}
+  assert.equal(game.seasonReport.club.finance.income.premiacaoLiga,undefined);
+  assert.equal(game.seasonReport.club.finance.income.premiosIndividuais,undefined);
+  const userPrizePayments=game.pendingPrizePayments.filter(payment=>payment.clubId===game.userClubId);
+  const pendingPrizeTotal=userPrizePayments.reduce((total,payment)=>total+payment.amount,0);
+  const budgetBeforePrizePayment=game.clubs.find(club=>club.id===game.userClubId).budget;
+  assert.ok(pendingPrizeTotal>0);
   const previousLeagueId=game.leagueId;
   const completedReport=game.seasonReport;
   assert.ok(startNextSeason(game).ok);
+  assert.equal(game.clubs.find(club=>club.id===game.userClubId).budget,budgetBeforePrizePayment+pendingPrizeTotal);
+  assert.equal(game.pendingPrizePayments.length,0);
+  assert.equal(Object.values(game.seasonTracking.clubs[game.userClubId].income).reduce((total,value)=>total+value,0),pendingPrizeTotal);
   assert.equal(game.seasonReport,completedReport);
   assert.equal(game.seasonTracking.season,game.season);
   assert.equal(game.leagueId,game.leagues.find(league=>league.clubIds.includes(game.userClubId)).id);

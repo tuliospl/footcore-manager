@@ -556,6 +556,29 @@ function archivePlayerSeason(player, season, label, clubName) {
   });
 }
 
+function queuePrizePayment(game, clubId, category, amount, description) {
+  game.pendingPrizePayments ??= [];
+  game.pendingPrizePayments.push({ clubId, category, amount, description, earnedSeason: game.season });
+}
+
+function payPendingPrizes(game) {
+  const payments = game.pendingPrizePayments || [];
+  const userPayments = payments.filter(payment => payment.clubId === game.userClubId);
+  for (const payment of payments) {
+    const club = getClub(game, payment.clubId);
+    if (!club) continue;
+    club.budget += payment.amount;
+    recordSeasonFinance(game, club.id, payment.category, payment.amount, "income");
+  }
+  game.pendingPrizePayments = [];
+  if (!userPayments.length) return;
+  const total = userPayments.reduce((sum, payment) => sum + payment.amount, 0);
+  const leagueMoney = userPayments.filter(payment => payment.category === "premiacaoLiga").reduce((sum, payment) => sum + payment.amount, 0);
+  const individualMoney = total - leagueMoney;
+  const breakdown = [leagueMoney ? `${formatMoney(leagueMoney)} pela colocação` : "", individualMoney ? `${formatMoney(individualMoney)} por prêmios individuais` : ""].filter(Boolean).join(" e ");
+  game.news.unshift({ id: `prize-payment-${game.season}-${game.userClubId}`, type: "positive", title: `Premiações recebidas: ${formatMoney(total)}`, body: `${breakdown} foram creditados no caixa no primeiro dia da nova temporada.` });
+}
+
 function awardSeasonPrizes(game) {
   const awards = new Map();
   const leagues = game.leagues || [{ id: "national", name: "Liga nacional", country: "", tier: 1, clubIds: game.clubs.map(club => club.id) }];
@@ -565,13 +588,10 @@ function awardSeasonPrizes(game) {
     ranking.forEach((row, index) => {
       const prize = leaguePrizeMoney(league, index + 1);
       const club = getClub(game, row.clubId);
-      club.budget += prize;
-      recordSeasonFinance(game, club.id, "premiacaoLiga", prize, "income");
+      queuePrizePayment(game, club.id, "premiacaoLiga", prize, `${index + 1}º lugar em ${league.name}`);
       awards.set(club.id, { prize, position: index + 1, leagueId: league.id, leagueName: league.name });
     });
   }
-  const userAward = awards.get(game.userClubId);
-  if (userAward) game.news.unshift({ id: `prize-${game.season}-${game.userClubId}`, type: "positive", title: `Premiação de ${formatMoney(userAward.prize)}`, body: `${userAward.position}º lugar em ${userAward.leagueName}. O valor já foi creditado ao caixa do clube.` });
   game.lastSeasonAwards = { season: game.season, clubs: Object.fromEntries(awards) };
   return awards;
 }
@@ -589,8 +609,7 @@ function awardIndividualHonors(game) {
       player.potential = Math.min(99, player.potential + 1);
       player.overall = Math.min(player.potential, player.overall + 1);
       player.value = playerValue(player);
-      club.budget += money;
-      recordSeasonFinance(game, club.id, "premiosIndividuais", money, "income");
+      queuePrizePayment(game, club.id, "premiosIndividuais", money, `${winner.label}: ${player.name}`);
       const record = {
         season: game.season,
         leagueId: league.id,
@@ -611,7 +630,7 @@ function awardIndividualHonors(game) {
       player.awards.push(record);
       const history = club.history.find(entry => entry.season === game.season);
       if (history) history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + money;
-      if (club.id === game.userClubId) game.news.unshift({ id: `award-${game.season}-${winner.type}-${player.id}`, type: "positive", title: `${player.name}: ${winner.label}`, body: `${winner.statLabel}. O prêmio rendeu ${formatMoney(money)} ao clube e melhorou o geral e o potencial do atleta.` });
+      if (club.id === game.userClubId) game.news.unshift({ id: `award-${game.season}-${winner.type}-${player.id}`, type: "positive", title: `${player.name}: ${winner.label}`, body: `${winner.statLabel}. O geral e o potencial do atleta melhoraram; os ${formatMoney(money)} serão pagos no início da próxima temporada.` });
       return record;
     });
     leagueAwards.push({ leagueId: league.id, leagueName: league.name, awards });
@@ -890,6 +909,7 @@ export function startNextSeason(game) {
   [...game.clubs.flatMap(club=>club.squad), ...game.market].forEach(player => { player.goals = 0; player.assists = 0; player.yellowCards = 0; player.yellowCardAccumulation = 0; player.redCards = 0; player.suspensionMatches = 0; player.suspensionReason = null; player.injuryMatches = 0; player.injuryLabel = null; player.appearances = 0; player.ratingTotal = 0; player.ratedMatches = 0; });
   game.news.unshift({ id: `season-${game.season}`, type: "info", title: `Temporada ${game.season}`, body: "Os clubes voltam a campo com objetivos renovados." });
   ensureSeasonTracking(game);
+  payPendingPrizes(game);
   return { ok: true };
 }
 
