@@ -10,6 +10,11 @@ function fixture() {
   return { game, buyer, seller };
 }
 
+function advanceUntilAnswer(game, offer, limit = 3) {
+  for (let index = 0; index < limit && offer.status === "pending"; index++) assert.equal(advanceWeek(game).ok, true);
+  return offer.status;
+}
+
 test("search combines club, position and accent-insensitive names without including own squad", () => {
   const { game, seller } = fixture();
   seller.squad[0].name = "João Teste";
@@ -23,7 +28,7 @@ test("search combines club, position and accent-insensitive names without includ
   assert.ok(searchTransferMarket(game).every(entry => entry.club?.id !== game.userClubId));
 });
 
-test("key players command a larger premium than reserves and low bids cannot reroll acceptance", () => {
+test("key players command a larger premium and duplicate bids cannot reroll a pending analysis", () => {
   const { game, buyer, seller } = fixture();
   const star = seller.squad[9];
   const reserve = seller.squad[15];
@@ -36,33 +41,42 @@ test("key players command a larger premium than reserves and low bids cannot rer
   assert.equal(starTerms.role, "Peça-chave");
   assert.equal(reserveTerms.role, "Reserva");
   assert.ok(starTerms.askingPrice > reserveTerms.askingPrice);
-  const before = JSON.stringify(game.clubs);
-  for (let i = 0; i < 5; i++) assert.equal(makeTransferOffer(game, seller.id, star.id, star.value).status, "rejected");
-  assert.equal(JSON.stringify(game.clubs), before);
+  const first = makeTransferOffer(game, seller.id, star.id, star.value);
+  assert.equal(first.status, "pending");
+  assert.equal(makeTransferOffer(game, seller.id, star.id, star.value).status, "invalid");
+  assert.equal(game.outgoingOffers.length, 1);
+  assert.equal(advanceUntilAnswer(game, game.outgoingOffers[0]), "rejected");
+  assert.ok(!seller.squad.includes(star) || !buyer.squad.includes(star));
   assert.equal(buyer.squad.length, 16);
 });
 
-test("counteroffers preserve finances; accepted bid transfers ownership and the exact fee once", () => {
+test("clubs answer after one or two rounds and a negotiated counteroffer can be accepted", () => {
   const { game, buyer, seller } = fixture();
   const player = seller.squad[9];
   const terms = getTransferTerms(game, seller.id, player.id);
   const beforeBuyer = buyer.budget;
   const beforeSeller = seller.budget;
-  const counter = makeTransferOffer(game, seller.id, player.id, Math.ceil(terms.askingPrice * 0.8));
-  assert.equal(counter.status, "counter");
-  assert.equal(counter.counterOffer, terms.askingPrice);
+  const openingAmount = Math.ceil(terms.minimumPrice * 0.72 / 1000) * 1000;
+  const submitted = makeTransferOffer(game, seller.id, player.id, openingAmount);
+  assert.equal(submitted.status, "pending");
   assert.equal(buyer.budget, beforeBuyer);
   assert.equal(seller.budget, beforeSeller);
-  assert.equal(makeTransferOffer(game, seller.id, player.id, counter.counterOffer).ok, true);
-  assert.equal(buyer.budget, beforeBuyer - counter.counterOffer);
-  assert.equal(seller.budget, beforeSeller + counter.counterOffer);
+  const offer = game.outgoingOffers[0];
+  assert.equal(advanceUntilAnswer(game, offer), "counter");
+  assert.ok(offer.counterAmount < terms.askingPrice);
+  const revised = makeTransferOffer(game, seller.id, player.id, offer.counterAmount, offer.requestedExchangePlayerId);
+  assert.equal(revised.status, "pending");
+  const acceptedAmount = offer.amount;
+  assert.equal(advanceUntilAnswer(game, offer), "accepted");
+  assert.ok(buyer.budget < beforeBuyer);
+  assert.ok(seller.budget > beforeSeller);
+  assert.equal(game.transferDeals.find(deal => deal.playerId === player.id).amount, acceptedAmount);
   assert.ok(buyer.squad.includes(player));
   assert.ok(!seller.squad.includes(player));
   assert.equal(game.clubs.flatMap(club => club.squad).filter(item => item.id === player.id).length, 1);
   const after = JSON.stringify(game);
-  assert.equal(makeTransferOffer(game, seller.id, player.id, counter.counterOffer).status, "invalid");
+  assert.equal(makeTransferOffer(game, seller.id, player.id, acceptedAmount).status, "invalid");
   assert.equal(JSON.stringify(game), after);
-  assert.equal(advanceWeek(game).ok, true);
 });
 
 test("a purchase can combine cash and a player without duplicating either athlete", () => {
@@ -76,10 +90,16 @@ test("a purchase can combine cash and a player without duplicating either athlet
   const buyerBudget = buyer.budget;
   const sellerBudget = seller.budget;
   const result = makeTransferOffer(game, seller.id, target.id, cash, exchange.id);
-  assert.equal(result.ok, true);
-  assert.equal(result.exchangeCredit, credit);
-  assert.equal(buyer.budget, buyerBudget - cash);
-  assert.equal(seller.budget, sellerBudget + cash);
+  assert.equal(result.status, "pending");
+  const offer = game.outgoingOffers[0];
+  const firstAnswer = advanceUntilAnswer(game, offer);
+  if (firstAnswer === "counter") {
+    const revisedTerms = getTransferTerms(game, seller.id, target.id);
+    assert.equal(makeTransferOffer(game, seller.id, target.id, Math.max(0, Math.ceil(revisedTerms.askingPrice * 2 / 1000) * 1000 - credit), exchange.id).status, "pending");
+    assert.equal(advanceUntilAnswer(game, offer), "accepted");
+  } else assert.equal(firstAnswer, "accepted");
+  assert.ok(buyer.budget < buyerBudget);
+  assert.ok(seller.budget > sellerBudget);
   assert.ok(buyer.squad.includes(target));
   assert.ok(!buyer.squad.includes(exchange));
   assert.ok(seller.squad.includes(exchange));
@@ -87,16 +107,18 @@ test("a purchase can combine cash and a player without duplicating either athlet
   assert.equal(game.clubs.flatMap(club => club.squad).filter(player => player.id === exchange.id).length, 1);
 });
 
-test("an exchange receives a cash counteroffer and cannot leave the buyer without a goalkeeper", () => {
+test("an exchange can receive a later counteroffer and cannot leave the buyer without a goalkeeper", () => {
   const { game, buyer, seller } = fixture();
   const target = seller.squad[9];
   const exchange = buyer.squad.find(player => player.position !== "GOL");
   exchange.value = 1_000_000;
   const terms = getTransferTerms(game, seller.id, target.id);
-  const cash = Math.max(0, Math.ceil(terms.askingPrice * 0.8) - 750_000);
+  const cash = Math.max(0, Math.ceil(terms.minimumPrice * 0.72) - 750_000);
   const result = makeTransferOffer(game, seller.id, target.id, cash, exchange.id);
-  assert.equal(result.status, "counter");
-  assert.equal(result.counterOffer, terms.askingPrice - 750_000);
+  assert.equal(result.status, "pending");
+  const offer = game.outgoingOffers[0];
+  assert.equal(advanceUntilAnswer(game, offer), "counter");
+  assert.ok(offer.counterAmount >= 0);
   const keepers = buyer.squad.filter(player => player.position === "GOL");
   buyer.squad = buyer.squad.filter(player => player.position !== "GOL" || player.id === keepers[0].id);
   const before = JSON.stringify(game.clubs);
@@ -132,7 +154,7 @@ test("invalid, unaffordable and full-squad offers do not mutate the game", () =>
   assert.equal(makeTransferOffer(game, buyer.id, buyer.squad[0].id, 1_000_000).status, "invalid");
 });
 
-test("terms respond to replacement depth, potential and title contention", () => {
+test("terms respond to replacement depth, potential, contract, form and title contention", () => {
   const { game, seller } = fixture();
   const player = seller.squad[9];
   player.overall = 90;
@@ -145,6 +167,11 @@ test("terms respond to replacement depth, potential and title contention", () =>
   const contender = getTransferTerms(game, seller.id, player.id).askingPrice;
   game.table[0].points = 20;
   assert.ok(getTransferTerms(game, seller.id, player.id).askingPrice < contender);
+  player.contractEndSeason = game.season;
+  player.form = 50;
+  player.ratedMatches = 6;
+  player.ratingTotal = 33;
+  assert.ok(getTransferTerms(game, seller.id, player.id).askingPrice < contender);
 });
 
 test("old saves accept negotiations and history survives JSON round trips", () => {
@@ -153,10 +180,11 @@ test("old saves accept negotiations and history survives JSON round trips", () =
   const player = seller.squad[9];
   makeTransferOffer(game, seller.id, player.id, 1);
   const restored = JSON.parse(JSON.stringify(game));
-  assert.equal(restored.negotiations[0].status, "rejected");
+  assert.equal(restored.negotiations[0].status, "pending");
+  assert.equal(restored.outgoingOffers[0].status, "pending");
   assert.equal(searchTransferMarket(restored).length, 124);
-  const terms = getTransferTerms(restored, seller.id, player.id);
-  assert.equal(makeTransferOffer(restored, seller.id, player.id, terms.askingPrice).ok, true);
+  assert.equal(makeTransferOffer(restored, seller.id, player.id, 1).status, "invalid");
+  assert.equal(advanceUntilAnswer(restored, restored.outgoingOffers[0]), "rejected");
 });
 
 test('numeric filters combine inclusive bounds with multiple positions, country, league and names', () => {

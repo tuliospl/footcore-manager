@@ -30,6 +30,7 @@ import {
   loanOutPlayer,
   acceptIncomingOffer,
   counterIncomingOffer,
+  cancelOutgoingOffer,
   sellPlayer,
   rejectIncomingOffer,
   setTactic,
@@ -386,7 +387,7 @@ function renderClubDetails() {
     if (player.loan) return `<span class="view-note">Emprestado</span>`;
     const listing = getClubListing(game, club.id, player.id);
     const terms = getTransferTerms(game, club.id, player.id);
-    return `<button class="action-button" data-offer="${player.id}" data-club="${club.id}">${listing ? listing.type === "loan" ? "Pedir empréstimo" : "Comprar" : terms?.available ? "Fazer proposta" : "Ver situação"}</button>`;
+    return `<button class="action-button" data-offer="${player.id}" data-club="${club.id}">${listing?.type === "loan" ? "Pedir empréstimo" : terms?.available ? "Negociar" : "Ver situação"}</button>`;
   };
   content.innerHTML = `${pageHeading("Observação do adversário", club.name, `${squad.length} atletas`)}
     <button class="secondary-button player-back-button" data-club-back>← Voltar</button>
@@ -427,7 +428,7 @@ function renderPlayerDetails() {
   const marketAction = !club
     ? `<button class="primary-button" data-buy="${player.id}">Contratar · ${formatMoney(player.askingPrice)}</button>`
     : listing
-      ? `<button class="primary-button" data-offer="${player.id}" data-club="${club.id}">${listing.type === "loan" ? "Contratar empréstimo" : `Comprar · ${formatMoney(listing.price)}`}</button>`
+      ? `<button class="primary-button" data-offer="${player.id}" data-club="${club.id}">${listing.type === "loan" ? "Contratar empréstimo" : `Negociar · pedido de ${formatMoney(listing.price)}`}</button>`
       : `<button class="primary-button" data-offer="${player.id}" data-club="${club.id}">${terms?.available ? "Fazer proposta" : "Ver situação"}</button>`;
   const actions = ownPlayer
     ? `${loanedOut ? `<span class="view-note">Emprestado ao ${escapeHtml(club.name)} até o fim da temporada</span>` : player.loan ? `<span class="view-note">Atleta emprestado</span>` : `${player.contractEndSeason < game.season + 2 ? `<button class="secondary-button" data-renew="${player.id}">Renovar · ${formatMoney(player.salary * 4)}</button>` : ""}<button class="secondary-button" data-loan-out="${player.id}">Emprestar jogador</button><button class="danger-button" data-sell="${player.id}">Vender jogador</button>`}`
@@ -487,7 +488,8 @@ function renderMarket() {
     <p class="view-note">Compre pelo preço anunciado, contrate por empréstimo ou negocie com o clube. Os anúncios são revistos conforme o elenco muda; titulares e peças-chave continuam exigindo propostas.</p>
     <p id="market-count" role="status" class="view-note"></p>
     <section class="card data-card"><table class="data-table"><thead><tr>${MARKET_COLUMNS.map(column => `<th scope="col" class="sortable-heading" aria-sort="none"><button type="button" data-market-sort="${column.key}">${column.label}<span aria-hidden="true">↕</span></button></th>`).join('')}<th scope="col">Negociação</th></tr></thead><tbody id="market-results"></tbody></table></section>
-    <section class="card season-history"><div class="card-header"><h3>Suas últimas negociações</h3></div><div class="card-body">${(game.negotiations || []).length ? game.negotiations.slice(0, 5).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)} · ${escapeHtml(item.clubName)}</strong><p>${formatMoney(item.amount)}${item.exchangePlayerName ? ` + ${escapeHtml(item.exchangePlayerName)} (crédito de ${formatMoney(item.exchangeCredit)})` : ""} · ${{ rejected: "Recusada", counter: "Contraproposta", accepted: "Aceita", purchased: "Compra por preço fixo", loaned: "Empréstimo contratado" }[item.status]}${item.counterOffer !== null && item.counterOffer !== undefined ? ` de ${formatMoney(item.counterOffer)}` : ""} · Temporada ${item.season}, após ${item.week} rodada(s)</p></article>`).join("") : `<p class="view-note">Suas propostas e as respostas dos clubes aparecerão aqui.</p>`}</div></section>
+    ${(game.outgoingOffers || []).length ? `<section class="card active-negotiations"><div class="card-header"><h3>Negociações em andamento</h3><span>As diretorias respondem após as rodadas</span></div><div class="active-negotiation-list">${game.outgoingOffers.map(offer => `<article class="active-negotiation"><div><strong>${escapeHtml(offer.playerName)} · ${escapeHtml(offer.clubName)}</strong>${offer.status === "pending" ? `<span>Em análise · resposta prevista após a rodada ${offer.responseWeek}</span><small>Sua oferta: ${formatMoney(offer.amount)}${offer.exchangePlayerName ? ` + ${escapeHtml(offer.exchangePlayerName)}` : ""}</small>` : `<span>Contraproposta: ${formatMoney(offer.counterAmount)}${offer.requestedExchangePlayerName ? ` + ${escapeHtml(offer.requestedExchangePlayerName)}` : ""}</span><small>Válida até a rodada ${offer.expiresWeek}. Você pode negociar novamente.</small>`}</div><div>${offer.status === "counter" ? `<button class="primary-button" data-outgoing-open="${offer.id}">Responder</button>` : ""}<button class="secondary-button" data-outgoing-cancel="${offer.id}">Encerrar</button></div></article>`).join("")}</div></section>` : ""}
+    <section class="card season-history"><div class="card-header"><h3>Suas últimas negociações</h3></div><div class="card-body">${(game.negotiations || []).length ? game.negotiations.slice(0, 8).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)} · ${escapeHtml(item.clubName)}</strong><p>${formatMoney(item.amount)}${item.exchangePlayerName ? ` + ${escapeHtml(item.exchangePlayerName)} (crédito de ${formatMoney(item.exchangeCredit)})` : ""} · ${{ pending: "Enviada para análise", rejected: "Recusada", counter: "Contraproposta", accepted: "Aceita", purchased: "Compra por preço fixo", loaned: "Empréstimo contratado" }[item.status] || item.status}${item.counterOffer !== null && item.counterOffer !== undefined ? ` de ${formatMoney(item.counterOffer)}` : ""} · Temporada ${item.season}, após ${item.week} rodada(s)</p></article>`).join("") : `<p class="view-note">Suas propostas e as respostas dos clubes aparecerão aqui.</p>`}</div></section>
     <section class="card season-history"><div class="card-header"><h3>Transferências entre clubes</h3><span>Mercado mundial</span></div><div class="card-body">${(game.transferDeals || []).length ? game.transferDeals.slice(0, 8).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)}</strong><p>${escapeHtml(item.sellerName)} → ${escapeHtml(item.buyerName)} · ${formatMoney(item.amount)}${item.exchangePlayerName ? ` + ${escapeHtml(item.exchangePlayerName)}` : ""}${item.status === "clause" ? " · Multa rescisória" : ""}</p></article>`).join("") : `<p class="view-note">As negociações realizadas pela IA aparecerão aqui conforme as rodadas avançarem.</p>`}</div></section>`;
   document.querySelector("#market-query").value = marketFilters.query;
   document.querySelector("#market-club").value = marketFilters.clubId;
@@ -519,7 +521,7 @@ function renderMarketResults() {
   document.querySelector("#market-results").innerHTML = entries.length ? entries.slice(marketPage * 60, (marketPage + 1) * 60).map(({ player, club, terms, listing }) => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="market" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}">
     <td class="player-name"><div class="player-with-shirt">${teamShirtMarkup(club, player.position)}<div><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(club?.name || "Sem clube")}</small>${!club ? `<small>${player.freeAgentOrigin==='generated'?'Atleta fictício gerado pelo jogo':player.previousClub?`Contrato encerrado · ${escapeHtml(player.previousClub)}`:'Livre de contrato'}</small>` : ""}${terms ? `<small class="transfer-role">${terms.role}${terms.available ? "" : " · Indisponível"}</small>` : ""}</div></div></td>
     <td><span class="position-pill">${player.position}</span></td><td>${player.age}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${player.potential}</td><td>${formatMoney(player.salary)}/rod.</td><td>${formatMoney(player.value)}</td>
-    <td>${club ? `${listing ? `<strong class="fixed-price">${listing.type === "loan" ? "Taxa: " : "Preço fixo: "}${formatMoney(listing.price)}</strong>${listing.type === "loan" ? `<small class="listing-note">Até o fim da temporada ${listing.endSeason} · 100% do salário</small>` : ""}` : ""}<button class="action-button" data-offer="${player.id}" data-club="${club.id}">${listing ? listing.type === "loan" ? "Contratar empréstimo" : "Comprar por preço fixo" : terms.available ? "Fazer proposta" : "Ver situação"}</button>` : `<strong class="fixed-price">Luvas: ${formatMoney(player.askingPrice)}</strong><button class="action-button buy" data-buy="${player.id}">Contratar</button>`}</td></tr>`).join("") : `<tr><td colspan="8" class="empty-state">${marketFilters.dealType === "free" || marketFilters.clubId === "market" ? "Nenhum jogador livre atende aos filtros neste momento. Novas oportunidades podem surgir com contratos não renovados." : "Nenhum atleta atende a todos os filtros. Amplie os intervalos ou clique em Limpar filtros."}</td></tr>`;
+    <td>${club ? `${listing ? `<strong class="fixed-price">${listing.type === "loan" ? "Taxa: " : "Preço pedido: "}${formatMoney(listing.price)}</strong>${listing.type === "loan" ? `<small class="listing-note">Até o fim da temporada ${listing.endSeason} · 100% do salário</small>` : `<small class="listing-note">Você pode oferecer menos e aguardar a análise.</small>`}` : ""}<button class="action-button" data-offer="${player.id}" data-club="${club.id}">${listing?.type === "loan" ? "Contratar empréstimo" : terms.available ? "Negociar" : "Ver situação"}</button>` : `<strong class="fixed-price">Luvas: ${formatMoney(player.askingPrice)}</strong><button class="action-button buy" data-buy="${player.id}">Contratar</button>`}</td></tr>`).join("") : `<tr><td colspan="8" class="empty-state">${marketFilters.dealType === "free" || marketFilters.clubId === "market" ? "Nenhum jogador livre atende aos filtros neste momento. Novas oportunidades podem surgir com contratos não renovados." : "Nenhum atleta atende a todos os filtros. Amplie os intervalos ou clique em Limpar filtros."}</td></tr>`;
 }
 
 function openOffer(sellerId, playerId) {
@@ -528,8 +530,14 @@ function openOffer(sellerId, playerId) {
   const terms = getTransferTerms(game, sellerId, playerId);
   if (!terms || !player) return;
   const listing = getClubListing(game, sellerId, playerId);
-  offerTarget = { sellerId, playerId, listing };
-  if (listing) {
+  const negotiation = (game.outgoingOffers || []).find(offer => offer.sellerId === sellerId && offer.playerId === playerId);
+  offerTarget = { sellerId, playerId, listing: !negotiation && listing?.type === "loan" ? listing : null };
+  if (negotiation?.status === "pending") {
+    offerDialog.innerHTML = `<div class="offer-waiting"><p class="eyebrow">Proposta em análise · ${escapeHtml(club.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2><p>A diretoria ainda está avaliando sua oferta de <strong>${formatMoney(negotiation.amount)}</strong>${negotiation.exchangePlayerName ? ` mais ${escapeHtml(negotiation.exchangePlayerName)}` : ""}.</p><p class="view-note">A resposta está prevista após a rodada ${negotiation.responseWeek}. Você receberá a decisão no Correio.</p><div class="dialog-actions"><button type="button" id="close-offer" class="primary-button">Entendi</button></div></div>`;
+    offerDialog.showModal();
+    return;
+  }
+  if (listing?.type === "loan" && !negotiation) {
     offerDialog.innerHTML = `<form id="offer-form"><p class="eyebrow">${listing.type === "loan" ? "Empréstimo" : "Venda por preço fixo"} · ${escapeHtml(club.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
       <p>${player.position} · ${player.age} anos · Geral ${player.overall} · Potencial ${player.potential}</p>
       <p>${listing.reason}</p>
@@ -540,15 +548,19 @@ function openOffer(sellerId, playerId) {
     return;
   }
   const userClub = getUserClub(game);
-  const exchangeOptions = userClub.squad.filter(item => !item.loan).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}">${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
+  const requestedPlayerId = negotiation?.requestedExchangePlayerId || "";
+  const exchangeOptions = userClub.squad.filter(item => !item.loan).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}" ${item.id === requestedPlayerId ? "selected" : ""}>${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
+  const suggestedAmount = negotiation?.counterAmount ?? listing?.price ?? Math.min(player.value, Math.max(0, Math.floor(userClub.budget)));
   offerDialog.innerHTML = `<form id="offer-form">
-    <p class="eyebrow">Negociação com ${escapeHtml(club.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
+    <p class="eyebrow">${negotiation ? "Contraproposta recebida" : "Negociação"} · ${escapeHtml(club.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
     <p>${player.position} · ${player.age} anos · Geral ${player.overall} · ${terms.role}</p>
     <div class="offer-facts"><p>Valor de mercado<strong>${formatMoney(player.value)}</strong></p><p>Seu caixa<strong>${formatMoney(getUserClub(game).budget)}</strong></p><p>Salário por rodada<strong>${formatMoney(player.salary)}</strong></p></div>
+    ${listing?.type === "fixed" && !negotiation ? `<div class="offer-response"><strong>Preço anunciado:</strong> ${formatMoney(listing.price)}. Você pode pagar o pedido ou tentar negociar um pacote menor.</div>` : ""}
+    ${negotiation ? `<div class="offer-response"><strong>Pedido do ${escapeHtml(club.name)}:</strong> ${formatMoney(negotiation.counterAmount)}${negotiation.requestedExchangePlayerName ? ` mais ${escapeHtml(negotiation.requestedExchangePlayerName)}` : ""}. Você pode aceitar ou montar outro pacote.</div>` : ""}
     <ul class="offer-reasons">${terms.reasons.map(reason => `<li>${escapeHtml(reason)}</li>`).join("")}</ul>
-    ${terms.available ? `<div class="offer-composition"><label class="offer-label" for="offer-amount">Dinheiro oferecido (R$)<input id="offer-amount" name="amount" type="number" min="0" step="1000" max="${Math.floor(userClub.budget)}" value="${Math.min(player.value, Math.max(0, Math.floor(userClub.budget)))}"></label><label class="offer-label" for="offer-exchange-player">Jogador oferecido na troca<select id="offer-exchange-player" name="exchangePlayer"><option value="">Nenhum jogador</option>${exchangeOptions}</select></label></div><p class="view-note">O outro clube considera 75% do valor de mercado do atleta oferecido. Dinheiro e jogadores são transferidos juntos após a aceitação.</p>` : ""}
+    ${terms.available ? `<div class="offer-composition"><label class="offer-label" for="offer-amount">Dinheiro oferecido (R$)<input id="offer-amount" name="amount" type="number" min="0" step="1000" max="${Math.floor(userClub.budget)}" value="${Math.min(suggestedAmount, Math.max(0, Math.floor(userClub.budget)))}"></label><label class="offer-label" for="offer-exchange-player">Jogador oferecido na troca<select id="offer-exchange-player" name="exchangePlayer"><option value="">Nenhum jogador</option>${exchangeOptions}</select></label></div><p class="view-note">O outro clube considera 75% do valor de mercado do atleta oferecido. A nova proposta também será analisada durante uma ou duas rodadas.</p>` : ""}
     <div id="offer-response" role="status" aria-live="polite"></div>
-    <div class="dialog-actions"><button type="button" id="close-offer" class="secondary-button">Fechar</button>${terms.available ? `<button type="submit" class="primary-button">Enviar proposta</button>` : ""}</div></form>`;
+    <div class="dialog-actions"><button type="button" id="close-offer" class="secondary-button">Fechar</button>${terms.available ? `<button type="submit" class="primary-button">${negotiation ? "Enviar nova proposta" : "Enviar proposta"}</button>` : ""}</div></form>`;
   offerDialog.showModal();
 }
 
@@ -939,6 +951,20 @@ content.addEventListener("keydown", event => {
 });
 
 content.addEventListener("click", event => {
+  const outgoingOpen = event.target.closest("[data-outgoing-open]");
+  if (outgoingOpen) {
+    const negotiation = (game.outgoingOffers || []).find(offer => offer.id === outgoingOpen.dataset.outgoingOpen);
+    if (negotiation) openOffer(negotiation.sellerId, negotiation.playerId);
+    return;
+  }
+  const outgoingCancel = event.target.closest("[data-outgoing-cancel]");
+  if (outgoingCancel) {
+    const result = cancelOutgoingOffer(game, outgoingCancel.dataset.outgoingCancel);
+    if (result.ok) saveGame();
+    showToast(result.message, !result.ok);
+    render();
+    return;
+  }
   const clubDetails = event.target.closest("[data-club-details]");
   if (clubDetails) {
     selectedClubDetailId = clubDetails.dataset.clubDetails;
