@@ -35,6 +35,8 @@ button { cursor: pointer; }
 .nav { display: grid; gap: 7px; margin-top: 58px; }
 .nav-item { border: 0; color: #a7b4ac; background: transparent; text-align: left; padding: 13px 14px; border-radius: 7px; font-weight: 600; transition: .18s ease; }
 .nav-item span { display: inline-block; width: 27px; color: #74837a; font-size: 18px; }
+.nav-item .nav-icon { height: 20px; vertical-align: -5px; }
+.nav-icon svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
 .nav-item.active { color: var(--forest); background: var(--lime); box-shadow: 0 8px 24px rgba(216,255,67,.12); }
 .nav-item.active span { color: var(--forest); }
@@ -354,6 +356,8 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .nav { margin: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-item { padding: 7px 2px; text-align: center; font-size: 9px; }
   .nav-item span { display: block; width: auto; height: 22px; }
+  .nav-item .nav-icon { display: grid; place-items: center; }
+  .nav-icon svg { width: 19px; height: 19px; }
   .main { min-width: 0; }
   .topbar { height: 70px; padding: 0 15px; gap: 12px; }
   .mobile-brand { display: none; }
