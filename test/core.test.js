@@ -8,6 +8,7 @@ import {
   getSortedTable,
   getUserClub,
   normalizeMidfieldPositions,
+  seasonTeam,
   sellPlayer,
   startNextSeason,
   stadiumUpgradeCost,
@@ -31,6 +32,23 @@ test("creates a complete league and schedule", () => {
   assert.equal(game.schedule.length, 14);
   assert.equal(game.schedule[0].length, 4);
   assert.equal(getUserClub(game).squad.length, 16);
+});
+
+test("team of the season excludes one-match ratings and requires regular participation", () => {
+  const game = createGame(43);
+  for (const player of game.clubs.flatMap(club => club.squad)) {
+    player.appearances = 10;
+    player.ratedMatches = 10;
+    player.ratingTotal = 65;
+  }
+  const cameo = game.clubs[0].squad.find(player => player.position === "GOL");
+  cameo.appearances = 1;
+  cameo.ratedMatches = 1;
+  cameo.ratingTotal = 10;
+  const selected = seasonTeam(game);
+  assert.equal(selected.length, 11);
+  assert.ok(selected.every(player => player.appearances >= 6));
+  assert.ok(!selected.some(player => player.playerId === cameo.id));
 });
 
 test("all clubs start with a balanced eleven and only starters play or score", () => {

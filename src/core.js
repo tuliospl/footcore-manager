@@ -658,12 +658,18 @@ function applyPromotionAndRelegation(game) {
   return movements;
 }
 
-function seasonTeam(game, leagueId) {
-  const league = game.leagues?.find(item => item.id === leagueId) || { clubIds: game.clubs.map(club => club.id) };
+function seasonTeamMinimumAppearances(game, league) {
+  const rounds = league.schedule?.length ?? game.schedule.length;
+  return Math.max(3, Math.ceil(rounds * 0.4));
+}
+
+export function seasonTeam(game, leagueId) {
+  const league = game.leagues?.find(item => item.id === leagueId) || { clubIds: game.clubs.map(club => club.id), schedule: game.schedule };
+  const minimumAppearances = seasonTeamMinimumAppearances(game, league);
   const slots = ["GOL", "LAT", "ZAG", "ZAG", "LAT", "VOL", "MC", "MC", "ATA", "ATA", "ATA"];
   const entries = league.clubIds.flatMap(clubId => {
     const club = getClub(game, clubId);
-    return club.squad.map(player => ({
+    return club.squad.filter(player => Math.min(player.appearances ?? 0, player.ratedMatches ?? 0) >= minimumAppearances).map(player => ({
       player,
       club,
       average: player.ratedMatches ? player.ratingTotal / player.ratedMatches : 0
@@ -697,6 +703,7 @@ function buildSeasonReport(game) {
     standings,
     awards,
     teamOfSeason: seasonTeam(game, leagueId),
+    teamOfSeasonMinimumAppearances: seasonTeamMinimumAppearances(game, league || { schedule: game.schedule }),
     promoted,
     relegated,
     club: {
