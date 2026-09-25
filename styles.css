@@ -87,6 +87,9 @@ button { cursor: pointer; }
 .match-card .card-header span { color: #a2b2a8; }
 .matchup { display: grid; grid-template-columns: 1fr 130px 1fr; align-items: center; text-align: center; min-height: 215px; padding: 20px; position: relative; }
 .team-badge { margin: 0 auto 12px; display: grid; place-items: center; width: 68px; height: 76px; clip-path: polygon(50% 0, 94% 18%, 86% 76%, 50% 100%, 14% 76%, 6% 18%); font: 800 20px "Barlow Condensed"; }
+.match-team-badge { display: block; width: max-content; margin: 0 auto 12px; padding: 0; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+.match-team-badge .team-badge { margin: 0; transition: transform .18s ease, filter .18s ease; }
+.match-team-badge:hover .team-badge, .match-team-badge:focus-visible .team-badge { transform: translateY(-3px) scale(1.05); filter: drop-shadow(0 7px 8px #0007) brightness(1.12); }
 .team h4 { margin: 0; font: 700 19px "Barlow Condensed"; text-transform: uppercase; }
 .versus { display: grid; justify-items: center; gap: 5px; }
 .versus strong { display: block; color: var(--lime); font: 800 36px/1 "Barlow Condensed"; }
@@ -188,6 +191,17 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .player-history-table th, .player-history-table td { text-align: center; white-space: nowrap; }
 .player-history-table th:nth-child(-n+2), .player-history-table td:nth-child(-n+2) { text-align: left; }
 .player-history-table td small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; }
+.club-profile-hero { position: relative; display: grid; grid-template-columns: 105px minmax(0, 1fr) auto; align-items: center; gap: 22px; min-height: 150px; margin-bottom: 18px; padding: 24px 28px; overflow: hidden; background: linear-gradient(120deg, color-mix(in srgb, var(--club-primary) 55%, #0b2118), #10251a 72%); color: var(--club-secondary); }
+.club-profile-hero::after { content: ""; position: absolute; right: -40px; width: 210px; height: 210px; border: 35px solid color-mix(in srgb, var(--club-secondary) 18%, transparent); border-radius: 50%; }
+.club-profile-badge { position: relative; z-index: 1; display: grid; place-items: center; width: 90px; height: 100px; clip-path: polygon(50% 0, 94% 18%, 86% 76%, 50% 100%, 14% 76%, 6% 18%); font: 800 22px "Barlow Condensed"; }
+.club-profile-hero h3 { margin: 3px 0 5px; color: #fff; font: 800 34px/1 "Barlow Condensed"; text-transform: uppercase; }
+.club-profile-hero p { margin: 0; color: #d4dfd7; }
+.club-profile-hero .eyebrow { color: color-mix(in srgb, var(--club-secondary) 78%, #fff); }
+.club-profile-summary { position: relative; z-index: 1; min-width: 105px; text-align: center; }
+.club-profile-summary small { display: block; color: #d4dfd7; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.club-profile-summary strong { display: block; margin-top: 5px; color: #fff; font: 800 42px/1 "Barlow Condensed"; }
+.club-squad-table td:not(:first-child) { white-space: nowrap; }
+.club-squad-table td small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; }
 
 .stadium-hero { display: grid; grid-template-columns: 1.15fr .85fr; min-height: 310px; }
 .stadium-visual { background: #163a2a; position: relative; overflow: hidden; display: grid; place-items: center; min-height: 310px; }
@@ -758,6 +772,11 @@ button:focus-visible { outline: 3px solid #5b99d4; outline-offset: 3px; }
   .player-profile-name h3 { font-size: 24px; }
   .player-profile-actions { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
   .player-detail-grid { grid-template-columns: 1fr; }
+  .club-profile-hero { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; padding: 18px; }
+  .club-profile-badge { width: 68px; height: 76px; }
+  .club-profile-hero h3 { font-size: 27px; }
+  .club-profile-summary { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; text-align: left; }
+  .club-profile-summary strong { margin: 0; font-size: 28px; }
 }
 
 @media (max-width: 430px) {

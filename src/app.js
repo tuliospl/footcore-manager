@@ -80,6 +80,8 @@ const marketFilters = defaultMarketFilters();
 let offerTarget = null;
 let selectedPlayerDetailId = null;
 let playerDetailReturnView = "squad";
+let selectedClubDetailId = null;
+let clubDetailReturnView = "dashboard";
 const squadSort = { key: "overall", direction: "desc" };
 const academySort = { key: "potential", direction: "desc" };
 const academyColumns = [
@@ -228,12 +230,13 @@ function renderMatchCard() {
   }
   const home = getClub(game, fixture.homeId);
   const away = getClub(game, fixture.awayId);
+  const team = club => `<div class="team">${club.id === game.userClubId ? badge(club, "team-badge") : `<button type="button" class="match-team-badge" data-club-details="${club.id}" aria-label="Ver elenco do ${escapeHtml(club.name)}">${badge(club, "team-badge")}</button>`}<h4>${escapeHtml(club.name)}</h4></div>`;
   return `<section class="card match-card">
     <div class="card-header"><h3>Próximo jogo</h3><span>Rodada ${game.week + 1} · ${escapeHtml(home.stadium.name)}</span></div>
     <div class="matchup">
-      <div class="team">${badge(home, "team-badge")}<h4>${escapeHtml(home.name)}</h4></div>
+      ${team(home)}
       <div class="versus"><span>Campeonato</span><strong>VS</strong><time>Domingo · 16h</time></div>
-      <div class="team">${badge(away, "team-badge")}<h4>${escapeHtml(away.name)}</h4></div>
+      ${team(away)}
     </div>
   </section>`;
 }
@@ -370,6 +373,34 @@ function renderSquad() {
     </tbody></table></section>${ownedLoans.length ? `<section class="card data-card"><div class="card-header"><h3>Emprestados pelo clube</h3><span>Retorno ao fim da temporada</span></div><table class="data-table"><thead><tr><th>Atleta</th><th>Pos.</th><th>Clube atual</th><th>Geral</th><th>Jogos no empréstimo</th><th>Evolução</th></tr></thead><tbody>${ownedLoans.map(({player, borrower}) => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="squad" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><div class="player-with-shirt">${teamShirtMarkup(borrower, player.position)}<strong>${escapeHtml(player.name)}</strong></div></td><td><span class="position-pill">${player.position}</span></td><td>${escapeHtml(borrower.name)}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${Math.max(0, (player.appearances ?? 0) - (player.loan.startAppearances ?? 0))}</td><td>${developmentLabel(player, game.season)}</td></tr>`).join("")}</tbody></table></section>` : ""}`;
 }
 
+function renderClubDetails() {
+  const club = getClub(game, selectedClubDetailId);
+  if (!club) { activeView = clubDetailReturnView; render(); return; }
+  const userClub = getUserClub(game);
+  const ownClub = club.id === userClub.id;
+  const league = game.leagues?.find(item => item.clubIds.includes(club.id));
+  const starters = new Set(getLineup(club).map(player => player.id));
+  const squad = [...club.squad].sort((first, second) => second.overall - first.overall || first.name.localeCompare(second.name, "pt-BR"));
+  const action = player => {
+    if (ownClub) return `<span class="view-note">Seu atleta</span>`;
+    if (player.loan) return `<span class="view-note">Emprestado</span>`;
+    const listing = getClubListing(game, club.id, player.id);
+    const terms = getTransferTerms(game, club.id, player.id);
+    return `<button class="action-button" data-offer="${player.id}" data-club="${club.id}">${listing ? listing.type === "loan" ? "Pedir empréstimo" : "Comprar" : terms?.available ? "Fazer proposta" : "Ver situação"}</button>`;
+  };
+  content.innerHTML = `${pageHeading("Observação do adversário", club.name, `${squad.length} atletas`)}
+    <button class="secondary-button player-back-button" data-club-back>← Voltar</button>
+    <section class="card club-profile-hero" style="--club-primary:${club.colors[0]};--club-secondary:${club.colors[1]}">
+      ${badge(club, "club-profile-badge")}
+      <div><p class="eyebrow">${escapeHtml(league?.name || club.country || "Clube")}</p><h3>${escapeHtml(club.name)}</h3><p>${escapeHtml(club.stadium.name)} · ${escapeHtml(club.coach || "Comissão técnica")}</p></div>
+      <div class="club-profile-summary"><small>Nível médio</small><strong>${Math.round(squad.reduce((total, player) => total + player.overall, 0) / Math.max(1, squad.length))}</strong></div>
+    </section>
+    <p class="view-note">Clique em qualquer jogador para abrir a ficha completa com jogos, gols, assistências, cartões e nota média. Pela ficha ou pelo botão da tabela você pode iniciar uma negociação.</p>
+    <section class="card data-card"><table class="data-table club-squad-table"><thead><tr><th>Atleta</th><th>Pos.</th><th>Idade</th><th>Geral</th><th>Jogos</th><th>Gols</th><th>Assist.</th><th>Nota média</th><th>Valor</th><th></th></tr></thead><tbody>
+      ${squad.map(player => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="club" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><div class="player-with-shirt">${teamShirtMarkup(club, player.position)}<div><strong>${escapeHtml(player.name)}</strong><small>${starters.has(player.id) ? "Titular" : "Reserva"}${player.loan ? " · Emprestado" : ""}</small><small class="discipline-status">${playerDisciplineStatus(player)}</small></div></div></td><td><span class="position-pill">${player.position}</span></td><td>${player.age}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${player.appearances ?? 0}</td><td>${player.goals ?? 0}</td><td>${player.assists ?? 0}</td><td><strong>${formatRating(averageRating(player))}</strong><small>${player.ratedMatches || 0} avaliados</small></td><td>${formatMoney(player.value)}</td><td>${action(player)}</td></tr>`).join("")}
+    </tbody></table></section>`;
+}
+
 function renderPlayerDetails() {
   const context = findPlayerContext(selectedPlayerDetailId);
   if (!context) { activeView = playerDetailReturnView; render(); return; }
@@ -405,8 +436,10 @@ function renderPlayerDetails() {
   const seasonHistory = [...(player.seasonHistory || [])].reverse();
   const individualAwards = [...(player.awards || [])].reverse();
   const seasonHistoryRows = seasonHistory.map(entry => `<tr><td><strong>${escapeHtml(entry.label || `Temporada ${entry.season}`)}</strong></td><td>${escapeHtml(entry.clubName || "—")}</td><td>${entry.appearances ?? 0}</td><td>${entry.goals ?? 0}</td><td>${entry.assists ?? 0}</td><td>${entry.yellowCards ?? 0}</td><td>${entry.redCards ?? 0}</td><td><strong>${formatRating(entry.ratedMatches > 0 ? entry.ratingTotal / entry.ratedMatches : null)}</strong><small>${entry.ratedMatches ?? 0} ${entry.ratedMatches === 1 ? "jogo avaliado" : "jogos avaliados"}</small></td></tr>`).join("");
-  content.innerHTML = `${pageHeading(playerDetailReturnView === "market" ? "Mercado · Observação" : "Gestão esportiva · Elenco", "Detalhes do atleta", club ? escapeHtml(club.name) : "Sem clube")}
-    <button class="secondary-button player-back-button" data-player-back>← Voltar ${playerDetailReturnView === "market" ? "ao mercado" : "ao elenco"}</button>
+  const detailKicker = playerDetailReturnView === "market" ? "Mercado · Observação" : playerDetailReturnView === "club" ? `Observação · ${escapeHtml(club?.name || "Clube")}` : "Gestão esportiva · Elenco";
+  const detailBackLabel = playerDetailReturnView === "market" ? "ao mercado" : playerDetailReturnView === "club" ? `ao elenco do ${escapeHtml(club?.name || "clube")}` : "ao elenco";
+  content.innerHTML = `${pageHeading(detailKicker, "Detalhes do atleta", club ? escapeHtml(club.name) : "Sem clube")}
+    <button class="secondary-button player-back-button" data-player-back>← Voltar ${detailBackLabel}</button>
     <section class="card player-profile-hero">
       <div class="player-profile-overall"><small>Geral</small><strong>${player.overall}</strong></div>
       <div class="player-profile-name"><div class="player-profile-title">${teamShirtMarkup(club, player.position)}<div><span class="position-pill">${player.position}</span><h3>${escapeHtml(player.name)}</h3></div></div><p>${player.age} anos · ${escapeHtml(playerAvailabilityStatus(player, regularStatus))} · Moral ${player.morale}</p><p class="discipline-status">${playerDisciplineStatus(player)}</p>${sourceDetails.length ? `<p>${sourceDetails.join(" · ")}</p>` : ""}</div>
@@ -744,7 +777,7 @@ function render() {
   if (startupError) { content.innerHTML = `<section class="card card-body" role="alert"><h2>Não foi possível carregar a carreira</h2><p>${escapeHtml(startupError)}</p><p>Recarregue a página para tentar novamente. O salvamento existente não foi substituído.</p></section>`; return; }
   if (activeView === 'setup') { careerSetup.render(); if (!careerSetup.database && !careerSetup.loading && !careerSetup.error) careerSetup.load(); return; }
   document.querySelectorAll(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === (activeView === "player" ? playerDetailReturnView : activeView)));
-  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, stadium: renderStadium }[activeView] || renderDashboard)();
+  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, club: renderClubDetails, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, stadium: renderStadium }[activeView] || renderDashboard)();
   syncPenaltyDialog();
 }
 
@@ -892,7 +925,7 @@ content.addEventListener("lostpointercapture", clearMatchDrag);
 
 function openPlayerDetails(target) {
   selectedPlayerDetailId = target.dataset.playerDetails;
-  playerDetailReturnView = target.dataset.playerReturn === "market" ? "market" : "squad";
+  playerDetailReturnView = ["market", "club", "competition"].includes(target.dataset.playerReturn) ? target.dataset.playerReturn : "squad";
   activeView = "player";
   render();
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -906,6 +939,21 @@ content.addEventListener("keydown", event => {
 });
 
 content.addEventListener("click", event => {
+  const clubDetails = event.target.closest("[data-club-details]");
+  if (clubDetails) {
+    selectedClubDetailId = clubDetails.dataset.clubDetails;
+    clubDetailReturnView = activeView;
+    activeView = "club";
+    render();
+    window.scrollTo({ top: 0, behavior: "instant" });
+    return;
+  }
+  if (event.target.closest("[data-club-back]")) {
+    activeView = clubDetailReturnView;
+    selectedClubDetailId = null;
+    render();
+    return;
+  }
   const seasonTab = event.target.closest("[data-season-tab]");
   if (seasonTab) { seasonReportTab = seasonTab.dataset.seasonTab; renderSeasonReport(); return; }
   if (event.target.closest("[data-start-next-season]")) {
