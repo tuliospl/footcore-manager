@@ -84,7 +84,7 @@ Clique em um placar para abrir o jogo. O seu abre a prancheta e pausa a rodada p
 
 As notas são estimativas de 1 a 10: começam em 6,0 e consideram gols, assistências, finalizações, cartões, pênaltis perdidos, defesas comuns, defesas de pênalti e gols sofridos durante a participação. Cobranças para fora não contam como defesa. Defensores recebem maior impacto pelos gols sofridos e bônus por pelo menos 60 minutos sem sofrer gols. Atletas que não entraram ficam sem nota. A avaliação de um substituído ou expulso deixa de variar depois da saída.
 
-Ao concluir a rodada, as notas de todos os clubes são registradas uma única vez. Em **Elenco**, **Nota média** mostra a média da temporada e a quantidade de jogos avaliados; clique no cabeçalho para ordenar. Partidas antigas sem avaliação não entram na média. As médias reiniciam na nova temporada. Os placares da **Última rodada** são clicáveis e conservam escalações, minutos e notas finais para consulta.
+Ao concluir a rodada, as notas de todos os clubes são registradas uma única vez. A ficha individual do atleta reúne forma, jogos, gols, assistências, cartões e nota média da temporada. Partidas antigas sem avaliação não entram na média. As médias reiniciam na nova temporada. Os placares da **Última rodada** são clicáveis e conservam escalações, minutos e notas finais para consulta.
 
 ## Mundo e divisões
 
