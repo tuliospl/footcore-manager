@@ -141,10 +141,12 @@ test('league prizes follow squad quality and grow as the competition improves',(
   const before=leagueSeasonRules(game,lower.id).championPrize;
   for(const clubId of lower.clubIds){
     const squad=game.clubs.find(club=>club.id===clubId).squad;
-    for(const player of squad) player.overall=Math.min(99,player.overall+8);
+    for(const player of squad){player.overall=95;player.value=200_000_000;}
   }
-  assert.ok(leagueSeasonRules(game,lower.id).championPrize>before);
-  assert.ok(leagueSeasonRules(game,lower.id).championPrize<=350_000_000);
+  const evolvedPrize=leagueSeasonRules(game,lower.id).championPrize;
+  assert.ok(evolvedPrize>before);
+  assert.ok(evolvedPrize>premierRules.championPrize);
+  assert.ok(evolvedPrize>350_000_000);
 });
 
 test('Brazilian national divisions promote and relegate four clubs',()=>{

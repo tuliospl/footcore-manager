@@ -261,27 +261,36 @@ export function leagueMovementPlaces(upperLeague, lowerLeague) {
   return size >= 16 ? 3 : size >= 10 ? 2 : 1;
 }
 
-function leagueSquadQuality(game, league) {
+function leaguePrizeProfile(game, league) {
   if (!game || !league?.clubIds?.length) return null;
-  const clubRatings = league.clubIds.map(clubId => {
+  const clubProfiles = league.clubIds.map(clubId => {
     const squad = getClub(game, clubId)?.squad || [];
     const strongest = squad.map(player => player.overall).filter(Number.isFinite).sort((first, second) => second - first).slice(0, 18);
-    return strongest.length ? strongest.reduce((total, overall) => total + overall, 0) / strongest.length : null;
-  }).filter(Number.isFinite);
-  return clubRatings.length ? clubRatings.reduce((total, rating) => total + rating, 0) / clubRatings.length : null;
+    if (!strongest.length) return null;
+    const selected = squad.slice().sort((first, second) => second.overall - first.overall).slice(0, 18);
+    return {
+      qualityRating: strongest.reduce((total, overall) => total + overall, 0) / strongest.length,
+      averagePlayerValue: selected.reduce((total, player) => total + (Number(player.value) || 0), 0) / selected.length
+    };
+  }).filter(Boolean);
+  if (!clubProfiles.length) return null;
+  return {
+    qualityRating: clubProfiles.reduce((total, profile) => total + profile.qualityRating, 0) / clubProfiles.length,
+    averagePlayerValue: clubProfiles.reduce((total, profile) => total + profile.averagePlayerValue, 0) / clubProfiles.length
+  };
 }
 
-export function leaguePrizeMoney(league, position, game = null) {
+export function leaguePrizeMoney(league, position, game = null, suppliedProfile = null) {
   const clubs = league?.clubIds?.length ?? 0;
   if (clubs < 2 || position < 1 || position > clubs) return 0;
   const tierPools = [0, 30_000_000, 12_000_000, 5_000_000, 2_500_000, 1_200_000];
-  const quality = leagueSquadQuality(game, league);
-  const sizeFactor = clamp(clubs / 20, 0.5, 1.1);
-  const qualityIndex = quality === null ? null : clamp((quality - 50) / 30, 0, 1.15);
-  const dynamicPrize = qualityIndex === null ? null : (1_000_000 + 249_000_000 * qualityIndex ** 3) * sizeFactor;
+  const profile = suppliedProfile || leaguePrizeProfile(game, league);
+  const sizeFactor = Math.sqrt(clubs / 20);
+  const reinforcementPlayers = profile ? Math.max(3, 4 + (profile.qualityRating - 50) / 10) : null;
+  const dynamicPrize = profile ? profile.averagePlayerValue * reinforcementPlayers * sizeFactor : null;
   const championPrize = dynamicPrize === null
     ? (tierPools[Math.min(5, Math.max(1, Number(league.tier) || 1))] || tierPools[5]) * clamp(clubs / 20, 0.4, 1.2)
-    : clamp(dynamicPrize, 500_000, 350_000_000);
+    : dynamicPrize;
   const positionFactor = clubs === 1 ? 1 : 1 - ((position - 1) / (clubs - 1)) * 0.75;
   return Math.round(championPrize * positionFactor / 1000) * 1000;
 }
@@ -317,12 +326,14 @@ export function leagueSeasonRules(game, leagueId) {
   if (!league) return { promotionPlaces: 0, relegationPlaces: 0, championPrize: 0, lastPrize: 0 };
   const upper = game.leagues.find(item => item.country === league.country && Number(item.tier) === Number(league.tier) - 1 && item.clubIds.length > 1);
   const lower = game.leagues.find(item => item.country === league.country && Number(item.tier) === Number(league.tier) + 1 && item.clubIds.length > 1);
+  const prizeProfile = leaguePrizeProfile(game, league);
   return {
     promotionPlaces: upper ? leagueMovementPlaces(upper, league) : 0,
     relegationPlaces: lower ? leagueMovementPlaces(league, lower) : 0,
-    qualityRating: leagueSquadQuality(game, league),
-    championPrize: leaguePrizeMoney(league, 1, game),
-    lastPrize: leaguePrizeMoney(league, league.clubIds.length, game)
+    qualityRating: prizeProfile?.qualityRating ?? null,
+    averagePlayerValue: prizeProfile?.averagePlayerValue ?? null,
+    championPrize: leaguePrizeMoney(league, 1, game, prizeProfile),
+    lastPrize: leaguePrizeMoney(league, league.clubIds.length, game, prizeProfile)
   };
 }
 
@@ -603,8 +614,9 @@ function awardSeasonPrizes(game) {
   for (const league of leagues) {
     if (league.clubIds.length < 2) continue;
     const ranking = getSortedTable(game, game.leagues ? league.id : undefined);
+    const prizeProfile = leaguePrizeProfile(game, league);
     ranking.forEach((row, index) => {
-      const prize = leaguePrizeMoney(league, index + 1, game);
+      const prize = leaguePrizeMoney(league, index + 1, game, prizeProfile);
       const club = getClub(game, row.clubId);
       queuePrizePayment(game, club.id, "premiacaoLiga", prize, `${index + 1}º lugar em ${league.name}`);
       awards.set(club.id, { prize, position: index + 1, leagueId: league.id, leagueName: league.name });
