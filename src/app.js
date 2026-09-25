@@ -191,7 +191,10 @@ function pageHeading(kicker, title, side = "") {
 }
 
 function clubMail() {
-  return game.news.filter(message => !String(message.id).startsWith("free-signing-"));
+  return game.news.filter(message => {
+    const id = String(message.id);
+    return !id.startsWith("free-signing-") && !id.startsWith("round-");
+  });
 }
 
 function renderHeader() {
