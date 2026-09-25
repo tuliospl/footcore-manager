@@ -3,6 +3,7 @@ import { getClub } from "./core.js";
 import { FORMATIONS, formationPositions } from "./tactics.js";
 import { formatRating, playerMatchStats } from "./ratings.js";
 import { matchPlayerRating } from "./match.js";
+import { teamShirtMarkup } from "./team-shirt.js";
 
 export function renderMatchEvents(game, events) {
   return `<ol class="match-events">${events.filter(event => !event.hidden).reverse().map(event => `<li class="event-${event.type || "goal"}"><time>${event.minute}′</time><div><strong>${escapeHtml(event.clubId ? getClub(game, event.clubId).shortName : "Arbitragem")}</strong><p>${escapeHtml(event.message || `Gol de ${event.scorer}${event.assister ? `, passe de ${event.assister}` : ""}.`)}</p></div></li>`).join("")}</ol>`;
@@ -25,11 +26,11 @@ export function renderTacticsBoard(game, selectedPlayer = null) {
   const goalVacant = !team.slots[0] || !team.onField.includes(team.slots[0]);
   const playerChip = (id, index) => {
     const player = players.find(item => item.id === id);
-    if (!player) return `<button class="pitch-player empty-slot" data-match-slot="${index}" ${editable ? "" : "disabled"} aria-label="Posição ${positions[index]} vazia"><span class="pitch-shirt">${positions[index]}</span><strong>Vaga</strong><small>Equipe com ${team.onField.length}</small></button>`;
+    if (!player) return `<button class="pitch-player empty-slot" data-match-slot="${index}" ${editable ? "" : "disabled"} aria-label="Posição ${positions[index]} vazia">${teamShirtMarkup(club, positions[index])}<strong>Vaga</strong><small>Equipe com ${team.onField.length}</small></button>`;
     const rating = matchPlayerRating(game, club.id, player);
     const isTaker = team.takerId === id;
     return `<button class="pitch-player ${rating.outOfPosition ? "out-of-position" : ""} ${selectedPlayer === id ? "player-selected" : ""}" data-match-player="${id}" data-match-slot="${index}" draggable="${editable}" ${canSelect ? "" : "disabled"} aria-pressed="${selectedPlayer === id}" aria-label="${escapeHtml(player.name)}, ${player.position} em ${positions[index]}, geral ${rating.overall}${rating.outOfPosition ? ", fora de posição" : ""}">
-      <span class="pitch-shirt">${positions[index]}</span><strong>${escapeHtml(player.name)}</strong>
+      ${teamShirtMarkup(club, positions[index])}<strong>${escapeHtml(player.name)}</strong>
       <small>${rating.outOfPosition ? `${player.position} → ${positions[index]} · Fora de posição` : player.position}</small>
       <span class="effective-rating">${rating.outOfPosition ? `<s>${player.overall}</s> → ` : ""}GER ${rating.overall}${rating.loss ? ` (−${rating.loss})` : ""}</span>
       <span class="match-rating">Nota ${formatRating(playerMatchStats(match, club.id, player).rating)}</span><small>${Math.round(team.energy[id])}% energia${team.yellows[id] ? " · 🟨" : ""}${isTaker ? " · ⚽ Pênaltis" : ""}</small></button>`;
@@ -42,7 +43,7 @@ export function renderTacticsBoard(game, selectedPlayer = null) {
   const benchChip = id => {
     const player = club.squad.find(item => item.id === id);
     const available = editable && (match.phase === "ready" || team.substitutions < 5);
-    return `<button class="bench-player ${selectedPlayer === id ? "player-selected" : ""}" data-match-player="${id}" draggable="${available}" ${available ? "" : "disabled"} aria-pressed="${selectedPlayer === id}" aria-label="Reserva ${escapeHtml(player.name)}, ${player.position}, geral ${player.overall}"><span class="position-pill">${player.position}</span><strong>${escapeHtml(player.name)}</strong><small>GER ${player.overall} · ${Math.round(team.energy[id])}% energia</small></button>`;
+    return `<button class="bench-player ${selectedPlayer === id ? "player-selected" : ""}" data-match-player="${id}" draggable="${available}" ${available ? "" : "disabled"} aria-pressed="${selectedPlayer === id}" aria-label="Reserva ${escapeHtml(player.name)}, ${player.position}, geral ${player.overall}">${teamShirtMarkup(club, player.position)}<strong>${escapeHtml(player.name)}</strong><small>GER ${player.overall} · ${Math.round(team.energy[id])}% energia</small></button>`;
   };
   return `<div class="live-grid tactics-layout"><div class="stack">
       <section class="card"><div class="card-header"><h3>Prancheta tática</h3><span>${team.formation} · ${team.onField.length} atletas</span></div>
