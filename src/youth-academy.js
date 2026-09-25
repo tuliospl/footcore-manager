@@ -218,7 +218,7 @@ function finishMission(game, scout) {
     title: prospects.length ? `${scout.name} encontrou ${prospects.length} talento${prospects.length === 1 ? "" : "s"}` : "A base está lotada",
     body: prospects.length ? `A observação em ${region.name} foi concluída. Analise os jovens na Categoria de base. O contrato temporário do olheiro foi encerrado.` : "Libere ou promova atletas antes de receber novos relatórios. O contrato temporário do olheiro foi encerrado."
   });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
 }
 
 export function advanceYouthAcademy(game) {
@@ -293,6 +293,6 @@ export function ageYouthAcademy(game) {
   academy.prospects = academy.prospects.filter(player => player.age <= 20);
   if (released.length) {
     game.news.unshift({ id: `academy-release-${game.season}`, type: "info", title: `${released.length} atleta${released.length === 1 ? " deixou" : "s deixaram"} a base`, body: "Jogadores acima da idade da categoria foram liberados ao fim da temporada." });
-    game.news = game.news.slice(0, 8);
+    game.news = game.news.slice(0, 200);
   }
 }

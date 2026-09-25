@@ -65,6 +65,45 @@ test("counteroffers preserve finances; accepted bid transfers ownership and the 
   assert.equal(advanceWeek(game).ok, true);
 });
 
+test("a purchase can combine cash and a player without duplicating either athlete", () => {
+  const { game, buyer, seller } = fixture();
+  const target = seller.squad[9];
+  const exchange = buyer.squad.find(player => player.position !== "GOL");
+  exchange.value = 2_000_000;
+  const terms = getTransferTerms(game, seller.id, target.id);
+  const credit = Math.floor(exchange.value * 0.75 / 1000) * 1000;
+  const cash = Math.max(0, terms.askingPrice - credit);
+  const buyerBudget = buyer.budget;
+  const sellerBudget = seller.budget;
+  const result = makeTransferOffer(game, seller.id, target.id, cash, exchange.id);
+  assert.equal(result.ok, true);
+  assert.equal(result.exchangeCredit, credit);
+  assert.equal(buyer.budget, buyerBudget - cash);
+  assert.equal(seller.budget, sellerBudget + cash);
+  assert.ok(buyer.squad.includes(target));
+  assert.ok(!buyer.squad.includes(exchange));
+  assert.ok(seller.squad.includes(exchange));
+  assert.equal(game.clubs.flatMap(club => club.squad).filter(player => player.id === target.id).length, 1);
+  assert.equal(game.clubs.flatMap(club => club.squad).filter(player => player.id === exchange.id).length, 1);
+});
+
+test("an exchange receives a cash counteroffer and cannot leave the buyer without a goalkeeper", () => {
+  const { game, buyer, seller } = fixture();
+  const target = seller.squad[9];
+  const exchange = buyer.squad.find(player => player.position !== "GOL");
+  exchange.value = 1_000_000;
+  const terms = getTransferTerms(game, seller.id, target.id);
+  const cash = Math.max(0, Math.ceil(terms.askingPrice * 0.8) - 750_000);
+  const result = makeTransferOffer(game, seller.id, target.id, cash, exchange.id);
+  assert.equal(result.status, "counter");
+  assert.equal(result.counterOffer, terms.askingPrice - 750_000);
+  const keepers = buyer.squad.filter(player => player.position === "GOL");
+  buyer.squad = buyer.squad.filter(player => player.position !== "GOL" || player.id === keepers[0].id);
+  const before = JSON.stringify(game.clubs);
+  assert.equal(makeTransferOffer(game, seller.id, target.id, terms.askingPrice, keepers[0].id).status, "invalid");
+  assert.equal(JSON.stringify(game.clubs), before);
+});
+
 test("unavailable players remain protected even against extraordinary offers", () => {
   for (const reason of ["short-squad", "only-keeper"]) {
     const { game, seller } = fixture();

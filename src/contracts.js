@@ -88,7 +88,7 @@ export function recruitFreeAgents(game) {
     delete player.askingPrice;delete player.freeAgentOrigin;delete player.previousClub;delete player.previousClubId;delete player.freeSinceSeason;delete player.freeSinceWeek;
     game.freeAgentDeals=[{season:game.season,week:game.week,clubId:club.id,clubName:club.name,playerId:player.id,playerName:player.name,fee},...(game.freeAgentDeals||[])].slice(0,30);
     game.news.unshift({id:`free-signing-${game.season}-${game.week}-${player.id}`,type:'info',title:`${player.name} acertou com ${club.name}`,body:'O atleta deixou o mercado de jogadores livres e assinou um novo contrato.'});
-    game.news=game.news.slice(0,8);signed++;
+    game.news=game.news.slice(0,200);signed++;
   }
 }
 import { recordSeasonFinance } from "./season-tracking.js";

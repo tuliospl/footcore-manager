@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   acceptIncomingOffer,
+  counterIncomingOffer,
   advanceWeek,
   createGame,
   getUserClub,
@@ -50,6 +51,36 @@ test("a club paying the release clause completes the transfer automatically", ()
   assert.equal(seller.budget, sellerBudget + 4_000_000);
   assert.ok(buyer.squad.includes(player));
   assert.equal(game.transferDeals[0].status, "clause");
+});
+
+test("the manager can counter an incoming offer with more cash and an exchange player", () => {
+  const { game, seller, buyer, player } = offerSetup(1405);
+  player.releaseClause = null;
+  const exchange = buyer.squad.find(item => item.position !== "GOL");
+  exchange.value = 500_000;
+  const proposal = registerIncomingOffer(game, buyer.id, player.id, 3_000_000);
+  const sellerBudget = seller.budget;
+  const buyerBudget = buyer.budget;
+  const result = counterIncomingOffer(game, proposal.offer.id, 3_200_000, exchange.id);
+  assert.equal(result.ok, true);
+  assert.equal(seller.budget, sellerBudget + 3_200_000);
+  assert.equal(buyer.budget, buyerBudget - 3_200_000);
+  assert.ok(buyer.squad.includes(player));
+  assert.ok(seller.squad.includes(exchange));
+  assert.equal(game.incomingOffers.length, 0);
+  assert.equal(game.receivedOfferHistory[0].status, "counter-accepted");
+});
+
+test("an excessive incoming counteroffer is limited without removing the original proposal", () => {
+  const { game, buyer, player } = offerSetup(1406);
+  player.releaseClause = null;
+  const proposal = registerIncomingOffer(game, buyer.id, player.id, 2_000_000);
+  const clubs = JSON.stringify(game.clubs);
+  const result = counterIncomingOffer(game, proposal.offer.id, 20_000_000);
+  assert.equal(result.status, "counter");
+  assert.ok(result.counterOffer < 20_000_000);
+  assert.equal(game.incomingOffers.length, 1);
+  assert.equal(JSON.stringify(game.clubs), clubs);
 });
 
 test("AI clubs buy and sell players independently as rounds advance", () => {

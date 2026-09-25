@@ -522,7 +522,7 @@ function buildRoundNews(game, results) {
   const result = results.find(item => item.homeId === userClub.id || item.awayId === userClub.id);
   if (!result) {
     game.news.unshift({ id: `bye-${game.season}-${game.week}`, type: "info", title: "Rodada de folga", body: "Seu clube não jogou nesta rodada. Os demais resultados já foram atualizados." });
-    game.news = game.news.slice(0, 8);
+    game.news = game.news.slice(0, 200);
     return;
   }
   const home = getClub(game, result.homeId);
@@ -536,7 +536,7 @@ function buildRoundNews(game, results) {
     title: `${home.shortName} ${result.homeGoals} x ${result.awayGoals} ${away.shortName}`,
     body: userGoals > opponentGoals ? "Vitória importante aumenta a confiança do elenco e da torcida." : userGoals < opponentGoals ? "O resultado pressiona o trabalho para a próxima rodada." : "Um ponto conquistado em uma partida equilibrada."
   });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
 }
 
 function archivePlayerSeason(player, season, label, clubName) {
@@ -968,8 +968,8 @@ function squadSlots(game, clubId) {
   return getClub(game, clubId).squad.length + game.clubs.flatMap(club => club.squad).filter(player => player.loan?.ownerClubId === clubId && player.loan.borrowerClubId !== clubId).length;
 }
 
-function recordDeal(game, seller, player, amount, result) {
-  game.negotiations = [{ season: game.season, week: game.week, sellerId: seller.id, playerId: player.id, playerName: player.name, clubName: seller.name, amount, status: result.status, counterOffer: result.counterOffer ?? null, message: result.message }, ...(game.negotiations || [])].slice(0, 20);
+function recordDeal(game, seller, player, amount, result, exchangePlayer = null) {
+  game.negotiations = [{ season: game.season, week: game.week, sellerId: seller.id, playerId: player.id, playerName: player.name, clubName: seller.name, amount, exchangePlayerId: exchangePlayer?.id ?? null, exchangePlayerName: exchangePlayer?.name ?? null, exchangeCredit: result.exchangeCredit ?? 0, status: result.status, counterOffer: result.counterOffer ?? null, message: result.message }, ...(game.negotiations || [])].slice(0, 20);
 }
 
 function canTransferOut(club, player) {
@@ -977,18 +977,46 @@ function canTransferOut(club, player) {
   return player.position !== "GOL" || club.squad.filter(item => item.position === "GOL" && !item.loan).length > 1;
 }
 
-function completeClubTransfer(game, seller, buyer, player, amount) {
-  if (!canTransferOut(seller, player) || buyer.budget < amount || squadSlots(game, buyer.id) >= (game.leagues ? 40 : 24)) return false;
-  seller.budget += amount;
-  buyer.budget -= amount;
-  recordSeasonFinance(game, seller.id, "transferencias", amount, "income");
-  recordSeasonFinance(game, buyer.id, "transferencias", amount, "expense");
-  seller.squad.splice(seller.squad.indexOf(player), 1);
-  buyer.squad.push(player);
+export function getExchangePlayerCredit(player) {
+  return player ? Math.max(0, Math.floor(player.value * 0.75 / 1000) * 1000) : 0;
+}
+
+function canCompleteExchange(game, club, outgoingPlayer, incomingPlayer = null) {
+  if (!outgoingPlayer || outgoingPlayer.loan || incomingPlayer?.loan) return false;
+  if (club.squad.length - 1 + (incomingPlayer ? 1 : 0) < 14) return false;
+  const keepers = club.squad.filter(item => item.position === "GOL" && !item.loan).length
+    - (outgoingPlayer.position === "GOL" ? 1 : 0)
+    + (incomingPlayer?.position === "GOL" ? 1 : 0);
+  if (keepers < 1) return false;
+  const finalSlots = squadSlots(game, club.id) - 1 + (incomingPlayer ? 1 : 0);
+  return finalSlots <= (game.leagues ? 40 : 24);
+}
+
+function prepareTransferredPlayer(game, club, player) {
   player.contractEndSeason = game.season + 2;
   delete player.releaseClause;
-  ensureReleaseClause(game, buyer, player);
+  ensureReleaseClause(game, club, player);
+}
+
+function completeClubTransfer(game, seller, buyer, player, amount, exchangePlayer = null) {
+  if (!Number.isSafeInteger(amount) || amount < 0 || (!amount && !exchangePlayer)) return false;
+  if (buyer.budget < amount || !canCompleteExchange(game, seller, player, exchangePlayer)) return false;
+  if (exchangePlayer && !canCompleteExchange(game, buyer, exchangePlayer, player)) return false;
+  if (!exchangePlayer && squadSlots(game, buyer.id) >= (game.leagues ? 40 : 24)) return false;
+  seller.budget += amount;
+  buyer.budget -= amount;
+  if (amount) {
+    recordSeasonFinance(game, seller.id, "transferencias", amount, "income");
+    recordSeasonFinance(game, buyer.id, "transferencias", amount, "expense");
+  }
+  seller.squad.splice(seller.squad.indexOf(player), 1);
+  if (exchangePlayer) buyer.squad.splice(buyer.squad.indexOf(exchangePlayer), 1);
+  buyer.squad.push(player);
+  if (exchangePlayer) seller.squad.push(exchangePlayer);
+  prepareTransferredPlayer(game, buyer, player);
+  if (exchangePlayer) prepareTransferredPlayer(game, seller, exchangePlayer);
   if (seller.lineup) ensureLineup(seller);
+  if (buyer.lineup) ensureLineup(buyer);
   return true;
 }
 
@@ -1016,12 +1044,12 @@ export function registerIncomingOffer(game, buyerId, playerId, amount) {
     receivedOfferRecord(game, offer, "clause");
     game.transferDeals = [{ ...offer, sellerId: seller.id, sellerName: seller.name, buyerName: buyer.name, status: "clause" }, ...(game.transferDeals || [])].slice(0, 50);
     game.news.unshift({ id: offer.id, type: "negative", title: `${buyer.name} pagou a multa de ${player.name}`, body: `${formatMoney(clause)} entraram no caixa, e a transferência foi concluída automaticamente conforme o contrato.` });
-    game.news = game.news.slice(0, 8);
+    game.news = game.news.slice(0, 200);
     return { ok: true, status: "clause", message: `${buyer.name} pagou a multa rescisória de ${formatMoney(clause)}.` };
   }
   game.incomingOffers.unshift(offer);
   game.news.unshift({ id: offer.id, type: "info", title: `${buyer.name} quer contratar ${player.name}`, body: `A proposta de ${formatMoney(amount)} fica disponível por duas rodadas.` });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
   return { ok: true, status: "pending", offer, message: `Proposta de ${formatMoney(amount)} recebida.` };
 }
 
@@ -1042,8 +1070,44 @@ export function acceptIncomingOffer(game, offerId) {
   receivedOfferRecord(game, offer, "accepted");
   game.transferDeals = [{ ...offer, sellerId: seller.id, sellerName: seller.name, buyerName: buyer.name, status: "accepted" }, ...(game.transferDeals || [])].slice(0, 50);
   game.news.unshift({ id: `accepted-${offer.id}`, type: "positive", title: `${player.name} foi vendido ao ${buyer.name}`, body: `A diretoria aceitou ${formatMoney(offer.amount)} pela transferência.` });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
   return { ok: true, message: `${player.name} foi vendido por ${formatMoney(offer.amount)}.` };
+}
+
+export function counterIncomingOffer(game, offerId, amount, exchangePlayerId = null) {
+  if (game.activeMatch) return { ok: false, status: "invalid", message: "Conclua a partida antes de negociar a proposta." };
+  ensureCareerManagement(game);
+  const index = game.incomingOffers.findIndex(offer => offer.id === offerId);
+  if (index < 0) return { ok: false, status: "invalid", message: "Esta proposta não está mais disponível." };
+  const offer = game.incomingOffers[index];
+  const seller = getUserClub(game);
+  const buyer = getClub(game, offer.buyerId);
+  const player = seller.squad.find(item => item.id === offer.playerId);
+  amount = Number(amount);
+  const exchangePlayer = exchangePlayerId ? buyer?.squad.find(item => item.id === exchangePlayerId) : null;
+  if (!buyer || !player || offer.expiresWeek < game.week) return { ok: false, status: "invalid", message: "A proposta expirou ou os clubes não podem mais negociar." };
+  if (!Number.isSafeInteger(amount) || amount < 0 || (!amount && !exchangePlayerId)) return { ok: false, status: "invalid", message: "Informe dinheiro, um atleta em troca ou os dois." };
+  if (exchangePlayerId && !exchangePlayer) return { ok: false, status: "invalid", message: "O atleta pedido não está mais disponível no clube comprador." };
+  if (amount > buyer.budget) return { ok: false, status: "invalid", message: `${buyer.name} não possui caixa para pagar esse valor.` };
+  if (!canCompleteExchange(game, seller, player, exchangePlayer) || exchangePlayer && !canCompleteExchange(game, buyer, exchangePlayer, player)) {
+    return { ok: false, status: "invalid", message: "A troca deixaria um dos clubes sem elenco mínimo ou sem goleiro." };
+  }
+  const exchangeCredit = getExchangePlayerCredit(exchangePlayer);
+  const packageValue = amount + exchangeCredit;
+  const buyerLimit = Math.ceil(Math.max(offer.amount * 1.25, player.value * 1.2) / 1000) * 1000;
+  if (packageValue > buyerLimit) {
+    const counterOffer = Math.max(0, buyerLimit - exchangeCredit);
+    return { ok: false, status: "counter", counterOffer, exchangeCredit, message: `${buyer.name} recusou o pacote e aceita chegar a ${formatMoney(counterOffer)}${exchangePlayer ? ` mais ${exchangePlayer.name}` : ""}. A proposta original continua disponível.` };
+  }
+  if (!completeClubTransfer(game, seller, buyer, player, amount, exchangePlayer)) return { ok: false, status: "invalid", message: "A contraproposta não pôde ser concluída." };
+  game.incomingOffers.splice(index, 1);
+  const negotiatedOffer = { ...offer, amount, exchangePlayerId: exchangePlayer?.id ?? null, exchangePlayerName: exchangePlayer?.name ?? null, exchangeCredit };
+  receivedOfferRecord(game, negotiatedOffer, "counter-accepted");
+  game.transferDeals = [{ ...negotiatedOffer, sellerId: seller.id, sellerName: seller.name, buyerName: buyer.name, status: "counter-accepted" }, ...(game.transferDeals || [])].slice(0, 50);
+  const exchangeText = exchangePlayer ? ` e recebeu ${exchangePlayer.name}` : "";
+  game.news.unshift({ id: `counter-${offer.id}`, type: "positive", title: `Contraproposta aceita por ${buyer.name}`, body: `${player.name} foi negociado por ${formatMoney(amount)}${exchangeText}.` });
+  game.news = game.news.slice(0, 200);
+  return { ok: true, status: "accepted", exchangeCredit, message: `${buyer.name} aceitou: ${formatMoney(amount)}${exchangeText} por ${player.name}.` };
 }
 
 export function rejectIncomingOffer(game, offerId) {
@@ -1146,7 +1210,7 @@ export function acceptClubListing(game, sellerId, playerId, type, quotedPrice) {
   const message = type === "loan" ? `${player.name} chega por empréstimo até o fim da temporada ${listing.endSeason}. Seu clube paga 100% do salário por rodada.` : `${player.name} foi comprado de ${seller.name} por ${formatMoney(listing.price)}.`;
   const result = { ok: true, status: type === "loan" ? "loaned" : "purchased", message };
   game.news.unshift({ id: `listing-${game.season}-${game.week}-${player.id}`, type: "positive", title: type === "loan" ? `${player.name} chega por empréstimo` : `${player.name} foi contratado`, body: message });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
   recordDeal(game, seller, player, listing.price, result);
   return result;
 }
@@ -1184,7 +1248,7 @@ export function loanOutAcademyGraduate(game, playerId) {
   };
   if (owner.lineup) ensureLineup(owner);
   game.news.unshift({ id: `academy-loan-${game.season}-${game.week}-${player.id}`, type: "info", title: `${player.name} foi emprestado`, body: `${destination.name} receberá o jovem até o fim da temporada e pagará seu salário enquanto ele estiver no clube.` });
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
   return { ok: true, message: `${player.name} foi emprestado ao ${destination.name} até o fim da temporada.` };
 }
 
@@ -1210,7 +1274,7 @@ function returnExpiredLoans(game) {
       }
     }
   }
-  game.news = game.news.slice(0, 8);
+  game.news = game.news.slice(0, 200);
 }
 
 export function searchTransferMarket(game, filters = {}) {
@@ -1254,39 +1318,42 @@ export function searchTransferMarket(game, filters = {}) {
   return results.sort((a,b) => factor * (comparisons[sort] || comparisons.overall)(a,b) || a.player.name.localeCompare(b.player.name, 'pt-BR') || a.player.id.localeCompare(b.player.id));
 }
 
-export function makeTransferOffer(game, sellerId, playerId, amount) {
+export function makeTransferOffer(game, sellerId, playerId, amount, exchangePlayerId = null) {
   if (game.activeMatch) return { ok: false, status: "invalid", message: "Transferências ficam fechadas durante a partida." };
   const buyer = getUserClub(game);
   const seller = getClub(game, sellerId);
   const terms = getTransferTerms(game, sellerId, playerId);
   if (!terms) return { ok: false, status: "invalid", message: "Este atleta não está disponível neste clube." };
-  if (!Number.isSafeInteger(amount) || amount <= 0) return { ok: false, status: "invalid", message: "Informe um valor inteiro positivo em reais." };
-  if (squadSlots(game, buyer.id) >= (game.leagues ? 40 : 24)) return { ok: false, status: "invalid", message: `O elenco atingiu o limite de ${game.leagues ? 40 : 24} atletas.` };
+  const exchangePlayer = exchangePlayerId ? buyer.squad.find(item => item.id === exchangePlayerId) : null;
+  if (!Number.isSafeInteger(amount) || amount < 0 || (!amount && !exchangePlayerId)) return { ok: false, status: "invalid", message: "Informe dinheiro, um atleta em troca ou os dois." };
+  if (exchangePlayerId && !exchangePlayer) return { ok: false, status: "invalid", message: "O atleta oferecido não está disponível no seu elenco." };
+  if (!exchangePlayer && squadSlots(game, buyer.id) >= (game.leagues ? 40 : 24)) return { ok: false, status: "invalid", message: `O elenco atingiu o limite de ${game.leagues ? 40 : 24} atletas. Inclua um jogador na troca para liberar uma vaga.` };
   if (amount > buyer.budget) return { ok: false, status: "invalid", message: "Seu caixa não cobre esta proposta." };
   if (getClubListing(game, sellerId, playerId)?.type === "loan") return { ok: false, status: "invalid", message: "O clube disponibilizou este atleta somente por empréstimo." };
   const player = seller.squad.find(item => item.id === playerId);
+  if (exchangePlayer && (!canCompleteExchange(game, buyer, exchangePlayer, player) || !canCompleteExchange(game, seller, player, exchangePlayer))) {
+    return { ok: false, status: "invalid", message: "A troca deixaria um dos clubes sem elenco mínimo ou sem goleiro." };
+  }
+  const exchangeCredit = getExchangePlayerCredit(exchangePlayer);
+  const packageValue = amount + exchangeCredit;
   let result;
   if (!terms.available) {
     result = { ok: false, status: "rejected", message: `${seller.name} recusou: ${terms.reasons[0]}` };
-  } else if (amount < terms.askingPrice * 0.65) {
-    result = { ok: false, status: "rejected", message: `${seller.name} considerou a proposta muito baixa. ${terms.reasons.join(" ")}` };
-  } else if (amount < terms.askingPrice) {
-    result = { ok: false, status: "counter", counterOffer: terms.askingPrice, message: `${seller.name} pede ${formatMoney(terms.askingPrice)}. ${terms.reasons.join(" ")}` };
+  } else if (packageValue < terms.askingPrice * 0.65) {
+    result = { ok: false, status: "rejected", exchangeCredit, message: `${seller.name} considerou o pacote muito baixo. ${terms.reasons.join(" ")}` };
+  } else if (packageValue < terms.askingPrice) {
+    const counterOffer = Math.max(0, terms.askingPrice - exchangeCredit);
+    result = { ok: false, status: "counter", counterOffer, exchangeCredit, message: `${seller.name} pede ${formatMoney(counterOffer)}${exchangePlayer ? ` mais ${exchangePlayer.name}` : ""}. ${terms.reasons.join(" ")}` };
   } else {
-    buyer.budget -= amount;
-    seller.budget += amount;
-    recordSeasonFinance(game, buyer.id, "transferencias", amount, "expense");
-    recordSeasonFinance(game, seller.id, "transferencias", amount, "income");
-    seller.squad.splice(seller.squad.findIndex(item => item.id === playerId), 1);
-    buyer.squad.push(player);
-    player.contractEndSeason=game.season+2;
+    if (!completeClubTransfer(game, seller, buyer, player, amount, exchangePlayer)) return { ok: false, status: "invalid", message: "A transferência não pôde ser concluída com este pacote." };
     if (terms.role === "Peça-chave") seller.fanMorale = clamp(seller.fanMorale - 5, 0, 100);
     buyer.fanMorale = clamp(buyer.fanMorale + (terms.role === "Peça-chave" ? 4 : 1), 0, 100);
-    game.news.unshift({ id: `transfer-${game.season}-${game.week}-${player.id}`, type: "positive", title: `${player.name} foi contratado`, body: `${seller.name} aceitou ${formatMoney(amount)} pela transferência.` });
-    game.news = game.news.slice(0, 8);
-    result = { ok: true, status: "accepted", message: `${seller.name} aceitou ${formatMoney(amount)}. ${player.name} já integra seu elenco.` };
+    const exchangeText = exchangePlayer ? ` e ${exchangePlayer.name}` : "";
+    game.news.unshift({ id: `transfer-${game.season}-${game.week}-${player.id}`, type: "positive", title: `${player.name} foi contratado`, body: `${seller.name} aceitou ${formatMoney(amount)}${exchangeText} pela transferência.` });
+    game.news = game.news.slice(0, 200);
+    result = { ok: true, status: "accepted", exchangeCredit, message: `${seller.name} aceitou ${formatMoney(amount)}${exchangeText}. ${player.name} já integra seu elenco.` };
   }
-  recordDeal(game, seller, player, amount, result);
+  recordDeal(game, seller, player, amount, result, exchangePlayer);
   return result;
 }
 

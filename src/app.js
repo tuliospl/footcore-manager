@@ -21,12 +21,14 @@ import {
   getUserClub,
   leagueSeasonRules,
   getTransferTerms,
+  getExchangePlayerCredit,
   searchTransferMarket,
   makeTransferOffer,
   getClubListing,
   acceptClubListing,
   loanOutAcademyGraduate,
   acceptIncomingOffer,
+  counterIncomingOffer,
   sellPlayer,
   rejectIncomingOffer,
   setTactic,
@@ -188,6 +190,10 @@ function pageHeading(kicker, title, side = "") {
   return `<div class="page-heading"><div><p class="eyebrow">${kicker}</p><h2>${title}</h2></div>${side ? `<p>${side}</p>` : ""}</div>`;
 }
 
+function clubMail() {
+  return game.news.filter(message => !String(message.id).startsWith("free-signing-"));
+}
+
 function renderHeader() {
   document.querySelector('.top-stats').hidden = activeView === 'setup';
   document.querySelectorAll('.nav-item').forEach(button => { button.disabled = !game || careerSetup.busy; });
@@ -201,6 +207,10 @@ function renderHeader() {
   document.querySelector("#season-label").textContent = seasonLabel(game);
   document.querySelector("#week-label").textContent = game.finished ? "Fim" : `${game.week + 1}/${game.schedule.length}`;
   document.querySelector("#budget-label").textContent = formatMoney(club.budget);
+  const unread = clubMail().filter(item => item.read !== true).length;
+  const mailBadge = document.querySelector("#mail-badge");
+  mailBadge.textContent = unread > 99 ? "99+" : unread;
+  mailBadge.hidden = unread === 0;
   advanceButton.hidden = activeView === "match" || activeView === "lineup";
   advanceButton.innerHTML = game.activeMatch ? "Voltar à rodada <span>→</span>" : game.finished ? "Resumo da temporada <span>→</span>" : !nextFixture() ? "Avançar folga <span>→</span>" : activeView === "lineup" ? "Ir a jogo <span>→</span>" : "Escalar time <span>→</span>";
 }
@@ -253,8 +263,28 @@ function renderIncomingOffers() {
   if (!offers.length) return "";
   return `<section class="card incoming-offers"><div class="card-header"><h3>Propostas recebidas</h3><span>Responda antes do prazo</span></div><div class="incoming-offer-list">${offers.map(offer => {
     const buyer = getClub(game, offer.buyerId);
-    return `<article class="incoming-offer"><div><strong>${escapeHtml(offer.playerName)}</strong><span>${escapeHtml(buyer?.name || "Clube interessado")} · ${formatMoney(offer.amount)}</span><small>Expira após a rodada ${offer.expiresWeek}</small></div><div><button class="secondary-button" data-reject-incoming="${offer.id}">Recusar</button><button class="primary-button" data-accept-incoming="${offer.id}">Aceitar proposta</button></div></article>`;
+    return `<article class="incoming-offer"><div><strong>${escapeHtml(offer.playerName)}</strong><span>${escapeHtml(buyer?.name || "Clube interessado")} · ${formatMoney(offer.amount)}</span><small>Expira após a rodada ${offer.expiresWeek}</small></div><div><button class="secondary-button" data-reject-incoming="${offer.id}">Recusar</button><button class="secondary-button" data-negotiate-incoming="${offer.id}">Negociar</button><button class="primary-button" data-accept-incoming="${offer.id}">Aceitar</button></div></article>`;
   }).join("")}</div></section>`;
+}
+
+function mailCategory(message) {
+  const text = `${message.id} ${message.title}`.toLocaleLowerCase("pt-BR");
+  if (/offer|transfer|buy-|sell-|listing|empréstimo|contrat/.test(text)) return { label: "Mercado", sender: "Diretoria de futebol" };
+  if (/injury|lesion|suspens|yellow|red-/.test(text)) return { label: "Departamento médico", sender: "Comissão técnica" };
+  if (/award|prize|champion|premia|acesso|rebaixamento|division/.test(text)) return { label: "Competições", sender: "Organização da liga" };
+  if (/academy|scout|base/.test(text)) return { label: "Categoria de base", sender: "Coordenação da base" };
+  return { label: "Clube", sender: "Secretaria do clube" };
+}
+
+function renderMail() {
+  const messages = clubMail();
+  const unread = messages.filter(item => item.read !== true).length;
+  content.innerHTML = `${pageHeading("Comunicação do clube", "Correio", `${unread} ${unread === 1 ? "mensagem não lida" : "mensagens não lidas"}`)}
+    <section class="card mail-card"><div class="card-header"><h3>Caixa de entrada</h3><button class="text-button" data-mail-read-all ${unread ? "" : "disabled"}>Marcar todas como lidas</button></div>
+    <div class="mail-list">${messages.length ? messages.map(message => {
+      const category = mailCategory(message);
+      return `<button class="mail-item ${message.read === true ? "" : "unread"}" data-mail-read="${escapeHtml(message.id)}"><span class="mail-status"></span><span class="mail-copy"><small>${escapeHtml(category.sender)} · ${escapeHtml(category.label)}</small><strong>${escapeHtml(message.title)}</strong><span>${escapeHtml(message.body)}</span><em>Temporada ${message.season ?? game.season} · Rodada ${(message.week ?? game.week) + 1}</em></span></button>`;
+    }).join("") : `<div class="empty-state">Nenhuma mensagem recebida.</div>`}</div></section>`;
 }
 
 function renderDashboard() {
@@ -420,8 +450,8 @@ function renderMarket() {
     <p class="view-note">Compre pelo preço anunciado, contrate por empréstimo ou negocie com o clube. Os anúncios são revistos conforme o elenco muda; titulares e peças-chave continuam exigindo propostas.</p>
     <p id="market-count" role="status" class="view-note"></p>
     <section class="card data-card"><table class="data-table"><thead><tr>${MARKET_COLUMNS.map(column => `<th scope="col" class="sortable-heading" aria-sort="none"><button type="button" data-market-sort="${column.key}">${column.label}<span aria-hidden="true">↕</span></button></th>`).join('')}<th scope="col">Negociação</th></tr></thead><tbody id="market-results"></tbody></table></section>
-    <section class="card season-history"><div class="card-header"><h3>Suas últimas negociações</h3></div><div class="card-body">${(game.negotiations || []).length ? game.negotiations.slice(0, 5).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)} · ${escapeHtml(item.clubName)}</strong><p>${formatMoney(item.amount)} · ${{ rejected: "Recusada", counter: "Contraproposta", accepted: "Aceita", purchased: "Compra por preço fixo", loaned: "Empréstimo contratado" }[item.status]}${item.counterOffer ? ` de ${formatMoney(item.counterOffer)}` : ""} · Temporada ${item.season}, após ${item.week} rodada(s)</p></article>`).join("") : `<p class="view-note">Suas propostas e as respostas dos clubes aparecerão aqui.</p>`}</div></section>
-    <section class="card season-history"><div class="card-header"><h3>Transferências entre clubes</h3><span>Mercado mundial</span></div><div class="card-body">${(game.transferDeals || []).length ? game.transferDeals.slice(0, 8).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)}</strong><p>${escapeHtml(item.sellerName)} → ${escapeHtml(item.buyerName)} · ${formatMoney(item.amount)}${item.status === "clause" ? " · Multa rescisória" : ""}</p></article>`).join("") : `<p class="view-note">As negociações realizadas pela IA aparecerão aqui conforme as rodadas avançarem.</p>`}</div></section>`;
+    <section class="card season-history"><div class="card-header"><h3>Suas últimas negociações</h3></div><div class="card-body">${(game.negotiations || []).length ? game.negotiations.slice(0, 5).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)} · ${escapeHtml(item.clubName)}</strong><p>${formatMoney(item.amount)}${item.exchangePlayerName ? ` + ${escapeHtml(item.exchangePlayerName)} (crédito de ${formatMoney(item.exchangeCredit)})` : ""} · ${{ rejected: "Recusada", counter: "Contraproposta", accepted: "Aceita", purchased: "Compra por preço fixo", loaned: "Empréstimo contratado" }[item.status]}${item.counterOffer !== null && item.counterOffer !== undefined ? ` de ${formatMoney(item.counterOffer)}` : ""} · Temporada ${item.season}, após ${item.week} rodada(s)</p></article>`).join("") : `<p class="view-note">Suas propostas e as respostas dos clubes aparecerão aqui.</p>`}</div></section>
+    <section class="card season-history"><div class="card-header"><h3>Transferências entre clubes</h3><span>Mercado mundial</span></div><div class="card-body">${(game.transferDeals || []).length ? game.transferDeals.slice(0, 8).map(item => `<article class="negotiation-entry"><strong>${escapeHtml(item.playerName)}</strong><p>${escapeHtml(item.sellerName)} → ${escapeHtml(item.buyerName)} · ${formatMoney(item.amount)}${item.exchangePlayerName ? ` + ${escapeHtml(item.exchangePlayerName)}` : ""}${item.status === "clause" ? " · Multa rescisória" : ""}</p></article>`).join("") : `<p class="view-note">As negociações realizadas pela IA aparecerão aqui conforme as rodadas avançarem.</p>`}</div></section>`;
   document.querySelector("#market-query").value = marketFilters.query;
   document.querySelector("#market-club").value = marketFilters.clubId;
   content.querySelectorAll('[data-market-filter]').forEach(input => {
@@ -472,14 +502,32 @@ function openOffer(sellerId, playerId) {
     offerDialog.showModal();
     return;
   }
+  const userClub = getUserClub(game);
+  const exchangeOptions = userClub.squad.filter(item => !item.loan).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}">${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
   offerDialog.innerHTML = `<form id="offer-form">
     <p class="eyebrow">Negociação com ${escapeHtml(club.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
     <p>${player.position} · ${player.age} anos · Geral ${player.overall} · ${terms.role}</p>
     <div class="offer-facts"><p>Valor de mercado<strong>${formatMoney(player.value)}</strong></p><p>Seu caixa<strong>${formatMoney(getUserClub(game).budget)}</strong></p><p>Salário por rodada<strong>${formatMoney(player.salary)}</strong></p></div>
     <ul class="offer-reasons">${terms.reasons.map(reason => `<li>${escapeHtml(reason)}</li>`).join("")}</ul>
-    ${terms.available ? `<label class="offer-label" for="offer-amount">Sua proposta (R$)</label><input id="offer-amount" name="amount" type="number" min="1" step="1" max="${Math.floor(getUserClub(game).budget)}" value="${Math.min(player.value, Math.max(0, Math.floor(getUserClub(game).budget)))}" required><p class="view-note">Se o clube aceitar, a transferência será concluída pelo valor enviado.</p>` : ""}
+    ${terms.available ? `<div class="offer-composition"><label class="offer-label" for="offer-amount">Dinheiro oferecido (R$)<input id="offer-amount" name="amount" type="number" min="0" step="1000" max="${Math.floor(userClub.budget)}" value="${Math.min(player.value, Math.max(0, Math.floor(userClub.budget)))}"></label><label class="offer-label" for="offer-exchange-player">Jogador oferecido na troca<select id="offer-exchange-player" name="exchangePlayer"><option value="">Nenhum jogador</option>${exchangeOptions}</select></label></div><p class="view-note">O outro clube considera 75% do valor de mercado do atleta oferecido. Dinheiro e jogadores são transferidos juntos após a aceitação.</p>` : ""}
     <div id="offer-response" role="status" aria-live="polite"></div>
     <div class="dialog-actions"><button type="button" id="close-offer" class="secondary-button">Fechar</button>${terms.available ? `<button type="submit" class="primary-button">Enviar proposta</button>` : ""}</div></form>`;
+  offerDialog.showModal();
+}
+
+function openIncomingNegotiation(offerId) {
+  const offer = game.incomingOffers.find(item => item.id === offerId);
+  const seller = getUserClub(game);
+  const buyer = offer && getClub(game, offer.buyerId);
+  const player = offer && seller.squad.find(item => item.id === offer.playerId);
+  if (!offer || !buyer || !player) return;
+  const exchangeOptions = buyer.squad.filter(item => !item.loan).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}">${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
+  offerTarget = { mode: "incoming", incomingOfferId: offer.id };
+  offerDialog.innerHTML = `<form id="offer-form"><p class="eyebrow">Contraproposta para ${escapeHtml(buyer.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
+    <p>A oferta recebida é de <strong>${formatMoney(offer.amount)}</strong>. Peça mais dinheiro, um atleta do comprador ou combine os dois.</p>
+    <div class="offer-composition"><label class="offer-label" for="offer-amount">Dinheiro solicitado (R$)<input id="offer-amount" name="amount" type="number" min="0" step="1000" max="${Math.floor(buyer.budget)}" value="${Math.min(buyer.budget, Math.ceil(offer.amount * 1.1 / 1000) * 1000)}"></label><label class="offer-label" for="offer-exchange-player">Jogador solicitado na troca<select id="offer-exchange-player" name="exchangePlayer"><option value="">Nenhum jogador</option>${exchangeOptions}</select></label></div>
+    <p class="view-note">O comprador pode aceitar ou limitar o valor. A proposta original continua disponível se a contraproposta for recusada.</p><div id="offer-response" role="status" aria-live="polite"></div>
+    <div class="dialog-actions"><button type="button" id="close-offer" class="secondary-button">Fechar</button><button type="submit" class="primary-button">Enviar contraproposta</button></div></form>`;
   offerDialog.showModal();
 }
 
@@ -493,21 +541,24 @@ offerDialog.addEventListener("click", event => {
 offerDialog.addEventListener("submit", event => {
   event.preventDefault();
   if (!offerTarget) return;
-  const { sellerId, playerId, listing } = offerTarget;
-  const result = listing ? acceptClubListing(game, sellerId, playerId, listing.type, listing.price) : makeTransferOffer(game, sellerId, playerId, Number(document.querySelector("#offer-amount").value));
-  if (result.ok || (!listing && result.status !== "invalid")) saveGame();
+  const { sellerId, playerId, listing, mode, incomingOfferId } = offerTarget;
+  const amount = Number(document.querySelector("#offer-amount")?.value ?? 0);
+  const exchangePlayerId = document.querySelector("#offer-exchange-player")?.value || null;
+  const result = mode === "incoming" ? counterIncomingOffer(game, incomingOfferId, amount, exchangePlayerId) : listing ? acceptClubListing(game, sellerId, playerId, listing.type, listing.price) : makeTransferOffer(game, sellerId, playerId, amount, exchangePlayerId);
+  if (result.ok || (mode !== "incoming" && !listing && result.status !== "invalid")) saveGame();
   render();
   const response = document.querySelector("#offer-response");
   response.className = `offer-response ${result.ok ? "accepted" : ""}`;
   response.textContent = result.message;
-  if (result.counterOffer) {
+  if (result.counterOffer !== undefined) {
     const button = document.createElement("button");
     button.type = "button";
     button.id = "use-counter";
     button.className = "action-button";
     button.dataset.amount = result.counterOffer;
-    button.textContent = result.counterOffer > getUserClub(game).budget ? "Contraproposta acima do seu caixa" : "Usar valor da contraproposta";
-    button.disabled = result.counterOffer > getUserClub(game).budget;
+    const availableBudget = mode === "incoming" ? getClub(game, game.incomingOffers.find(item => item.id === incomingOfferId)?.buyerId)?.budget ?? 0 : getUserClub(game).budget;
+    button.textContent = result.counterOffer > availableBudget ? "Valor acima do caixa disponível" : "Usar valor sugerido";
+    button.disabled = result.counterOffer > availableBudget;
     response.append(button);
   }
   if (result.ok) {
@@ -683,11 +734,12 @@ function renderMatch() {
 }
 
 function render() {
+  if (game && activeView !== "setup") game.news = game.news.map(item => ({ ...item, read: item.read ?? false, season: item.season ?? game.season, week: item.week ?? game.week })).slice(0, 200);
   renderHeader();
   if (startupError) { content.innerHTML = `<section class="card card-body" role="alert"><h2>Não foi possível carregar a carreira</h2><p>${escapeHtml(startupError)}</p><p>Recarregue a página para tentar novamente. O salvamento existente não foi substituído.</p></section>`; return; }
   if (activeView === 'setup') { careerSetup.render(); if (!careerSetup.database && !careerSetup.loading && !careerSetup.error) careerSetup.load(); return; }
   document.querySelectorAll(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === (activeView === "player" ? playerDetailReturnView : activeView)));
-  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, squad: renderSquad, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, stadium: renderStadium }[activeView] || renderDashboard)();
+  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, stadium: renderStadium }[activeView] || renderDashboard)();
   syncPenaltyDialog();
 }
 
@@ -961,11 +1013,23 @@ content.addEventListener("click", event => {
     if (result.ok) saveGame();
     showToast(result.message, !result.ok); render(); return;
   }
+  const incomingNegotiation = event.target.closest("[data-negotiate-incoming]");
+  if (incomingNegotiation) { openIncomingNegotiation(incomingNegotiation.dataset.negotiateIncoming); return; }
   const incomingRejection = event.target.closest("[data-reject-incoming]");
   if (incomingRejection) {
     const result = rejectIncomingOffer(game, incomingRejection.dataset.rejectIncoming);
     if (result.ok) saveGame();
     showToast(result.message, !result.ok); render(); return;
+  }
+  const mailMessage = event.target.closest("[data-mail-read]");
+  if (mailMessage) {
+    const message = game.news.find(item => item.id === mailMessage.dataset.mailRead);
+    if (message && message.read !== true) { message.read = true; saveGame(); render(); }
+    return;
+  }
+  if (event.target.closest("[data-mail-read-all]")) {
+    clubMail().forEach(item => { item.read = true; });
+    saveGame(); render(); return;
   }
   const offer = event.target.closest("[data-offer]");
   if (offer) { openOffer(offer.dataset.club, offer.dataset.offer); return; }

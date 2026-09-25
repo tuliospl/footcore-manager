@@ -40,6 +40,9 @@ button { cursor: pointer; }
 .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
 .nav-item.active { color: var(--forest); background: var(--lime); box-shadow: 0 8px 24px rgba(216,255,67,.12); }
 .nav-item.active span { color: var(--forest); }
+.mail-nav { position: relative; }
+#mail-badge { position: absolute; top: 6px; right: 7px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: grid; place-items: center; background: var(--red); color: #fff; font-size: 9px; line-height: 1; }
+#mail-badge[hidden] { display: none; }
 .sidebar-footer { margin-top: auto; position: relative; z-index: 1; color: #718078; font-size: 11px; padding: 0 8px; }
 .sidebar-footer p { margin: 18px 0 7px; }
 .text-button { border: 0; background: transparent; color: #9eaaa3; padding: 0; font-size: 12px; text-decoration: underline; }
@@ -322,13 +325,15 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .offer-facts p { font-size: 11px; }
 .offer-facts strong { display: block; color: var(--ink); margin-top: 5px; font-size: 15px; }
 .offer-reasons { padding-left: 20px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.offer-composition { display: grid; grid-template-columns: 1fr 1.35fr; gap: 14px; }
+.offer-composition select { width: 100%; min-width: 0; }
 #offer-amount { margin-top: 8px; font-size: 20px; }
 .offer-response { padding: 14px; margin-top: 14px; background: #fff1d6; border-radius: 6px; line-height: 1.6; font-size: 12px; }
 .offer-response.accepted { background: #e8f3d1; }
 .offer-response button { display: block; margin-top: 12px; }
 .action-button:disabled { opacity: .6; cursor: not-allowed; }
 @media (max-width: 1050px) { .market-filters { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 480px) { .market-filters { grid-template-columns: 1fr; } #offer-dialog form { padding: 20px; } }
+@media (max-width: 480px) { .market-filters, .offer-composition { grid-template-columns: 1fr; } #offer-dialog form { padding: 20px; } }
 .main, .stack, .card { min-width: 0; }
 
 .toast { position: fixed; right: 25px; bottom: 25px; padding: 13px 18px; border-radius: 7px; color: #fff; background: var(--forest); box-shadow: 0 12px 35px rgba(0,0,0,.22); transform: translateY(20px); opacity: 0; pointer-events: none; transition: .25s ease; z-index: 30; }
@@ -340,6 +345,18 @@ dialog form { padding: 28px; max-width: 390px; }
 dialog h2 { margin: 0; font: 800 28px "Barlow Condensed"; text-transform: uppercase; }
 dialog p { color: var(--muted); line-height: 1.5; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
+.mail-list { display: grid; }
+.mail-item { width: 100%; display: grid; grid-template-columns: 10px 1fr; gap: 12px; border: 0; border-bottom: 1px solid var(--line); padding: 18px 20px; background: var(--card); color: var(--ink); text-align: left; }
+.mail-item:last-child { border-bottom: 0; }
+.mail-item:hover { background: #f4f7ed; }
+.mail-item.unread { background: #f7fbdc; }
+.mail-status { width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: transparent; }
+.mail-item.unread .mail-status { background: var(--lime); box-shadow: 0 0 0 3px rgba(216,255,67,.25); }
+.mail-copy { display: grid; gap: 5px; }
+.mail-copy small { color: var(--forest-2); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
+.mail-copy strong { font-size: 15px; }
+.mail-copy > span { color: var(--muted); line-height: 1.5; }
+.mail-copy em { color: #8b948d; font-size: 10px; font-style: normal; }
 
 @media (max-width: 1050px) {
   .top-stats div:nth-child(1) { display: none; }
@@ -353,11 +370,12 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .sidebar-footer { position: fixed; bottom: 66px; left: 0; right: 0; background: var(--forest); padding: 4px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .sidebar-footer p { display: none; }
   .sidebar-footer .save-state { font-size: 9px; }
-  .nav { margin: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); width: 100%; gap: 2px; }
+  .nav { margin: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-item { padding: 7px 2px; text-align: center; font-size: 9px; }
   .nav-item span { display: block; width: auto; height: 22px; }
   .nav-item .nav-icon { display: grid; place-items: center; }
   .nav-icon svg { width: 19px; height: 19px; }
+  #mail-badge { top: 1px; right: 3px; }
   .main { min-width: 0; }
   .topbar { height: 70px; padding: 0 15px; gap: 12px; }
   .mobile-brand { display: none; }
