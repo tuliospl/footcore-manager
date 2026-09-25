@@ -1,6 +1,6 @@
 # Divisões da base mundial
 
-Revisão de participantes: 22/09/2026. Brasil e ligas de ano civil: 2026; ligas com temporada em dois anos: 2026/27. Os jogadores são os registros do pacote MKFP 02-09-26, sem consulta ou atualização de elenco pela internet.
+Revisão de participantes: 22/09/2026. Brasil e ligas de ano civil: 2026; ligas com temporada em dois anos: 2026/27.
 
 **O formato jogável é adaptado:** turno e returno com os clubes disponíveis; sem grupos, mata-mata, acesso ou rebaixamento. Pertencer à divisão real não significa reproduzir seu regulamento. O Manthiqueira permanece no mercado, mas não tem adversários para uma carreira nesta base.
 

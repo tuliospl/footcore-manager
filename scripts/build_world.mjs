@@ -14,5 +14,5 @@ for (const team of catalog.teams) {
   clubs.push(result.club);
 }
 const leagues = manifest.leagues.map(({teamIds,...league}) => ({...league,clubIds:teamIds.map(id=>ids.get(id))}));
-await writeFile(new URL('../data/world/database.json',import.meta.url),JSON.stringify({version:1,balanceVersion:BALANCE_VERSION,name:'Mundo 2026 · MKFP',countries:catalog.countries,clubs,freeAgents:[],leagues}));
+await writeFile(new URL('../data/world/database.json',import.meta.url),JSON.stringify({version:1,balanceVersion:BALANCE_VERSION,name:'Mundo 2026',countries:catalog.countries,clubs,freeAgents:[],leagues}));
 console.log(`${clubs.length} clubes / ${clubs.reduce((n,c)=>n+c.squad.length,0)} jogadores`);

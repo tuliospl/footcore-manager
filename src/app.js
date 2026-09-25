@@ -131,7 +131,7 @@ const careerSetup = new CareerSetup(content, {
 async function updatePlayerBalance(target) {
   if (!needsBalanceMigration(target) || target.activeMatch) return;
   if (target.leagues && !balanceDatabase) {
-    const response = await fetch('data/world/database.json?v=market-2');
+    const response = await fetch('data/world/database.json?v=market-3');
     if (!response.ok) throw new Error('Não foi possível carregar a atualização dos jogadores.');
     balanceDatabase = await response.json();
   }

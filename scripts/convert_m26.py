@@ -1,4 +1,4 @@
-"""Convert the supplied MKFP M26 schema to the Footcore CSV catalog.
+"""Convert local team files to the Footcore CSV catalog.
 
 Usage: python3 scripts/convert_m26.py
 Original files are read only. Unknown schemas/values fail explicitly.
@@ -125,9 +125,9 @@ def convert(source, readme, target):
         except (ValueError, KeyError, TypeError, UnicodeError, IndexError) as error:
             errors.append({"file": path.name, "error": str(error)})
     entries.sort(key=lambda t: (t["country"], t["name"].casefold()))
-    catalog = {"version": 1, "name": source.name, "clubs": len(entries), "players": sum(t["players"] for t in entries), "countries": [{"code": code, "name": name} for code, name in countries if any(t["country"] == code for t in entries)], "teams": entries}
+    catalog = {"version": 1, "name": "Base de clubes", "clubs": len(entries), "players": sum(t["players"] for t in entries), "countries": [{"code": code, "name": name} for code, name in countries if any(t["country"] == code for t in entries)], "teams": entries}
     (target / "catalog.json").write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    report = {"source": str(source.relative_to(ROOT)) if source.is_relative_to(ROOT) else str(source), "converted": len(entries), "players": catalog["players"], "errors": errors, "mapping": {"club": {"a": "name", "b": "stadium", "c": "strength", "d": "country index", "e/f": "colors", "q": "capacity", "n": "coach", "o": "players", "i": "badge ARGB"}, "player": {"a": "name", "b": "position 0–6", "c": "country index", "f": "foot 1–3", "g": "star", "h": "starter", "i": "age", "j": "technical 1–15", "k": "physical 16–26", "l": "extra 0–7"}}, "notes": ["Country indices and characteristic codes follow the order in the supplied readme; all 559 club countries match their filename prefixes.", "Player overall, potential, salaries and values are Footcore estimates, not attributes recovered from M26.", "Wing positions P/WG become ATA in Footcore. Metadata such as foot and special characteristics currently has no simulation effect.", "Other embedded images remain preserved in the original M26 files; only badges are extracted."], "records": audit}
+    report = {"converted": len(entries), "players": catalog["players"], "errors": errors, "mapping": {"club": {"a": "name", "b": "stadium", "c": "strength", "d": "country index", "e/f": "colors", "q": "capacity", "n": "coach", "o": "players", "i": "badge ARGB"}, "player": {"a": "name", "b": "position 0–6", "c": "country index", "f": "foot 1–3", "g": "star", "h": "starter", "i": "age", "j": "technical 1–15", "k": "physical 16–26", "l": "extra 0–7"}}, "notes": ["Country indices and characteristic codes follow the order in the supplied readme; all 559 club countries match their filename prefixes.", "Player overall, potential, salaries and values are Footcore estimates.", "Wing positions P/WG become ATA in Footcore. Metadata such as foot and special characteristics currently has no simulation effect.", "Only badges are used by the game."], "records": audit}
     (target / "conversion-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"clubs": len(entries), "players": catalog["players"], "countries": len(catalog["countries"]), "badges": len(entries), "errors": errors}, ensure_ascii=False))
     return not errors
@@ -135,7 +135,7 @@ def convert(source, readme, target):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=Path, default=ROOT / "leia-me-times-csv/MKFP 02-09-26")
+    parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--readme", type=Path, default=ROOT / "leia-me-times-csv/leia-me-times-csv.txt")
     parser.add_argument("--output", type=Path, default=ROOT / "data/m26")
     args = parser.parse_args()

@@ -4,7 +4,7 @@ Um jogo de gestão de futebol inspirado nos managers clássicos brasileiros. O M
 
 ## Recursos
 
-- Nova carreira com escolha do clube, 559 times e 15.400 jogadores do pacote MKFP
+- Nova carreira com escolha do clube, 559 times e 15.400 jogadores
 - 36 ligas jogáveis de 18 países, com calendários e classificações separados
 - Divisões de referência: Brasil 2026 e Europa 2026/27
 - Simulação de partidas baseada em elenco, forma, moral e tática
@@ -88,13 +88,13 @@ Ao concluir a rodada, as notas de todos os clubes são registradas uma única ve
 
 ## Mundo e divisões
 
-A base usada pelo jogo fica em `data/world/database.json`. Os 559 clubes estão disponíveis para novas carreiras e no mercado. As Séries A, B e C brasileiras contêm seus 20 clubes; algumas outras divisões são parciais. A seleção de clube mostra a quantidade presente e esperada. O Manthiqueira é o único representante de sua divisão estadual no pacote: participa do mercado, mas não permite iniciar carreira sem mais adversários.
+A base usada pelo jogo fica em `data/world/database.json`. Os 559 clubes estão disponíveis para novas carreiras e no mercado. As Séries A, B e C brasileiras contêm seus 20 clubes; algumas outras divisões são parciais. A seleção de clube mostra a quantidade presente e esperada. O Manthiqueira é o único representante de sua divisão estadual na base: participa do mercado, mas não permite iniciar carreira sem mais adversários.
 
-**Formato da simulação:** todos os campeonatos usam pontos corridos em turno e returno. Divisões adjacentes do mesmo país têm acesso e rebaixamento; no Brasil, quatro clubes sobem e quatro descem quando as duas divisões estão disponíveis. Ainda não há grupos, mata-mata, copas nacionais ou continentais. Os confrontos são gerados pelo jogo, sem reproduzir datas ou ordem do calendário oficial. Ligas com número ímpar têm folgas. As demais ligas avançam proporcionalmente ao calendário do manager, terminando junto com a temporada; a folha é cobrada uma vez por rodada disputada pelo clube. Os elencos do pacote e seus atributos estimados não são atualizados pela consulta às divisões.
+**Formato da simulação:** todos os campeonatos usam pontos corridos em turno e returno. Divisões adjacentes do mesmo país têm acesso e rebaixamento; no Brasil, quatro clubes sobem e quatro descem quando as duas divisões estão disponíveis. Ainda não há grupos, mata-mata, copas nacionais ou continentais. Os confrontos são gerados pelo jogo, sem reproduzir datas ou ordem do calendário oficial. Ligas com número ímpar têm folgas. As demais ligas avançam proporcionalmente ao calendário do manager, terminando junto com a temporada; a folha é cobrada uma vez por rodada disputada pelo clube. Os atributos estimados não são atualizados pela consulta às divisões.
 
 **Persistência:** IndexedDB acomoda a carreira mundial (aproximadamente 8 MB). Carreiras antigas do localStorage são migradas ao abrir. Não abra a mesma carreira em várias abas para jogar simultaneamente.
 
-**Atualizar o pacote:** após `npm run convert:m26`, revise os participantes em `scripts/build_world.py` e execute `npm run build:world`. O gerador valida nomes, clubes duplicados e cobertura integral antes de produzir o manifesto. `scripts/build_world.mjs` reutiliza o parser CSV do jogo para gerar a base. As fontes consultadas ficam em `data/world/leagues.json`, e o resumo de cobertura em [data/world/README.md](data/world/README.md).
+**Atualizar a base:** após preparar os arquivos locais, revise os participantes em `scripts/build_world.py` e execute `npm run build:world`. O gerador valida nomes, clubes duplicados e cobertura integral antes de produzir o manifesto. `scripts/build_world.mjs` reutiliza o parser CSV do jogo para gerar a base. As referências das competições ficam em `data/world/leagues.json`, e o resumo de cobertura em [data/world/README.md](data/world/README.md).
 
 
 ### Escala global de jogadores e economia (versão 2)

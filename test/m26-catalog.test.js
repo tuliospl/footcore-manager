@@ -56,7 +56,7 @@ test("Flamengo data and badge survive career creation; imported league simulates
   assert.equal(pedro.position, "ATA");
   assert.equal(pedro.source.extra, 6);
   assert.equal(pedro.overall, 81); // Reviewed Footcore anchor, not the source club strength.
-  const game = createGameFromDatabase({ version: 1, name: "MKFP", clubs }, clubs[0].id, 42);
+  const game = createGameFromDatabase({ version: 1, name: "Base de clubes", clubs }, clubs[0].id, 42);
   assert.equal(game.clubs[0].badgePath, teams[0].badgePath);
   assert.match(badgeContent(game.clubs[0]), /<img/);
   assert.equal(advanceWeek(game).ok, true);

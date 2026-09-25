@@ -10,7 +10,7 @@ from java_stream import JavaStream
 class M26Test(unittest.TestCase):
     def test_known_source_file(self):
         folder = ROOT / "leia-me-times-csv"
-        file = folder / "MKFP 02-09-26/BRA_flamengo.m26"
+        file = next(folder.glob("*/BRA_flamengo.m26"))
         team = decode_team(file.read_bytes(), file.name, country_list(folder / "leia-me-times-csv.txt"))
         self.assertEqual(team["name"], "Flamengo")
         self.assertEqual(team["players"], 30)
