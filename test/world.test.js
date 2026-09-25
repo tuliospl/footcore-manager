@@ -128,6 +128,25 @@ test('adjacent divisions exchange clubs and award placement prizes at season end
   assert.ok(previousLeagueId==='x-2');
 });
 
+test('league prizes follow squad quality and grow as the competition improves',()=>{
+  const game=career('Liverpool');
+  const premier=game.leagues.find(league=>league.id==='eng-1');
+  const brazil=game.leagues.find(league=>league.id==='bra-1');
+  const lower=game.leagues.find(league=>league.id==='bra-4');
+  const premierRules=leagueSeasonRules(game,premier.id);
+  assert.ok(premierRules.qualityRating>75);
+  assert.ok(premierRules.championPrize>=200_000_000);
+  assert.ok(premierRules.championPrize>leagueSeasonRules(game,brazil.id).championPrize);
+  assert.ok(leagueSeasonRules(game,brazil.id).championPrize>leagueSeasonRules(game,lower.id).championPrize);
+  const before=leagueSeasonRules(game,lower.id).championPrize;
+  for(const clubId of lower.clubIds){
+    const squad=game.clubs.find(club=>club.id===clubId).squad;
+    for(const player of squad) player.overall=Math.min(99,player.overall+8);
+  }
+  assert.ok(leagueSeasonRules(game,lower.id).championPrize>before);
+  assert.ok(leagueSeasonRules(game,lower.id).championPrize<=350_000_000);
+});
+
 test('Brazilian national divisions promote and relegate four clubs',()=>{
   const first=database.leagues.find(league=>league.id==='bra-1');
   const second=database.leagues.find(league=>league.id==='bra-2');

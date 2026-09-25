@@ -27,6 +27,7 @@ Um jogo de gestão de futebol inspirado nos managers clássicos brasileiros. O M
 - Nova temporada com envelhecimento dos atletas e estatísticas reiniciadas
 - Histórico de posições e pontos por temporada; jogos e gols reiniciam a cada campeonato
 - Resumo automático no fim da temporada com classificação, prêmios, seleção da liga, finanças e evolução do elenco
+- Premiações das ligas recalculadas pela qualidade atual dos elencos, permitindo crescimento esportivo e financeiro ao longo das temporadas
 
 ## Executar
 

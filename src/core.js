@@ -261,11 +261,27 @@ export function leagueMovementPlaces(upperLeague, lowerLeague) {
   return size >= 16 ? 3 : size >= 10 ? 2 : 1;
 }
 
-export function leaguePrizeMoney(league, position) {
+function leagueSquadQuality(game, league) {
+  if (!game || !league?.clubIds?.length) return null;
+  const clubRatings = league.clubIds.map(clubId => {
+    const squad = getClub(game, clubId)?.squad || [];
+    const strongest = squad.map(player => player.overall).filter(Number.isFinite).sort((first, second) => second - first).slice(0, 18);
+    return strongest.length ? strongest.reduce((total, overall) => total + overall, 0) / strongest.length : null;
+  }).filter(Number.isFinite);
+  return clubRatings.length ? clubRatings.reduce((total, rating) => total + rating, 0) / clubRatings.length : null;
+}
+
+export function leaguePrizeMoney(league, position, game = null) {
   const clubs = league?.clubIds?.length ?? 0;
   if (clubs < 2 || position < 1 || position > clubs) return 0;
   const tierPools = [0, 30_000_000, 12_000_000, 5_000_000, 2_500_000, 1_200_000];
-  const championPrize = (tierPools[Math.min(5, Math.max(1, Number(league.tier) || 1))] || tierPools[5]) * clamp(clubs / 20, 0.4, 1.2);
+  const quality = leagueSquadQuality(game, league);
+  const sizeFactor = clamp(clubs / 20, 0.5, 1.1);
+  const qualityIndex = quality === null ? null : clamp((quality - 50) / 30, 0, 1.15);
+  const dynamicPrize = qualityIndex === null ? null : (1_000_000 + 249_000_000 * qualityIndex ** 3) * sizeFactor;
+  const championPrize = dynamicPrize === null
+    ? (tierPools[Math.min(5, Math.max(1, Number(league.tier) || 1))] || tierPools[5]) * clamp(clubs / 20, 0.4, 1.2)
+    : clamp(dynamicPrize, 500_000, 350_000_000);
   const positionFactor = clubs === 1 ? 1 : 1 - ((position - 1) / (clubs - 1)) * 0.75;
   return Math.round(championPrize * positionFactor / 1000) * 1000;
 }
@@ -304,8 +320,9 @@ export function leagueSeasonRules(game, leagueId) {
   return {
     promotionPlaces: upper ? leagueMovementPlaces(upper, league) : 0,
     relegationPlaces: lower ? leagueMovementPlaces(league, lower) : 0,
-    championPrize: leaguePrizeMoney(league, 1),
-    lastPrize: leaguePrizeMoney(league, league.clubIds.length)
+    qualityRating: leagueSquadQuality(game, league),
+    championPrize: leaguePrizeMoney(league, 1, game),
+    lastPrize: leaguePrizeMoney(league, league.clubIds.length, game)
   };
 }
 
@@ -587,7 +604,7 @@ function awardSeasonPrizes(game) {
     if (league.clubIds.length < 2) continue;
     const ranking = getSortedTable(game, game.leagues ? league.id : undefined);
     ranking.forEach((row, index) => {
-      const prize = leaguePrizeMoney(league, index + 1);
+      const prize = leaguePrizeMoney(league, index + 1, game);
       const club = getClub(game, row.clubId);
       queuePrizePayment(game, club.id, "premiacaoLiga", prize, `${index + 1}º lugar em ${league.name}`);
       awards.set(club.id, { prize, position: index + 1, leagueId: league.id, leagueName: league.name });
