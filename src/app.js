@@ -231,9 +231,9 @@ function renderMatchCard() {
   return `<section class="card match-card">
     <div class="card-header"><h3>Próximo jogo</h3><span>Rodada ${game.week + 1} · ${escapeHtml(home.stadium.name)}</span></div>
     <div class="matchup">
-      <div class="team">${badge(home, "team-badge")}<h4>${escapeHtml(home.name)}</h4><p>${fixture.homeId === game.userClubId ? "Seu time" : "Mandante"}</p></div>
-      <div class="versus"><small>Campeonato</small><strong>VS</strong><small>Domingo · 16h</small></div>
-      <div class="team">${badge(away, "team-badge")}<h4>${escapeHtml(away.name)}</h4><p>${fixture.awayId === game.userClubId ? "Seu time" : "Visitante"}</p></div>
+      <div class="team">${badge(home, "team-badge")}<h4>${escapeHtml(home.name)}</h4></div>
+      <div class="versus"><span>Campeonato</span><strong>VS</strong><time>Domingo · 16h</time></div>
+      <div class="team">${badge(away, "team-badge")}<h4>${escapeHtml(away.name)}</h4></div>
     </div>
   </section>`;
 }

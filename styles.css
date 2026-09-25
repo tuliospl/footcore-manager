@@ -85,12 +85,13 @@ button { cursor: pointer; }
 .match-card::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 100px, rgba(255,255,255,.018) 100px 101px); }
 .match-card .card-header { border-color: rgba(255,255,255,.1); position: relative; }
 .match-card .card-header span { color: #a2b2a8; }
-.matchup { display: grid; grid-template-columns: 1fr 100px 1fr; align-items: center; text-align: center; min-height: 215px; padding: 20px; position: relative; }
+.matchup { display: grid; grid-template-columns: 1fr 130px 1fr; align-items: center; text-align: center; min-height: 215px; padding: 20px; position: relative; }
 .team-badge { margin: 0 auto 12px; display: grid; place-items: center; width: 68px; height: 76px; clip-path: polygon(50% 0, 94% 18%, 86% 76%, 50% 100%, 14% 76%, 6% 18%); font: 800 20px "Barlow Condensed"; }
 .team h4 { margin: 0; font: 700 19px "Barlow Condensed"; text-transform: uppercase; }
-.team p { color: #90a198; font-size: 11px; margin: 5px 0; }
-.versus strong { display: block; color: var(--lime); font: 800 28px "Barlow Condensed"; }
+.versus { display: grid; justify-items: center; gap: 5px; }
+.versus strong { display: block; color: var(--lime); font: 800 36px/1 "Barlow Condensed"; }
 .versus small { color: #6f8378; text-transform: uppercase; font-size: 9px; letter-spacing: 1.4px; }
+.versus span, .versus time { color: #b8c7be; font-size: 11px; font-style: normal; font-weight: 700; letter-spacing: 1.2px; line-height: 1.3; text-transform: uppercase; }
 .last-score { font: 800 46px "Barlow Condensed"; color: #fff; }
 
 .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -403,7 +404,9 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .page-heading h2 { font-size: 30px; }
   .page-heading > p { display: none; }
   .metric-grid { grid-template-columns: 1fr; }
-  .matchup { grid-template-columns: 1fr 54px 1fr; padding: 12px; }
+  .matchup { grid-template-columns: 1fr 82px 1fr; padding: 12px; }
+  .versus strong { font-size: 31px; }
+  .versus span, .versus time { font-size: 9px; letter-spacing: .7px; }
   .team-badge { width: 52px; height: 59px; }
   .team h4 { font-size: 15px; }
   .stadium-hero { grid-template-columns: 1fr; }
