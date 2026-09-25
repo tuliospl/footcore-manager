@@ -26,7 +26,7 @@ import {
   makeTransferOffer,
   getClubListing,
   acceptClubListing,
-  loanOutAcademyGraduate,
+  loanOutPlayer,
   acceptIncomingOffer,
   counterIncomingOffer,
   sellPlayer,
@@ -359,13 +359,13 @@ function renderSquad() {
   const starters = new Set(getLineup(club).map(player => player.id));
   content.innerHTML = `${pageHeading("Gestão esportiva", "Elenco", `${squad.length} no clube${ownedLoans.length ? ` · ${ownedLoans.length} emprestado${ownedLoans.length === 1 ? "" : "s"}` : ""}`)}
     <div class="page-heading"><button class="secondary-button" data-go="lineup">Montar escalação</button><div class="toolbar"><label for="tactic">Postura tática</label><select id="tactic"><option value="defensivo" ${club.tactic === "defensivo" ? "selected" : ""}>Defensiva</option><option value="equilibrado" ${club.tactic === "equilibrado" ? "selected" : ""}>Equilibrada</option><option value="ofensivo" ${club.tactic === "ofensivo" ? "selected" : ""}>Ofensiva</option></select></div></div>
-    <p class="view-note">Clique em qualquer parte da linha de um atleta para abrir sua ficha completa. Defina titulares e reservas na tela Escalação. Contratos vencem ao fim da temporada indicada; renove antes de concluir a última rodada. Geral e potencial variam com idade e desempenho acumulado.</p>
+    <p class="view-note">Clique em qualquer parte da linha de um atleta para abrir sua ficha completa. Defina titulares e reservas na tela Escalação. Qualquer atleta próprio pode ser emprestado quando houver um destino com chance de jogo, preservando o elenco mínimo e ao menos um goleiro. Contratos vencem ao fim da temporada indicada; renove antes de concluir a última rodada.</p>
     <section class="card data-card"><table class="data-table"><thead><tr>${squadColumns.map(column => {
       const active = squadSort.key === column.key;
       const next = active ? squadSort.direction === "asc" ? "desc" : "asc" : column.direction;
       return `<th scope="col" class="sortable-heading" aria-sort="${active ? squadSort.direction === "asc" ? "ascending" : "descending" : "none"}"><button type="button" data-squad-sort="${column.key}" title="Ordenar por ${column.label.toLocaleLowerCase("pt-BR")} em ordem ${next === "asc" ? "crescente" : "decrescente"}">${column.label}<span aria-hidden="true">${active ? squadSort.direction === "asc" ? "↑" : "↓" : "↕"}</span></button></th>`;
     }).join("")}<th scope="col">Contrato</th><th scope="col"></th></tr></thead><tbody>
-    ${squad.map(player => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="squad" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><strong>${escapeHtml(player.name)}</strong>${loanDescription(player)}<small>${playerAvailabilityStatus(player, playerSquadRole(club, player, starters))} · Moral ${player.morale}</small><small class="discipline-status">${playerDisciplineStatus(player)}</small><small>${developmentLabel(player, game.season)}</small></td><td><span class="position-pill">${player.position}</span></td><td>${player.age}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${player.potential}</td><td>${formatMoney(player.value)}</td><td>${player.loan ? 'Empréstimo' : `Até o fim de ${contractLabel(player.contractEndSeason)}<small>${player.releaseClause ? `Multa: ${formatMoney(player.releaseClause)}` : "Sem multa rescisória"}</small>${player.contractEndSeason===game.season?'<small>Vence nesta temporada</small>':''}${player.contractEndSeason<game.season+2?`<button class="action-button" data-renew="${player.id}">Renovar · ${formatMoney(player.salary*4)}</button>`:''}`}</td><td>${player.loan ? `<span class="view-note">Empréstimo</span>` : `${player.academyGraduate && player.age <= 23 ? `<button class="action-button" data-loan-out="${player.id}">Emprestar</button>` : ""}<button class="action-button" data-sell="${player.id}">Vender</button>`}</td></tr>`).join("")}
+    ${squad.map(player => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="squad" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><strong>${escapeHtml(player.name)}</strong>${loanDescription(player)}<small>${playerAvailabilityStatus(player, playerSquadRole(club, player, starters))} · Moral ${player.morale}</small><small class="discipline-status">${playerDisciplineStatus(player)}</small><small>${developmentLabel(player, game.season)}</small></td><td><span class="position-pill">${player.position}</span></td><td>${player.age}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${player.potential}</td><td>${formatMoney(player.value)}</td><td>${player.loan ? 'Empréstimo' : `Até o fim de ${contractLabel(player.contractEndSeason)}<small>${player.releaseClause ? `Multa: ${formatMoney(player.releaseClause)}` : "Sem multa rescisória"}</small>${player.contractEndSeason===game.season?'<small>Vence nesta temporada</small>':''}${player.contractEndSeason<game.season+2?`<button class="action-button" data-renew="${player.id}">Renovar · ${formatMoney(player.salary*4)}</button>`:''}`}</td><td>${player.loan ? `<span class="view-note">Empréstimo</span>` : `<button class="action-button" data-loan-out="${player.id}">Emprestar</button><button class="action-button" data-sell="${player.id}">Vender</button>`}</td></tr>`).join("")}
     </tbody></table></section>${ownedLoans.length ? `<section class="card data-card"><div class="card-header"><h3>Emprestados pelo clube</h3><span>Retorno ao fim da temporada</span></div><table class="data-table"><thead><tr><th>Atleta</th><th>Pos.</th><th>Clube atual</th><th>Geral</th><th>Jogos no empréstimo</th><th>Evolução</th></tr></thead><tbody>${ownedLoans.map(({player, borrower}) => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="squad" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><strong>${escapeHtml(player.name)}</strong></td><td><span class="position-pill">${player.position}</span></td><td>${escapeHtml(borrower.name)}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${Math.max(0, (player.appearances ?? 0) - (player.loan.startAppearances ?? 0))}</td><td>${developmentLabel(player, game.season)}</td></tr>`).join("")}</tbody></table></section>` : ""}`;
 }
 
@@ -398,7 +398,7 @@ function renderPlayerDetails() {
       ? `<button class="primary-button" data-offer="${player.id}" data-club="${club.id}">${listing.type === "loan" ? "Contratar empréstimo" : `Comprar · ${formatMoney(listing.price)}`}</button>`
       : `<button class="primary-button" data-offer="${player.id}" data-club="${club.id}">${terms?.available ? "Fazer proposta" : "Ver situação"}</button>`;
   const actions = ownPlayer
-    ? `${loanedOut ? `<span class="view-note">Emprestado ao ${escapeHtml(club.name)} até o fim da temporada</span>` : player.loan ? `<span class="view-note">Atleta emprestado</span>` : `${player.contractEndSeason < game.season + 2 ? `<button class="secondary-button" data-renew="${player.id}">Renovar · ${formatMoney(player.salary * 4)}</button>` : ""}${player.academyGraduate && player.age <= 23 ? `<button class="secondary-button" data-loan-out="${player.id}">Emprestar jovem</button>` : ""}<button class="danger-button" data-sell="${player.id}">Vender jogador</button>`}`
+    ? `${loanedOut ? `<span class="view-note">Emprestado ao ${escapeHtml(club.name)} até o fim da temporada</span>` : player.loan ? `<span class="view-note">Atleta emprestado</span>` : `${player.contractEndSeason < game.season + 2 ? `<button class="secondary-button" data-renew="${player.id}">Renovar · ${formatMoney(player.salary * 4)}</button>` : ""}<button class="secondary-button" data-loan-out="${player.id}">Emprestar jogador</button><button class="danger-button" data-sell="${player.id}">Vender jogador</button>`}`
     : marketAction;
   const contract = !club ? "Livre de contrato" : player.loan ? "Empréstimo" : `Até o fim de ${contractLabel(player.contractEndSeason)}`;
   const seasonHistory = [...(player.seasonHistory || [])].reverse();
@@ -1055,7 +1055,7 @@ content.addEventListener("click", event => {
   }
   const loanOut = event.target.closest("[data-loan-out]");
   if (loanOut) {
-    const result = loanOutAcademyGraduate(game, loanOut.dataset.loanOut);
+    const result = loanOutPlayer(game, loanOut.dataset.loanOut);
     if (result.ok) saveGame();
     showToast(result.message, !result.ok); render(); return;
   }

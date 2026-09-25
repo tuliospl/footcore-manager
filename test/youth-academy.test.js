@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGame, advanceWeek, getUserClub, sellPlayer, loanOutAcademyGraduate } from "../src/core.js";
+import { createGame, advanceWeek, getUserClub, sellPlayer, loanOutAcademyGraduate, loanOutPlayer } from "../src/core.js";
 import {
   advanceYouthAcademy,
   ageYouthAcademy,
@@ -134,6 +134,23 @@ test("academy graduates can develop on loan and return automatically", () => {
   assert.equal(player.loan, undefined);
   assert.ok(player.appearances >= 8);
   assert.ok(player.overall > startingOverall);
+});
+
+test("any owned player can be loaned when another club offers playing time", () => {
+  const game = createGame(322);
+  const owner = getUserClub(game);
+  owner.reputation = 95;
+  const player = owner.squad.find(item => item.position !== "GOL" && !item.academyGraduate);
+  player.age = 27;
+  player.overall = 72;
+  player.potential = 78;
+  const result = loanOutPlayer(game, player.id);
+  assert.equal(result.ok, true);
+  assert.ok(!owner.squad.includes(player));
+  const borrower = game.clubs.find(club => club.id === player.loan.borrowerClubId);
+  assert.ok(borrower.squad.includes(player));
+  assert.equal(player.loan.developmentLoan, true);
+  assert.equal(player.loan.ownerClubId, owner.id);
 });
 
 test("academy prospects sort by every visible column without mutating their saved order", () => {

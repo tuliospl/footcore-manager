@@ -1242,26 +1242,26 @@ export function acceptClubListing(game, sellerId, playerId, type, quotedPrice) {
   return result;
 }
 
-export function loanOutAcademyGraduate(game, playerId) {
+export function loanOutPlayer(game, playerId) {
   if (game.activeMatch) return { ok: false, message: "Empréstimos ficam fechados durante a partida." };
   if (game.finished) return { ok: false, message: "Inicie a próxima temporada antes de negociar um empréstimo." };
   ensureCareerManagement(game);
   const owner = getUserClub(game);
   const player = owner.squad.find(item => item.id === playerId);
   if (!player) return { ok: false, message: "Atleta não encontrado no elenco." };
-  if (!player.academyGraduate || player.age > 23) return { ok: false, message: "A opção é destinada a atletas da base com até 23 anos." };
   if (!canTransferOut(owner, player)) return { ok: false, message: "O elenco não permite este empréstimo agora." };
   const limit = game.leagues ? 40 : 24;
   const ownerAverage = clubAverage(owner);
   const candidates = game.clubs.filter(club => club.id !== owner.id && squadSlots(game, club.id) < limit).map(club => {
-    const peers = club.squad.filter(item => item.position === player.position && !item.loan).sort((first, second) => second.overall - first.overall);
-    const competition = peers[0]?.overall ?? clubAverage(club);
+    const peers = getLineup(club).filter(item => item.position === player.position && !item.loan);
+    const competition = peers.length ? Math.min(...peers.map(item => item.overall)) : clubAverage(club);
     const smallerClub = club.reputation < owner.reputation || clubAverage(club) < ownerAverage - 1;
-    const playingChance = player.overall >= competition - 2;
-    return { club, competition, smallerClub, playingChance, score: (playingChance ? 100 : 0) + (smallerClub ? 30 : 0) - Math.abs(player.overall - competition) };
+    const playingChance = player.overall >= competition - 3;
+    const developmentFit = Math.max(0, player.potential - player.overall);
+    return { club, competition, smallerClub, playingChance, score: (playingChance ? 100 : 0) + (smallerClub ? 30 : 0) + Math.min(10, developmentFit) - Math.abs(player.overall - competition) };
   }).filter(entry => entry.playingChance).sort((first, second) => second.score - first.score || first.club.reputation - second.club.reputation);
   const destination = candidates.find(entry => entry.smallerClub)?.club || candidates[0]?.club;
-  if (!destination) return { ok: false, message: "Nenhum clube oferece espaço adequado para este jovem no momento." };
+  if (!destination) return { ok: false, message: "Nenhum clube oferece espaço adequado para este atleta no momento." };
   owner.squad.splice(owner.squad.indexOf(player), 1);
   destination.squad.push(player);
   player.loan = {
@@ -1274,9 +1274,13 @@ export function loanOutAcademyGraduate(game, playerId) {
     startAppearances: player.appearances ?? 0
   };
   if (owner.lineup) ensureLineup(owner);
-  game.news.unshift({ id: `academy-loan-${game.season}-${game.week}-${player.id}`, type: "info", title: `${player.name} foi emprestado`, body: `${destination.name} receberá o jovem até o fim da temporada e pagará seu salário enquanto ele estiver no clube.` });
+  game.news.unshift({ id: `loan-out-${game.season}-${game.week}-${player.id}`, type: "info", title: `${player.name} foi emprestado`, body: `${destination.name} receberá o atleta até o fim da temporada, terá espaço para utilizá-lo e pagará seu salário durante o período.` });
   game.news = game.news.slice(0, 200);
   return { ok: true, message: `${player.name} foi emprestado ao ${destination.name} até o fim da temporada.` };
+}
+
+export function loanOutAcademyGraduate(game, playerId) {
+  return loanOutPlayer(game, playerId);
 }
 
 function returnExpiredLoans(game) {
