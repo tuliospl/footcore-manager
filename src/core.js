@@ -1405,7 +1405,7 @@ function finalizeOutgoingTransfer(game, offer, seller, player, exchangePlayer, a
   recordDeal(game, seller, player, amount, result, exchangePlayer);
   game.transferDeals = [{ ...offer, amount, exchangePlayerId: exchangePlayer?.id ?? null, exchangePlayerName: exchangePlayer?.name ?? null, sellerName: seller.name, buyerId: buyer.id, buyerName: buyer.name, status: "accepted" }, ...(game.transferDeals || [])].slice(0, 50);
   game.news.unshift({ id: `outgoing-accepted-${offer.id}`, type: "positive", title: `${seller.name} aceitou sua proposta`, body: `${player.name} foi contratado por ${formatMoney(amount)}${exchangeText}.` });
-  return true;
+  return result;
 }
 
 function resolveOutgoingOffers(game) {
@@ -1461,7 +1461,7 @@ function resolveOutgoingOffers(game) {
     const playerRequest = requestedPlayer ? ` mais ${requestedPlayer.name}` : "";
     const result = { status: "counter", counterOffer: offer.counterAmount, exchangeCredit: requestedCredit, message: `${seller.name} respondeu com ${formatMoney(offer.counterAmount)}${playerRequest}. Você pode aceitar, reduzir o valor ou oferecer outro atleta.` };
     recordDeal(game, seller, player, offer.amount, result, exchangePlayer);
-    game.news.unshift({ id: `outgoing-counter-${offer.id}-${offer.attempt}`, type: "info", title: `${seller.name} enviou uma contraproposta`, body: result.message });
+    game.news.unshift({ id: `outgoing-counter-${offer.id}-${offer.attempt}`, offerId: offer.id, type: "info", title: `${seller.name} enviou uma contraproposta`, body: result.message });
   }
   game.news = game.news.slice(0, 200);
 }
@@ -1473,6 +1473,28 @@ export function cancelOutgoingOffer(game, offerId) {
   if (index < 0) return { ok: false, message: "Esta negociação não está mais ativa." };
   const [offer] = game.outgoingOffers.splice(index, 1);
   return { ok: true, message: `Negociação por ${offer.playerName} encerrada.` };
+}
+
+export function acceptOutgoingCounter(game, offerId) {
+  if (game.activeMatch) return { ok: false, message: "Conclua a partida antes de responder à contraproposta." };
+  ensureCareerManagement(game);
+  const index = game.outgoingOffers.findIndex(offer => offer.id === offerId && offer.status === "counter");
+  if (index < 0) return { ok: false, message: "Esta contraproposta não está mais disponível." };
+  const offer = game.outgoingOffers[index];
+  const seller = getClub(game, offer.sellerId);
+  const buyer = getUserClub(game);
+  const player = seller?.squad.find(item => item.id === offer.playerId);
+  const exchangePlayer = offer.requestedExchangePlayerId ? buyer.squad.find(item => item.id === offer.requestedExchangePlayerId) : null;
+  const terms = seller && player ? getTransferTerms(game, seller.id, player.id) : null;
+  if (!seller || !player || !terms?.available) return { ok: false, message: "As condições mudaram e o clube retirou a contraproposta." };
+  if (!Number.isSafeInteger(offer.counterAmount) || offer.counterAmount < 0 || offer.counterAmount > buyer.budget) return { ok: false, message: "Seu caixa não cobre esta contraproposta." };
+  if (offer.requestedExchangePlayerId && !exchangePlayer) return { ok: false, message: "O jogador solicitado não está mais disponível no seu elenco." };
+  if (!exchangePlayer && squadSlots(game, buyer.id) >= (game.leagues ? 40 : 24)) return { ok: false, message: "Seu elenco está cheio. Renegocie incluindo um atleta na troca." };
+  if (exchangePlayer && (!canCompleteExchange(game, buyer, exchangePlayer, player) || !canCompleteExchange(game, seller, player, exchangePlayer))) return { ok: false, message: "A troca deixaria um dos clubes sem elenco mínimo ou sem goleiro." };
+  const result = finalizeOutgoingTransfer(game, offer, seller, player, exchangePlayer, offer.counterAmount, terms);
+  if (!result) return { ok: false, message: "A transferência não pôde ser concluída com este pacote." };
+  game.outgoingOffers.splice(index, 1);
+  return result;
 }
 
 export function makeTransferOffer(game, sellerId, playerId, amount, exchangePlayerId = null) {

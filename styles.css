@@ -380,10 +380,11 @@ dialog h2 { margin: 0; font: 800 28px "Barlow Condensed"; text-transform: upperc
 dialog p { color: var(--muted); line-height: 1.5; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
 .mail-list { display: grid; }
-.mail-item { width: 100%; display: grid; grid-template-columns: 10px 1fr; gap: 12px; border: 0; border-bottom: 1px solid var(--line); padding: 18px 20px; background: var(--card); color: var(--ink); text-align: left; }
+.mail-item { width: 100%; border-bottom: 1px solid var(--line); background: var(--card); color: var(--ink); }
 .mail-item:last-child { border-bottom: 0; }
 .mail-item:hover { background: #f4f7ed; }
 .mail-item.unread { background: #f7fbdc; }
+.mail-open { width: 100%; display: grid; grid-template-columns: 10px 1fr; gap: 12px; border: 0; padding: 18px 20px; background: transparent; color: inherit; text-align: left; }
 .mail-status { width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: transparent; }
 .mail-item.unread .mail-status { background: var(--lime); box-shadow: 0 0 0 3px rgba(216,255,67,.25); }
 .mail-copy { display: grid; gap: 5px; }
@@ -391,6 +392,10 @@ dialog p { color: var(--muted); line-height: 1.5; }
 .mail-copy strong { font-size: 15px; }
 .mail-copy > span { color: var(--muted); line-height: 1.5; }
 .mail-copy em { color: #8b948d; font-size: 10px; font-style: normal; }
+.mail-copy b { width: max-content; margin-top: 3px; color: var(--forest-2); font-size: 12px; text-decoration: underline; }
+.mail-negotiation-actions { padding: 0 20px 18px 42px; }
+.mail-negotiation-actions p { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+.mail-negotiation-actions > div { display: flex; flex-wrap: wrap; gap: 8px; }
 
 @media (max-width: 1050px) {
   .top-stats div:nth-child(1) { display: none; }
@@ -776,6 +781,8 @@ button:focus-visible { outline: 3px solid #5b99d4; outline-offset: 3px; }
   .incoming-offer > div:last-child { display: grid; grid-template-columns: 1fr 1fr; }
   .active-negotiation { align-items: stretch; flex-direction: column; }
   .active-negotiation > div:last-child { display: grid; grid-template-columns: 1fr 1fr; }
+  .mail-negotiation-actions { padding-left: 20px; }
+  .mail-negotiation-actions > div { display: grid; grid-template-columns: 1fr; }
   .player-profile-hero { grid-template-columns: 82px minmax(0, 1fr); gap: 16px; padding: 18px; }
   .player-profile-overall { width: 76px; height: 76px; }
   .player-profile-overall strong { font-size: 34px; }

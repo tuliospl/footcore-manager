@@ -29,6 +29,7 @@ import {
   acceptClubListing,
   loanOutPlayer,
   acceptIncomingOffer,
+  acceptOutgoingCounter,
   counterIncomingOffer,
   cancelOutgoingOffer,
   sellPlayer,
@@ -83,6 +84,7 @@ let selectedPlayerDetailId = null;
 let playerDetailReturnView = "squad";
 let selectedClubDetailId = null;
 let clubDetailReturnView = "dashboard";
+let selectedMailId = null;
 const squadSort = { key: "overall", direction: "desc" };
 const academySort = { key: "potential", direction: "desc" };
 const academyColumns = [
@@ -277,11 +279,15 @@ function renderIncomingOffers() {
 
 function mailCategory(message) {
   const text = `${message.id} ${message.title}`.toLocaleLowerCase("pt-BR");
-  if (/offer|transfer|buy-|sell-|listing|empréstimo|contrat/.test(text)) return { label: "Mercado", sender: "Diretoria de futebol" };
+  if (/offer|outgoing|transfer|proposta|buy-|sell-|listing|empréstimo|contrat/.test(text)) return { label: "Mercado", sender: "Diretoria de futebol" };
   if (/injury|lesion|suspens|yellow|red-/.test(text)) return { label: "Departamento médico", sender: "Comissão técnica" };
   if (/award|prize|champion|premia|acesso|rebaixamento|division/.test(text)) return { label: "Competições", sender: "Organização da liga" };
   if (/academy|scout|base/.test(text)) return { label: "Categoria de base", sender: "Coordenação da base" };
   return { label: "Clube", sender: "Secretaria do clube" };
+}
+
+function outgoingOfferForMessage(message) {
+  return (game.outgoingOffers || []).find(offer => offer.status === "counter" && (message.offerId === offer.id || message.id === `outgoing-counter-${offer.id}-${offer.attempt}`));
 }
 
 function renderMail() {
@@ -291,7 +297,9 @@ function renderMail() {
     <section class="card mail-card"><div class="card-header"><h3>Caixa de entrada</h3><button class="text-button" data-mail-read-all ${unread ? "" : "disabled"}>Marcar todas como lidas</button></div>
     <div class="mail-list">${messages.length ? messages.map(message => {
       const category = mailCategory(message);
-      return `<button class="mail-item ${message.read === true ? "" : "unread"}" data-mail-read="${escapeHtml(message.id)}"><span class="mail-status"></span><span class="mail-copy"><small>${escapeHtml(category.sender)} · ${escapeHtml(category.label)}</small><strong>${escapeHtml(message.title)}</strong><span>${escapeHtml(message.body)}</span><em>Temporada ${message.season ?? game.season} · Rodada ${(message.week ?? game.week) + 1}</em></span></button>`;
+      const offer = outgoingOfferForMessage(message);
+      const expanded = offer && selectedMailId === message.id;
+      return `<article class="mail-item ${message.read === true ? "" : "unread"} ${expanded ? "expanded" : ""}"><button class="mail-open" data-mail-read="${escapeHtml(message.id)}" ${offer ? `aria-expanded="${expanded}"` : ""}><span class="mail-status"></span><span class="mail-copy"><small>${escapeHtml(category.sender)} · ${escapeHtml(category.label)}</small><strong>${escapeHtml(message.title)}</strong><span>${escapeHtml(message.body)}</span><em>Temporada ${message.season ?? game.season} · Rodada ${(message.week ?? game.week) + 1}</em>${offer ? `<b>${expanded ? "Fechar opções" : "Clique para responder"}</b>` : ""}</span></button>${expanded ? `<div class="mail-negotiation-actions"><p>A contraproposta vale até a rodada ${offer.expiresWeek}. Escolha como responder:</p><div><button class="secondary-button" data-mail-counter-reject="${offer.id}">Rejeitar</button><button class="secondary-button" data-mail-counter-negotiate="${offer.id}">Fazer outra proposta</button><button class="primary-button" data-mail-counter-accept="${offer.id}">Aceitar contraproposta</button></div></div>` : ""}</article>`;
     }).join("") : `<div class="empty-state">Nenhuma mensagem recebida.</div>`}</div></section>`;
 }
 
@@ -1103,8 +1111,31 @@ content.addEventListener("click", event => {
   const mailMessage = event.target.closest("[data-mail-read]");
   if (mailMessage) {
     const message = game.news.find(item => item.id === mailMessage.dataset.mailRead);
-    if (message && message.read !== true) { message.read = true; saveGame(); render(); }
+    if (message) {
+      const actionable = outgoingOfferForMessage(message);
+      selectedMailId = actionable && selectedMailId !== message.id ? message.id : null;
+      if (message.read !== true) { message.read = true; saveGame(); }
+      render();
+    }
     return;
+  }
+  const mailCounterAcceptance = event.target.closest("[data-mail-counter-accept]");
+  if (mailCounterAcceptance) {
+    const result = acceptOutgoingCounter(game, mailCounterAcceptance.dataset.mailCounterAccept);
+    if (result.ok) { selectedMailId = null; saveGame(); }
+    showToast(result.message, !result.ok); render(); return;
+  }
+  const mailCounterNegotiation = event.target.closest("[data-mail-counter-negotiate]");
+  if (mailCounterNegotiation) {
+    const negotiation = (game.outgoingOffers || []).find(offer => offer.id === mailCounterNegotiation.dataset.mailCounterNegotiate);
+    if (negotiation) openOffer(negotiation.sellerId, negotiation.playerId);
+    return;
+  }
+  const mailCounterRejection = event.target.closest("[data-mail-counter-reject]");
+  if (mailCounterRejection) {
+    const result = cancelOutgoingOffer(game, mailCounterRejection.dataset.mailCounterReject);
+    if (result.ok) { selectedMailId = null; saveGame(); }
+    showToast(result.ok ? "Contraproposta rejeitada e negociação encerrada." : result.message, !result.ok); render(); return;
   }
   if (event.target.closest("[data-mail-read-all]")) {
     clubMail().forEach(item => { item.read = true; });

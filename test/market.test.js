@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGame, getUserClub, getTransferTerms, searchTransferMarket, makeTransferOffer, advanceWeek } from "../src/core.js";
+import { createGame, getUserClub, getTransferTerms, searchTransferMarket, makeTransferOffer, acceptOutgoingCounter, advanceWeek } from "../src/core.js";
 
 function fixture() {
   const game = createGame(42);
@@ -77,6 +77,21 @@ test("clubs answer after one or two rounds and a negotiated counteroffer can be 
   const after = JSON.stringify(game);
   assert.equal(makeTransferOffer(game, seller.id, player.id, acceptedAmount).status, "invalid");
   assert.equal(JSON.stringify(game), after);
+});
+
+test("a received counteroffer can be accepted immediately from the inbox", () => {
+  const { game, buyer, seller } = fixture();
+  const player = seller.squad[9];
+  const terms = getTransferTerms(game, seller.id, player.id);
+  const openingAmount = Math.ceil(terms.minimumPrice * 0.72 / 1000) * 1000;
+  assert.equal(makeTransferOffer(game, seller.id, player.id, openingAmount).status, "pending");
+  const offer = game.outgoingOffers[0];
+  assert.equal(advanceUntilAnswer(game, offer), "counter");
+  const result = acceptOutgoingCounter(game, offer.id);
+  assert.equal(result.ok, true);
+  assert.ok(buyer.squad.includes(player));
+  assert.ok(!seller.squad.includes(player));
+  assert.equal(game.outgoingOffers.length, 0);
 });
 
 test("a purchase can combine cash and a player without duplicating either athlete", () => {
