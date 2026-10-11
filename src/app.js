@@ -11,6 +11,7 @@ import { teamShirtMarkup } from "./team-shirt.js";
 import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel, sponsorshipCommercialProfile } from "./sponsorships.js";
 import { fanbaseProfile } from "./fans.js";
 import { ensureStadiumOperations, setStadiumTicketPrice, stadiumExpansionQuote, stadiumFacilityQuote, stadiumRevenueProjection, startStadiumProject, STADIUM_FACILITIES, STADIUM_SECTORS } from "./stadium.js";
+import { competitionGroups, competitionTable, ensureParallelCompetitions, parallelCompetition, pendingCompetitionFixture } from "./competitions.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -191,7 +192,7 @@ function showToast(message, isError = false) {
 
 function nextFixture() {
   if (game.finished) return null;
-  return game.schedule[game.week].find(match => match.homeId === game.userClubId || match.awayId === game.userClubId);
+  return pendingCompetitionFixture(game) || game.schedule[game.week].find(match => match.homeId === game.userClubId || match.awayId === game.userClubId);
 }
 
 function pageHeading(kicker, title, side = "") {
@@ -235,12 +236,14 @@ function renderMatchCard() {
   }
   const home = getClub(game, fixture.homeId);
   const away = getClub(game, fixture.awayId);
+  const competitionName = fixture.competitionName || "Campeonato";
+  const roundLabel = fixture.competitionRound || `Rodada ${game.week + 1}`;
   const team = club => `<div class="team">${club.id === game.userClubId ? badge(club, "team-badge") : `<button type="button" class="match-team-badge" data-club-details="${club.id}" aria-label="Ver elenco do ${escapeHtml(club.name)}">${badge(club, "team-badge")}</button>`}<h4>${escapeHtml(club.name)}</h4></div>`;
   return `<section class="card match-card">
-    <div class="card-header"><h3>Próximo jogo</h3><span>Rodada ${game.week + 1} · ${escapeHtml(home.stadium.name)}</span></div>
+    <div class="card-header"><h3>Próximo jogo</h3><span>${escapeHtml(roundLabel)} · ${escapeHtml(home.stadium.name)}</span></div>
     <div class="matchup">
       ${team(home)}
-      <div class="versus"><span>Campeonato</span><strong>VS</strong><time>Domingo · 16h</time></div>
+      <div class="versus"><span>${escapeHtml(competitionName)}</span><strong>VS</strong><time>${fixture.competitionId ? "Jogo de copa" : "Domingo · 16h"}</time></div>
       ${team(away)}
     </div>
   </section>`;
@@ -634,8 +637,55 @@ offerDialog.addEventListener("submit", event => {
 });
 offerDialog.addEventListener("close", () => { offerTarget = null; });
 
+function competitionPicker(selectedId) {
+  const competitions = ensureParallelCompetitions(game).items;
+  return `<label class="competition-picker">Ver competição<select id="competition-league"><optgroup label="Campeonatos nacionais">${(game.leagues || []).map(league => `<option value="${league.id}" ${league.id === selectedId ? "selected" : ""}>${escapeHtml(league.country)} · ${escapeHtml(league.name)}</option>`).join("")}</optgroup><optgroup label="Copas e torneios internacionais">${competitions.map(competition => `<option value="${competition.id}" ${competition.id === selectedId ? "selected" : ""}>${escapeHtml(competition.name)}</option>`).join("")}</optgroup></select></label>`;
+}
+
+function competitionRows(rows) {
+  return rows.map((row, index) => {
+    const club = getClub(game, row.clubId);
+    return `<tr class="${club.id === game.userClubId ? "user-row" : ""}"><td><strong>${index + 1}</strong></td><td class="player-name"><button class="player-detail-link" data-club-details="${club.id}">${escapeHtml(club.name)}</button></td><td>${row.played}</td><td>${row.wins}</td><td>${row.draws}</td><td>${row.losses}</td><td>${row.gf}</td><td>${row.ga}</td><td>${row.gf - row.ga}</td><td><strong>${row.points}</strong></td></tr>`;
+  }).join("");
+}
+
+function competitionTableMarkup(rows, title = "Classificação") {
+  return `<section class="card data-card competition-table"><div class="card-header"><h3>${escapeHtml(title)}</h3></div><div class="table-scroll"><table class="data-table"><thead><tr><th>#</th><th>Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>PTS</th></tr></thead><tbody>${competitionRows(rows)}</tbody></table></div></section>`;
+}
+
+function renderParallelCompetition(competition) {
+  const formatLabel = competition.format === "groups" ? "Fase de grupos e mata-mata" : competition.format === "league" ? "Fase de liga e mata-mata" : "Mata-mata";
+  const currentFixtures = (competition.currentFixtures || []).map(fixture => {
+    const home = getClub(game, fixture.homeId);
+    const away = getClub(game, fixture.awayId);
+    return `<div class="competition-fixture ${fixture.homeId === game.userClubId || fixture.awayId === game.userClubId ? "user-fixture" : ""}"><span>${escapeHtml(home.shortName)}</span><strong>×</strong><span>${escapeHtml(away.shortName)}</span></div>`;
+  }).join("");
+  const recent = competition.history.at(-1);
+  const recentResults = (recent?.results || []).map(result => {
+    const home = getClub(game, result.homeId);
+    const away = getClub(game, result.awayId);
+    const penalties = result.penaltyWinnerId ? ` · ${escapeHtml(getClub(game, result.penaltyWinnerId).shortName)} nos pênaltis` : "";
+    return `<div class="competition-fixture"><span>${escapeHtml(home.shortName)}</span><strong>${result.homeGoals} × ${result.awayGoals}</strong><span>${escapeHtml(away.shortName)}</span><small>${penalties}</small></div>`;
+  }).join("");
+  const phaseContent = competition.phase === "groups"
+    ? `<div class="competition-groups">${competitionGroups(competition).map(group => competitionTableMarkup(group.table, `Grupo ${group.id}`)).join("")}</div>`
+    : competition.phase === "league" ? competitionTableMarkup(competitionTable(competition), "Classificação da fase de liga") : "";
+  content.innerHTML = `${pageHeading("Competições paralelas", escapeHtml(competition.name), `${competition.participants.length} clubes · ${formatLabel}`)}
+    ${competitionPicker(competition.id)}
+    <section class="card competition-overview"><div class="card-body"><div><small>Fase atual</small><strong>${escapeHtml(competition.roundLabel)}</strong></div><div><small>Premiação do campeão</small><strong>${formatMoney(competition.championPrize)}</strong></div><div><small>Status</small><strong>${competition.finished ? `Campeão: ${escapeHtml(getClub(game, competition.championId)?.name || "Definido")}` : competition.awaitingUser ? "Aguardando seu jogo" : "Em andamento"}</strong></div></div></section>
+    ${currentFixtures ? `<section class="card"><div class="card-header"><h3>${escapeHtml(competition.roundLabel)}</h3><span>Próximos confrontos</span></div><div class="competition-fixtures">${currentFixtures}</div></section>` : ""}
+    ${phaseContent}
+    ${recentResults ? `<section class="card"><div class="card-header"><h3>${escapeHtml(recent.label)}</h3><span>Últimos resultados</span></div><div class="competition-fixtures">${recentResults}</div></section>` : ""}`;
+}
+
 function renderCompetition() {
-  const league = game.leagues?.find(l=>l.id===(competitionLeagueId || game.leagueId));
+  const selectedId = competitionLeagueId || game.leagueId;
+  const parallel = parallelCompetition(game, selectedId);
+  if (parallel) {
+    renderParallelCompetition(parallel);
+    return;
+  }
+  const league = game.leagues?.find(l=>l.id===selectedId);
   const rules = league ? leagueSeasonRules(game, league.id) : { promotionPlaces: 0, relegationPlaces: 0, championPrize: 0, lastPrize: 0 };
   const latestAwards = game.lastSeasonPlayerAwards?.leagues.find(item => item.leagueId === (league?.id || "national"))?.awards || [];
   const rows = getSortedTable(game, league?.id).map((row, index) => {
@@ -645,7 +695,7 @@ function renderCompetition() {
   }).join("");
   const history = getUserClub(game).history;
   content.innerHTML = `${pageHeading(league ? `${league.country} · ${seasonLabel(game, league.id)}` : "Liga nacional", league ? escapeHtml(league.name) : "Campeonato", `${league?.schedule.length ?? game.schedule.length} rodadas · turno e returno`)}
-    ${game.leagues ? `<label class="competition-picker">Ver campeonato<select id="competition-league">${game.leagues.map(l=>`<option value="${l.id}" ${l.id===league.id?'selected':''}>${escapeHtml(l.country)} · ${escapeHtml(l.name)}</option>`).join('')}</select></label><p class="view-note">${escapeHtml(league.note)}</p><p class="view-note">${rules.promotionPlaces ? `${rules.promotionPlaces} clube${rules.promotionPlaces === 1 ? " sobe" : "s sobem"} · ` : ""}${rules.relegationPlaces ? `${rules.relegationPlaces} clube${rules.relegationPlaces === 1 ? " desce" : "s descem"} · ` : ""}Premiação: ${formatMoney(rules.championPrize)} para o campeão até ${formatMoney(rules.lastPrize)} para a última colocação. Nível técnico médio: ${rules.qualityRating?.toFixed(1).replace(".", ",") || "—"} · valor médio dos principais atletas: ${rules.averagePlayerValue ? formatMoney(rules.averagePlayerValue) : "—"}. Os prêmios não têm teto e são recalculados conforme os elencos evoluem.</p>` : ''}
+    ${game.leagues ? `${competitionPicker(league.id)}<p class="view-note">${escapeHtml(league.note)}</p><p class="view-note">${rules.promotionPlaces ? `${rules.promotionPlaces} clube${rules.promotionPlaces === 1 ? " sobe" : "s sobem"} · ` : ""}${rules.relegationPlaces ? `${rules.relegationPlaces} clube${rules.relegationPlaces === 1 ? " desce" : "s descem"} · ` : ""}Premiação: ${formatMoney(rules.championPrize)} para o campeão até ${formatMoney(rules.lastPrize)} para a última colocação. Nível técnico médio: ${rules.qualityRating?.toFixed(1).replace(".", ",") || "—"} · valor médio dos principais atletas: ${rules.averagePlayerValue ? formatMoney(rules.averagePlayerValue) : "—"}. Os prêmios não têm teto e são recalculados conforme os elencos evoluem.</p>` : ''}
     <section class="card data-card"><table class="data-table"><thead><tr><th>#</th><th>Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>PTS</th></tr></thead><tbody>${rows}</tbody></table></section>`;
   if (latestAwards.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Prêmios individuais da temporada ${game.lastSeasonPlayerAwards.season}</h3><span>Um jogador pode vencer mais de uma categoria</span></div><div class="card-body">${latestAwards.map(award => `<p><strong>${escapeHtml(award.label)}:</strong> <button class="player-detail-link" data-player-details="${award.playerId}" data-player-return="competition">${escapeHtml(award.playerName)}</button> · ${escapeHtml(award.clubName)} · ${escapeHtml(award.statLabel)} · prêmio de ${formatMoney(award.money)}</p>`).join("")}</div></section>`;
   if (history.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Histórico do clube</h3></div><div class="card-body">${[...history].reverse().map(season => `<p>Temporada ${season.season} · ${season.leagueName ? `${escapeHtml(season.leagueName)} · ` : ""}${season.position}º lugar · ${season.points} pontos${season.position === 1 ? " · Campeão" : ""}${season.prizeMoney ? ` · ${formatMoney(season.prizeMoney)} pela colocação` : ""}${season.individualAwardsMoney ? ` · ${formatMoney(season.individualAwardsMoney)} por prêmios individuais` : ""}</p>`).join("")}</div></section>`;
@@ -659,6 +709,7 @@ const financeLabels = {
   emprestimos: "Empréstimos",
   premiacaoLiga: "Premiação da liga",
   premiosIndividuais: "Prêmios individuais",
+  copas: "Copas e torneios internacionais",
   estadio: "Ampliação do estádio",
   olheiros: "Categoria de base e olheiros",
   contratos: "Renovações de contrato",

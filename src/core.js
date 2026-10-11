@@ -14,6 +14,7 @@ import { ensureSeasonTracking, playerValueChanges, recordSeasonFinance, seasonFi
 import { ensureSponsorships, finishSponsorshipSeason, processSponsorshipRound, startSponsorshipSeason } from "./sponsorships.js";
 import { applyDivisionFanImpact, ensureFanbases, processFanRound, recordPlayerArrival, recordPlayerDeparture, settleFanSeason, startFanSeason } from "./fans.js";
 import { ensureStadiumOperations, medicalInjuryRisk, medicalRecoveryReduction, processStadiumRound, stadiumExpansionQuote, stadiumRevenueProjection, startStadiumProject } from "./stadium.js";
+import { completeCompetitionRound, ensureParallelCompetitions, pendingCompetitionFixture, processCompetitionCalendar } from "./competitions.js";
 
 const FIRST_NAMES = ["Caio", "Davi", "Enzo", "Felipe", "Gabriel", "Hugo", "João", "Léo", "Lucas", "Mateus", "Rafael", "Vitor"];
 const LAST_NAMES = ["Almeida", "Barbosa", "Costa", "Dias", "Ferreira", "Gomes", "Lima", "Mendes", "Nunes", "Oliveira", "Rocha", "Silva"];
@@ -196,6 +197,7 @@ export function ensureCareerManagement(game) {
   ensureContracts(game);
   ensureYouthAcademy(game);
   ensureSponsorships(game);
+  ensureParallelCompetitions(game);
   for (const club of game.clubs) club.markingIntensity = MARKING_STYLES[club.markingIntensity] ? club.markingIntensity : "moderada";
   for (const league of game.leagues || []) league.note = normalizedLeagueNote(league.note);
   if ((game.developmentReferenceVersion ?? 0) < 1) {
@@ -550,6 +552,40 @@ function processFinances(game, results) {
   processSponsorshipRound(game, results);
 }
 
+function processCompetitionFinances(game, results) {
+  for (const result of results) {
+    const club = getClub(game, result.homeId);
+    if (!club) continue;
+    const projection = stadiumRevenueProjection(game, club, true);
+    result.attendance = projection.attendance;
+    result.income = projection.total;
+    result.stadiumRevenue = projection;
+    club.budget += projection.total;
+    recordSeasonFinance(game, club.id, "bilheteria", projection.gate, "income");
+    recordSeasonFinance(game, club.id, "operacoesEstadio", projection.commercial, "income");
+  }
+}
+
+function applyCompetitionResults(game, results, random) {
+  processCompetitionFinances(game, results);
+  updateMorale(game, results, random);
+  processFanRound(game, results);
+  developSquads(game, results);
+  updateAvailability(game, results, random);
+}
+
+function simulateCompetitionRound(game, competition, fixtures, random) {
+  return fixtures.map(fixture => simulateMatch(game, { ...fixture, competitionId: competition.id }, random));
+}
+
+function processParallelCalendar(game, random) {
+  return processCompetitionCalendar(game, (competition, fixtures) => {
+    const results = simulateCompetitionRound(game, competition, fixtures, random);
+    applyCompetitionResults(game, results, random);
+    return results;
+  });
+}
+
 function updateMorale(game, results, random) {
   results.forEach(result => {
     const home = getClub(game, result.homeId);
@@ -867,6 +903,7 @@ function applyRound(game, results, random) {
         league.lastRound = otherResults; league.week++;
       }
     }
+    processParallelCalendar(game, random);
   }
   buildRoundNews(game, results);
   if (game.week >= game.schedule.length) finishSeason(game);
@@ -944,6 +981,17 @@ export function finishLiveRound(game) {
   }
   const random = mulberry32(match.rngState);
   game.rngState = match.rngState + 997;
+  if (match.competitionId) {
+    const competition = ensureParallelCompetitions(game).items.find(item => item.id === match.competitionId);
+    const fixtures = competition?.currentFixtures || [];
+    const results = fixtures.map(fixture => reports.find(report => report.homeId === fixture.homeId) || simulateMatch(game, { ...fixture, competitionId: match.competitionId }, random));
+    delete game.activeMatch;
+    delete game.liveRound;
+    applyCompetitionResults(game, results, random);
+    completeCompetitionRound(game, match.competitionId, results);
+    processParallelCalendar(game, random);
+    return { ok: true, results, competitionId: match.competitionId };
+  }
   const results = game.schedule[game.week].map(fixture => reports.find(report => report.homeId === fixture.homeId) || simulateMatch(game, fixture, random));
   delete game.activeMatch;
   delete game.liveRound;
@@ -980,6 +1028,7 @@ export function startNextSeason(game) {
   startFanSeason(game);
   startSponsorshipSeason(game);
   payPendingPrizes(game);
+  ensureParallelCompetitions(game);
   return { ok: true };
 }
 

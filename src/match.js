@@ -2,6 +2,7 @@ import { ensureLineup, lineupError, setLineupFormation } from "./lineup.js";
 import { advanceWeek, getClub, getLineup, mulberry32 } from "./core.js";
 import { attackingWeight, creativeWeight, defensiveWeight, weightedPlayer } from "./player-impact.js";
 import { markingStyle } from "./marking.js";
+import { competitionRoundFixtures, pendingCompetitionFixture } from "./competitions.js";
 
 import { FORMATIONS, arrangePlayers, formationPositions, positionalRating } from "./tactics.js";
 
@@ -99,7 +100,7 @@ function createLiveMatch(game, fixture, seedOffset = 0) {
 export function startMatch(game) {
   if (game.activeMatch) return fail("Já há uma partida em andamento.");
   if (game.finished) return fail("Inicie a próxima temporada primeiro.");
-  const fixture = game.schedule[game.week].find(item => item.homeId === game.userClubId || item.awayId === game.userClubId);
+  const fixture = pendingCompetitionFixture(game) || game.schedule[game.week].find(item => item.homeId === game.userClubId || item.awayId === game.userClubId);
   if (!fixture) return { ...advanceWeek(game), bye: true };
   const error=lineupError(getClub(game,game.userClubId));
   if(error) return fail(error);
@@ -112,7 +113,8 @@ export function ensureLiveRound(game) {
   if (!game.activeMatch) return;
   ensureMatchTactics(game);
   if (!game.liveRound) {
-    game.liveRound = game.schedule[game.week].filter(fixture => fixture.homeId !== game.activeMatch.homeId)
+    const fixtures = game.activeMatch.competitionId ? competitionRoundFixtures(game, game.activeMatch.competitionId) : game.schedule[game.week];
+    game.liveRound = fixtures.filter(fixture => fixture.homeId !== game.activeMatch.homeId)
       .map((fixture, index) => createLiveMatch(game, fixture, (index + 1) * 1777));
   }
   syncOtherMatches(game);
@@ -120,7 +122,8 @@ export function ensureLiveRound(game) {
 
 export function liveRoundMatches(game) {
   if (!game.activeMatch) return [];
-  return game.schedule[game.week].map(fixture => fixture.homeId === game.activeMatch.homeId ? game.activeMatch : game.liveRound?.find(match => match.homeId === fixture.homeId)).filter(Boolean);
+  const fixtures = game.activeMatch.competitionId ? competitionRoundFixtures(game, game.activeMatch.competitionId) : game.schedule[game.week];
+  return fixtures.map(fixture => fixture.homeId === game.activeMatch.homeId ? game.activeMatch : game.liveRound?.find(match => match.homeId === fixture.homeId)).filter(Boolean);
 }
 
 function syncOtherMatches(game) {
