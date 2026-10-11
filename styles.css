@@ -147,7 +147,11 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .player-with-shirt { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .player-with-shirt > div { min-width: 0; }
 .team-shirt { position: relative; flex: 0 0 auto; display: inline-grid; place-items: center; width: 42px; height: 40px; padding-top: 3px; clip-path: polygon(20% 0, 37% 0, 40% 12%, 60% 12%, 63% 0, 80% 0, 100% 25%, 82% 42%, 76% 33%, 76% 100%, 24% 100%, 24% 33%, 18% 42%, 0 25%); color: var(--shirt-ink); background: var(--shirt-primary); filter: drop-shadow(0 2px 1px #0002); font: 800 10px "Barlow Condensed"; text-shadow: 0 1px 2px #0007; }
-.team-shirt > span { position: relative; z-index: 1; color: inherit; font: inherit; }
+.team-shirt-position { position: absolute; z-index: 2; top: 14%; left: 50%; transform: translateX(-50%); color: inherit; font: inherit; }
+.team-shirt-sponsor { position: absolute; z-index: 2; max-width: 48%; overflow: hidden; color: inherit; font: 800 4px/1 "Inter"; font-style: normal; letter-spacing: -.2px; text-overflow: clip; white-space: nowrap; text-shadow: 0 1px 1px #0008; }
+.team-shirt-sponsor--master { top: 51%; left: 50%; transform: translate(-50%, -50%); }
+.team-shirt-sponsor--back { bottom: 12%; left: 50%; transform: translateX(-50%); }
+.team-shirt-sponsor--sleeve { top: 28%; left: 4%; transform: rotate(-24deg); font-size: 3px; }
 .team-shirt--stripes { background: repeating-linear-gradient(90deg, var(--shirt-primary) 0 21%, var(--shirt-secondary) 21% 42%); }
 .team-shirt--hoops { background: repeating-linear-gradient(0deg, var(--shirt-primary) 0 20%, var(--shirt-secondary) 20% 40%); }
 .team-shirt--diagonal { background: linear-gradient(135deg, var(--shirt-primary) 0 40%, var(--shirt-secondary) 40% 58%, var(--shirt-primary) 58%); }
@@ -212,6 +216,21 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .stadium-info h3 { font: 800 29px "Barlow Condensed"; text-transform: uppercase; margin: 0 0 4px; }
 .stadium-info > p { color: var(--muted); margin: 0 0 24px; }
 .stadium-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.sponsor-layout { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 20px; align-items: start; }
+.sponsor-shirt-card { position: sticky; top: 96px; display: grid; justify-items: center; gap: 18px; padding: 28px; text-align: center; }
+.sponsor-shirt-preview .team-shirt { width: 220px; height: 210px; font-size: 25px; filter: drop-shadow(0 14px 12px #0003); }
+.sponsor-shirt-preview .team-shirt-sponsor { font-size: 20px; letter-spacing: -1px; }
+.sponsor-shirt-preview .team-shirt-sponsor--sleeve { font-size: 11px; }
+.sponsor-contract-list { display: grid; width: 100%; gap: 8px; text-align: left; }
+.sponsor-contract-list article { padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: #f7f9f5; }
+.sponsor-contract-list small, .sponsor-contract-list span { display: block; color: var(--muted); font-size: 11px; }
+.sponsor-slot-section { margin-bottom: 18px; }
+.sponsor-offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; }
+.sponsor-offer { display: flex; min-width: 0; flex-direction: column; gap: 9px; padding: 16px; border: 1px solid var(--line); border-radius: 9px; background: #fbfcf9; }
+.sponsor-offer h4 { margin: 0; font: 800 22px "Barlow Condensed"; text-transform: uppercase; }
+.sponsor-offer p { margin: 0; color: var(--muted); font-size: 12px; }
+.sponsor-offer strong { font-size: 17px; }
+.sponsor-offer .primary-button { width: 100%; margin: auto 0 0; }
 .fact { border-left: 3px solid var(--lime); padding-left: 12px; }
 .fact small { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; }
 .fact strong { font: 700 20px "Barlow Condensed"; }
@@ -409,7 +428,7 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .sidebar-footer { position: fixed; bottom: 66px; left: 0; right: 0; background: var(--forest); padding: 4px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .sidebar-footer p { display: none; }
   .sidebar-footer .save-state { font-size: 9px; }
-  .nav { margin: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); width: 100%; gap: 2px; }
+  .nav { margin: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-item { padding: 7px 2px; text-align: center; font-size: 9px; }
   .nav-item span { display: block; width: auto; height: 22px; }
   .nav-item .nav-icon { display: grid; place-items: center; }
@@ -438,6 +457,9 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .team h4 { font-size: 15px; }
   .stadium-hero { grid-template-columns: 1fr; }
   .stadium-visual { min-height: 240px; }
+  .sponsor-layout { grid-template-columns: 1fr; }
+  .sponsor-shirt-card { position: static; }
+  .sponsor-offer-grid { grid-template-columns: 1fr; }
   .toolbar label { display: none; }
 }
 

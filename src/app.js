@@ -8,6 +8,7 @@ import { CareerSetup } from "./career-setup.js";
 import { badgeContent } from "./club-badge.js";
 import { escapeHtml } from "./html.js";
 import { teamShirtMarkup } from "./team-shirt.js";
+import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorObjectiveLabel } from "./sponsorships.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -657,7 +658,8 @@ const financeLabels = {
   premiosIndividuais: "Prêmios individuais",
   estadio: "Ampliação do estádio",
   olheiros: "Categoria de base e olheiros",
-  contratos: "Renovações de contrato"
+  contratos: "Renovações de contrato",
+  patrocinios: "Patrocínios"
 };
 
 function signedMoney(value) {
@@ -745,6 +747,27 @@ function renderStadium() {
     </div></section>`;
 }
 
+function renderSponsors() {
+  const club = getUserClub(game);
+  const sponsorships = ensureSponsorships(game);
+  const remainingRounds = Math.max(0, game.schedule.length - game.week);
+  const contracts = SPONSOR_SLOTS.map(slot => {
+    const contract = sponsorships.contracts[slot.id];
+    return `<article><strong>${escapeHtml(slot.label)}</strong>${contract ? `<span>${escapeHtml(contract.name)} · ${formatMoney(contract.roundPayment)}/rodada</span><small>Meta: ${escapeHtml(sponsorObjectiveLabel(game, contract.objective))} · bônus ${formatMoney(contract.bonus)}</small>` : `<span>Espaço disponível</span><small>${escapeHtml(slot.placement)}</small>`}</article>`;
+  }).join("");
+  const sections = SPONSOR_SLOTS.map(slot => {
+    const contract = sponsorships.contracts[slot.id];
+    const offers = sponsorships.offers.filter(offer => offer.slot === slot.id);
+    const body = contract
+      ? `<div class="card-body"><p><strong>${escapeHtml(contract.name)}</strong> ocupa este espaço até o fim da temporada.</p><p>${formatMoney(contract.roundPayment)} por rodada · ${formatMoney(contract.totalPaid)} já recebidos · bônus de ${formatMoney(contract.bonus)} se a meta “${escapeHtml(sponsorObjectiveLabel(game, contract.objective))}” for alcançada.</p><p class="view-note">O contrato não pode ser substituído durante a temporada.</p></div>`
+      : `<div class="sponsor-offer-grid">${offers.map(offer => `<article class="sponsor-offer"><small>${escapeHtml(offer.profileLabel)}</small><h4>${escapeHtml(offer.name)}</h4><strong>${formatMoney(offer.roundPayment)} / rodada</strong><p>Receita possível no restante da temporada: ${formatMoney(offer.roundPayment * remainingRounds)}</p><p>Meta: ${escapeHtml(sponsorObjectiveLabel(game, offer.objective))}</p><p>Bônus: ${formatMoney(offer.bonus)}</p><button type="button" class="primary-button" data-sign-sponsor="${offer.id}">Assinar contrato</button></article>`).join("")}</div>`;
+    return `<section class="card sponsor-slot-section"><div class="card-header"><h3>${escapeHtml(slot.label)}</h3><span>${escapeHtml(slot.placement)}</span></div>${body}</section>`;
+  }).join("");
+  content.innerHTML = `${pageHeading("Receitas comerciais", "Patrocínios", "Contratos anuais, pagamentos por rodada e bônus por desempenho")}
+    <p class="view-note">Cada espaço aceita apenas um contrato por temporada. Contratos seguros pagam mais por rodada; contratos ambiciosos transferem parte do valor para o bônus e aumentam o risco.</p>
+    <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview">${teamShirtMarkup(club)}</div><div><p class="eyebrow">Uniforme comercial</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;
+}
+
 function renderYouthAcademy() {
   const academy = ensureYouthAcademy(game);
   const payroll = academy.scouts.reduce((total, scout) => total + scout.salary, 0);
@@ -801,7 +824,7 @@ function render() {
   if (startupError) { content.innerHTML = `<section class="card card-body" role="alert"><h2>Não foi possível carregar a carreira</h2><p>${escapeHtml(startupError)}</p><p>Recarregue a página para tentar novamente. O salvamento existente não foi substituído.</p></section>`; return; }
   if (activeView === 'setup') { careerSetup.render(); if (!careerSetup.database && !careerSetup.loading && !careerSetup.error) careerSetup.load(); return; }
   document.querySelectorAll(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === (activeView === "player" ? playerDetailReturnView : activeView)));
-  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, club: renderClubDetails, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, stadium: renderStadium }[activeView] || renderDashboard)();
+  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, club: renderClubDetails, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, sponsors: renderSponsors, stadium: renderStadium }[activeView] || renderDashboard)();
   syncPenaltyDialog();
 }
 
@@ -1197,6 +1220,12 @@ content.addEventListener("click", event => {
   const release = event.target.closest("[data-release-prospect]");
   if (release) {
     const result = releaseProspect(game, release.dataset.releaseProspect);
+    if (result.ok) saveGame();
+    showToast(result.message, !result.ok); render(); return;
+  }
+  const sponsor = event.target.closest("[data-sign-sponsor]");
+  if (sponsor) {
+    const result = signSponsor(game, sponsor.dataset.signSponsor);
     if (result.ok) saveGame();
     showToast(result.message, !result.ok); render(); return;
   }

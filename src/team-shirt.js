@@ -41,5 +41,11 @@ export function teamKit(club) {
 export function teamShirtMarkup(club, label = "") {
   const kit = teamKit(club);
   const clubName = club?.name ? `Camisa do ${club.name}` : "Camisa neutra";
-  return `<span class="team-shirt team-shirt--${kit.pattern}" style="--shirt-primary:${kit.primary};--shirt-secondary:${kit.secondary};--shirt-ink:${kit.ink}" role="img" aria-label="${escapeHtml(clubName)}"><span>${escapeHtml(label)}</span></span>`;
+  const sponsorMark = slot => {
+    const name = club?.sponsors?.[slot]?.name;
+    if (!name) return "";
+    const initials = name.split(/\s+/).map(part => part[0]).join("").slice(0, 5).toLocaleUpperCase("pt-BR");
+    return `<i class="team-shirt-sponsor team-shirt-sponsor--${slot}" aria-hidden="true">${escapeHtml(initials)}</i>`;
+  };
+  return `<span class="team-shirt team-shirt--${kit.pattern}" style="--shirt-primary:${kit.primary};--shirt-secondary:${kit.secondary};--shirt-ink:${kit.ink}" role="img" aria-label="${escapeHtml(clubName)}"><span class="team-shirt-position">${escapeHtml(label)}</span>${sponsorMark("master")}${sponsorMark("back")}${sponsorMark("sleeve")}</span>`;
 }

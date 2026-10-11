@@ -24,3 +24,18 @@ test("camisa neutraliza cores inválidas e escapa o rótulo", () => {
   assert.match(markup, /Camisa do Clube &lt;teste&gt;/);
   assert.match(markup, /&lt;ATA&gt;/);
 });
+
+test("camisa exibe patrocinadores nos espaços master, costas e manga", () => {
+  const markup = teamShirtMarkup({
+    name: "Aurora",
+    colors: ["#112233", "#ffffff"],
+    sponsors: {
+      master: { name: "Nexora" },
+      back: { name: "Viva Sports" },
+      sleeve: { name: "Elo" }
+    }
+  }, "ATA");
+  assert.match(markup, /team-shirt-sponsor--master[^>]*>N</);
+  assert.match(markup, /team-shirt-sponsor--back[^>]*>VS</);
+  assert.match(markup, /team-shirt-sponsor--sleeve[^>]*>E</);
+});

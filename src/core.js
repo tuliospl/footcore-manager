@@ -11,6 +11,7 @@ import { validateDatabase } from "./database.js";
 import { ensureYouthAcademy, advanceYouthAcademy, ageYouthAcademy } from "./youth-academy.js";
 import { MARKING_STYLES, markingStyle } from "./marking.js";
 import { ensureSeasonTracking, playerValueChanges, recordSeasonFinance, seasonFinanceSummary } from "./season-tracking.js";
+import { ensureSponsorships, finishSponsorshipSeason, processSponsorshipRound, startSponsorshipSeason } from "./sponsorships.js";
 
 const FIRST_NAMES = ["Caio", "Davi", "Enzo", "Felipe", "Gabriel", "Hugo", "João", "Léo", "Lucas", "Mateus", "Rafael", "Vitor"];
 const LAST_NAMES = ["Almeida", "Barbosa", "Costa", "Dias", "Ferreira", "Gomes", "Lima", "Mendes", "Nunes", "Oliveira", "Rocha", "Silva"];
@@ -190,6 +191,7 @@ export function createGameFromDatabase(input, userClubId, seed = Date.now(), wor
 export function ensureCareerManagement(game) {
   ensureContracts(game);
   ensureYouthAcademy(game);
+  ensureSponsorships(game);
   for (const club of game.clubs) club.markingIntensity = MARKING_STYLES[club.markingIntensity] ? club.markingIntensity : "moderada";
   for (const league of game.leagues || []) league.note = normalizedLeagueNote(league.note);
   if ((game.developmentReferenceVersion ?? 0) < 1) {
@@ -536,6 +538,7 @@ function processFinances(game, results) {
     recordSeasonFinance(game, club.id, "bilheteria", income, "income");
     recordSeasonFinance(game, club.id, "salarios", payroll, "expense");
   });
+  processSponsorshipRound(game, results);
 }
 
 function updateMorale(game, results, random) {
@@ -796,6 +799,7 @@ function finishSeason(game) {
     club.squad.forEach(player => { archivePlayerSeason(player, game.season, seasonLabel(game, leagueId), club.name); agePlayer(player, game.season); });
   });
   awardIndividualHonors(game);
+  finishSponsorshipSeason(game);
   game.news.unshift({ id: `champion-${game.season}`, type: champion.id === game.userClubId ? "positive" : "info", title: `${champion.name} é campeão!`, body: "A temporada terminou. Um novo calendário já está pronto." });
   game.finished = true;
   game.market.forEach(player=>{ archivePlayerSeason(player, game.season, seasonLabel(game), player.previousClub || "Sem clube"); agePlayer(player, game.season); if(player.freeAgentOrigin) player.askingPrice=freeAgentFee(player); });
@@ -955,6 +959,7 @@ export function startNextSeason(game) {
   [...game.clubs.flatMap(club=>club.squad), ...game.market].forEach(player => { player.goals = 0; player.assists = 0; player.yellowCards = 0; player.yellowCardAccumulation = 0; player.redCards = 0; player.suspensionMatches = 0; player.suspensionReason = null; player.injuryMatches = 0; player.injuryLabel = null; player.appearances = 0; player.ratingTotal = 0; player.ratedMatches = 0; });
   game.news.unshift({ id: `season-${game.season}`, type: "info", title: `Temporada ${game.season}`, body: "Os clubes voltam a campo com objetivos renovados." });
   ensureSeasonTracking(game);
+  startSponsorshipSeason(game);
   payPendingPrizes(game);
   return { ok: true };
 }
