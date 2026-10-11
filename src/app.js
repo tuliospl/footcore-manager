@@ -12,6 +12,7 @@ import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, spons
 import { fanbaseProfile } from "./fans.js";
 import { ensureStadiumOperations, setStadiumTicketPrice, stadiumExpansionQuote, stadiumFacilityQuote, stadiumRevenueProjection, startStadiumProject, STADIUM_FACILITIES, STADIUM_SECTORS } from "./stadium.js";
 import { competitionGroups, competitionTable, ensureParallelCompetitions, parallelCompetition, pendingCompetitionFixture } from "./competitions.js";
+import { competitionRoundDate, formatCalendarDate, leagueCalendarDescription, leagueRoundDate } from "./calendar.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -218,6 +219,7 @@ function renderHeader() {
   document.querySelector("#club-identity").innerHTML = `${badge(club)}<div><h1>${escapeHtml(club.name)}</h1><p>${escapeHtml(club.stadium.name)} · Técnico</p></div>`;
   document.querySelector("#season-label").textContent = seasonLabel(game);
   document.querySelector("#week-label").textContent = game.finished ? "Fim" : `${game.week + 1}/${game.schedule.length}`;
+  document.querySelector("#date-label").textContent = formatCalendarDate(leagueRoundDate(game, game.leagueId, game.finished ? game.schedule.length - 1 : game.week), { short: true });
   document.querySelector("#budget-label").textContent = formatMoney(club.budget);
   const unread = clubMail().filter(item => item.read !== true).length;
   const mailBadge = document.querySelector("#mail-badge");
@@ -238,12 +240,13 @@ function renderMatchCard() {
   const away = getClub(game, fixture.awayId);
   const competitionName = fixture.competitionName || "Campeonato";
   const roundLabel = fixture.competitionRound || `Rodada ${game.week + 1}`;
+  const matchDate = fixture.competitionId ? competitionRoundDate(game, parallelCompetition(game, fixture.competitionId)) : leagueRoundDate(game, game.leagueId, game.week);
   const team = club => `<div class="team">${club.id === game.userClubId ? badge(club, "team-badge") : `<button type="button" class="match-team-badge" data-club-details="${club.id}" aria-label="Ver elenco do ${escapeHtml(club.name)}">${badge(club, "team-badge")}</button>`}<h4>${escapeHtml(club.name)}</h4></div>`;
   return `<section class="card match-card">
     <div class="card-header"><h3>Próximo jogo</h3><span>${escapeHtml(roundLabel)} · ${escapeHtml(home.stadium.name)}</span></div>
     <div class="matchup">
       ${team(home)}
-      <div class="versus"><span>${escapeHtml(competitionName)}</span><strong>VS</strong><time>${fixture.competitionId ? "Jogo de copa" : "Domingo · 16h"}</time></div>
+      <div class="versus"><span>${escapeHtml(competitionName)}</span><strong>VS</strong><time>${escapeHtml(formatCalendarDate(matchDate))} · 16h</time></div>
       ${team(away)}
     </div>
   </section>`;
@@ -696,8 +699,8 @@ function renderCompetition() {
     return `<tr class="${club.id === game.userClubId ? "user-row" : ""}"><td><strong>${index + 1}</strong></td><td class="player-name">${escapeHtml(club.name)}<small>${zone || escapeHtml(club.stadium.name)}</small></td><td>${row.played}</td><td>${row.wins}</td><td>${row.draws}</td><td>${row.losses}</td><td>${row.gf}</td><td>${row.ga}</td><td>${row.gf - row.ga}</td><td><strong>${row.points}</strong></td></tr>`;
   }).join("");
   const history = getUserClub(game).history;
-  content.innerHTML = `${pageHeading(league ? `${league.country} · ${seasonLabel(game, league.id)}` : "Liga nacional", league ? escapeHtml(league.name) : "Campeonato", `${league?.schedule.length ?? game.schedule.length} rodadas · turno e returno`)}
-    ${game.leagues ? `${competitionPicker(league.id)}<p class="view-note">${escapeHtml(league.note)}</p><p class="view-note">${rules.promotionPlaces ? `${rules.promotionPlaces} clube${rules.promotionPlaces === 1 ? " sobe" : "s sobem"} · ` : ""}${rules.relegationPlaces ? `${rules.relegationPlaces} clube${rules.relegationPlaces === 1 ? " desce" : "s descem"} · ` : ""}Premiação: ${formatMoney(rules.championPrize)} para o campeão até ${formatMoney(rules.lastPrize)} para a última colocação. Nível técnico médio: ${rules.qualityRating?.toFixed(1).replace(".", ",") || "—"} · valor médio dos principais atletas: ${rules.averagePlayerValue ? formatMoney(rules.averagePlayerValue) : "—"}. Os prêmios não têm teto e são recalculados conforme os elencos evoluem.</p>` : ''}
+  content.innerHTML = `${pageHeading(league ? `${league.country} · ${seasonLabel(game, league.id)}` : "Liga nacional", league ? escapeHtml(league.name) : "Campeonato", `${league?.schedule.length ?? game.schedule.length} rodadas · ${leagueCalendarDescription(league)}`)}
+    ${game.leagues ? `${competitionPicker(league.id)}<p class="view-note"><strong>${leagueCalendarDescription(league)}</strong>. A primeira rodada acontece em ${formatCalendarDate(leagueRoundDate(game, league.id, 0))} e a última em ${formatCalendarDate(leagueRoundDate(game, league.id, league.schedule.length - 1))}.</p><p class="view-note">${escapeHtml(league.note)}</p><p class="view-note">${rules.promotionPlaces ? `${rules.promotionPlaces} clube${rules.promotionPlaces === 1 ? " sobe" : "s sobem"} · ` : ""}${rules.relegationPlaces ? `${rules.relegationPlaces} clube${rules.relegationPlaces === 1 ? " desce" : "s descem"} · ` : ""}Premiação: ${formatMoney(rules.championPrize)} para o campeão até ${formatMoney(rules.lastPrize)} para a última colocação. Nível técnico médio: ${rules.qualityRating?.toFixed(1).replace(".", ",") || "—"} · valor médio dos principais atletas: ${rules.averagePlayerValue ? formatMoney(rules.averagePlayerValue) : "—"}. Os prêmios não têm teto e são recalculados conforme os elencos evoluem.</p>` : ''}
     <section class="card data-card"><table class="data-table"><thead><tr><th>#</th><th>Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>PTS</th></tr></thead><tbody>${rows}</tbody></table></section>`;
   if (latestAwards.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Prêmios individuais da temporada ${game.lastSeasonPlayerAwards.season}</h3><span>Um jogador pode vencer mais de uma categoria</span></div><div class="card-body">${latestAwards.map(award => `<p><strong>${escapeHtml(award.label)}:</strong> <button class="player-detail-link" data-player-details="${award.playerId}" data-player-return="competition">${escapeHtml(award.playerName)}</button> · ${escapeHtml(award.clubName)} · ${escapeHtml(award.statLabel)} · prêmio de ${formatMoney(award.money)}</p>`).join("")}</div></section>`;
   if (history.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Histórico do clube</h3></div><div class="card-body">${[...history].reverse().map(season => `<p>Temporada ${season.season} · ${season.leagueName ? `${escapeHtml(season.leagueName)} · ` : ""}${season.position}º lugar · ${season.points} pontos${season.position === 1 ? " · Campeão" : ""}${season.prizeMoney ? ` · ${formatMoney(season.prizeMoney)} pela colocação` : ""}${season.individualAwardsMoney ? ` · ${formatMoney(season.individualAwardsMoney)} por prêmios individuais` : ""}</p>`).join("")}</div></section>`;

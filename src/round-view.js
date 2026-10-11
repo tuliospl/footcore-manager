@@ -4,6 +4,7 @@ import { getClub, seasonLabel } from "./core.js";
 import { liveRoundMatches } from "./match.js";
 import { matchReport, formatRating } from "./ratings.js";
 import { renderMatchEvents, renderTacticsBoard } from "./match-view.js";
+import { formatCalendarDate } from "./calendar.js";
 
 const minuteLabel = minute => minute > 90 ? `90+${minute - 90}′` : `${minute}′`;
 const noteClass = rating => rating == null ? "unrated" : rating >= 7 ? "good" : rating < 6 ? "poor" : "average";
@@ -30,7 +31,8 @@ function featuredMatch(game, match) {
     const events = match.events.filter(event => event.clubId === clubId && (["goal", "red", "yellow", "penalty-miss"].includes(event.type) || event.scorerId)).reverse();
     return events.length ? events.map(event => `<li><span aria-hidden="true">${event.type === "yellow" ? "🟨" : event.type === "red" ? "🟥" : event.type === "penalty-miss" ? "✕" : "⚽"}</span> ${event.minute}′ · ${escapeHtml(event.message || `Gol de ${event.scorer}`)}</li>`).join("") : `<li class="quiet-event">Sem lances de destaque</li>`;
   };
-  return `<div class="featured-heading"><span>Seu jogo · ${escapeHtml(home.stadium.name)}</span><button class="text-button" data-featured-match="${match.homeId}">${match.phase === "finished" ? "Ver resumo" : "Gerenciar time"} ↗</button></div><div class="featured-score"><strong class="featured-club" style="--club-bg:${home.colors[0]};--club-fg:${home.colors[1]}">${escapeHtml(home.name)}</strong><b>${match.homeGoals} <span>×</span> ${match.awayGoals}</b><strong class="featured-club" style="--club-bg:${away.colors[0]};--club-fg:${away.colors[1]}">${escapeHtml(away.name)}</strong></div><div class="featured-events"><ul tabindex="0" aria-label="Eventos de ${escapeHtml(home.name)}">${highlights(home.id)}</ul><ul tabindex="0" aria-label="Eventos de ${escapeHtml(away.name)}">${highlights(away.id)}</ul></div>`;
+  const date = match.calendarDate ? ` · ${formatCalendarDate(new Date(match.calendarDate))}` : "";
+  return `<div class="featured-heading"><span>Seu jogo · ${escapeHtml(home.stadium.name)}${date}</span><button class="text-button" data-featured-match="${match.homeId}">${match.phase === "finished" ? "Ver resumo" : "Gerenciar time"} ↗</button></div><div class="featured-score"><strong class="featured-club" style="--club-bg:${home.colors[0]};--club-fg:${home.colors[1]}">${escapeHtml(home.name)}</strong><b>${match.homeGoals} <span>×</span> ${match.awayGoals}</b><strong class="featured-club" style="--club-bg:${away.colors[0]};--club-fg:${away.colors[1]}">${escapeHtml(away.name)}</strong></div><div class="featured-events"><ul tabindex="0" aria-label="Eventos de ${escapeHtml(home.name)}">${highlights(home.id)}</ul><ul tabindex="0" aria-label="Eventos de ${escapeHtml(away.name)}">${highlights(away.id)}</ul></div>`;
 }
 
 function playerTable(game, report, clubId) {

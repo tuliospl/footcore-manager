@@ -482,7 +482,7 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .club-identity { display: none; }
   .top-stats { margin-left: 0; gap: 8px; }
   .top-stats div { padding-left: 9px; }
-  .top-stats div:nth-child(3) { display: block; }
+  .top-stats div:nth-child(4) { display: block; }
   .top-stats strong { font-size: 15px; }
   .primary-button { margin-left: auto; padding: 10px 12px; font-size: 11px; }
   .primary-button span { margin-left: 5px; }

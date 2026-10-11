@@ -3,6 +3,7 @@ import { advanceWeek, getClub, getLineup, mulberry32 } from "./core.js";
 import { attackingWeight, creativeWeight, defensiveWeight, weightedPlayer } from "./player-impact.js";
 import { markingStyle } from "./marking.js";
 import { competitionRoundFixtures, pendingCompetitionFixture } from "./competitions.js";
+import { competitionRoundDate, leagueRoundDate } from "./calendar.js";
 
 import { FORMATIONS, arrangePlayers, formationPositions, positionalRating } from "./tactics.js";
 
@@ -104,7 +105,8 @@ export function startMatch(game) {
   if (!fixture) return { ...advanceWeek(game), bye: true };
   const error=lineupError(getClub(game,game.userClubId));
   if(error) return fail(error);
-  game.activeMatch = createLiveMatch(game, fixture);
+  const calendarDate = fixture.competitionId ? competitionRoundDate(game, fixture) : leagueRoundDate(game, game.leagueId, game.week);
+  game.activeMatch = createLiveMatch(game, { ...fixture, calendarDate: calendarDate.toISOString() });
   ensureLiveRound(game);
   return { ok: true };
 }
