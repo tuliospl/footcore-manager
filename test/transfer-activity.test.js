@@ -6,6 +6,7 @@ import {
   advanceWeek,
   createGame,
   getUserClub,
+  processTransferActivity,
   registerIncomingOffer,
   rejectIncomingOffer
 } from "../src/core.js";
@@ -90,4 +91,34 @@ test("AI clubs buy and sell players independently as rounds advance", () => {
   assert.ok(deals.length > 0);
   assert.ok(deals.every(deal => deal.sellerId !== game.userClubId && deal.buyerId !== game.userClubId));
   assert.ok(deals.every(deal => deal.amount > 0 && deal.sellerName && deal.buyerName));
+});
+
+test("a dominant user club still attracts bids for elite players", () => {
+  const game = createGame(1407);
+  const seller = getUserClub(game);
+  const target = seller.squad.find(player => player.position === "ATA");
+  for (const player of seller.squad) {
+    player.overall = Math.max(player.overall, 88);
+    player.potential = Math.max(player.potential, player.overall);
+  }
+  target.overall = 94;
+  target.potential = 96;
+  target.value = 20_000_000;
+  target.releaseClause = null;
+  const buyer = game.clubs.at(-1);
+  buyer.budget = 100_000_000;
+  for (const player of buyer.squad) {
+    player.overall = Math.max(player.overall, 84);
+    player.potential = Math.max(player.potential, player.overall);
+  }
+  for (const club of game.clubs.filter(club => club.id !== seller.id && club.id !== buyer.id)) club.budget = 0;
+
+  for (let week = 0; week < 60 && !game.incomingOffers.length; week += 1) {
+    game.week = week;
+    processTransferActivity(game);
+  }
+
+  assert.equal(game.incomingOffers.length, 1);
+  assert.equal(game.incomingOffers[0].buyerId, buyer.id);
+  assert.ok(seller.squad.find(player => player.id === game.incomingOffers[0].playerId)?.overall >= 88);
 });

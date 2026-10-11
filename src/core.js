@@ -1225,19 +1225,26 @@ function generateIncomingInterest(game) {
   if (game.incomingOffers.length >= 3 || game.finished) return;
   const seller = getUserClub(game);
   const sellerAverage = clubAverage(seller);
-  const eligible = seller.squad.filter(player => canTransferOut(seller, player) && (!player.academyGraduate || player.appearances >= 5)).map(player => ({
-    player,
-    appeal: player.overall - sellerAverage + Math.max(0, player.potential - player.overall) * 0.2 + (player.form - 65) * 0.08
-  })).filter(item => item.appeal >= 4 || item.player.overall >= 80).sort((first, second) => second.appeal - first.appeal || second.player.value - first.player.value);
+  const eligible = seller.squad.filter(player => canTransferOut(seller, player) && (!player.academyGraduate || player.appearances >= 5)).map(player => {
+    const potentialBonus = Math.max(0, player.potential - player.overall) * 0.2;
+    const formBonus = (player.form - 65) * 0.08;
+    const relativeAppeal = player.overall - sellerAverage + potentialBonus + formBonus;
+    const absoluteAppeal = (player.overall - 76) * 0.55 + potentialBonus + formBonus * 0.5;
+    return { player, appeal: Math.max(relativeAppeal, absoluteAppeal) };
+  }).filter(item => item.appeal >= 4 || item.player.overall >= 80).sort((first, second) => second.appeal - first.appeal || second.player.value - first.player.value);
   if (!eligible.length) return;
-  const interestChance = Math.min(0.38, 0.08 + eligible[0].appeal * 0.018);
+  const interestChance = Math.min(0.38, 0.08 + Math.max(0, eligible[0].appeal) * 0.018);
   const key = `${game.seed}:${game.season}:${game.week}:incoming`;
   if (transferRoll(key) >= interestChance) return;
   const player = eligible[Math.min(eligible.length - 1, Math.floor(transferRoll(`${key}:player`) * Math.min(eligible.length, 4)))].player;
   const buyers = game.clubs.filter(club => club.id !== seller.id && club.budget > player.value && squadSlots(game, club.id) < (game.leagues ? 40 : 24))
     .filter(club => {
+      const buyerAverage = clubAverage(club);
       const peers = club.squad.filter(item => item.position === player.position);
-      return clubAverage(club) >= sellerAverage + 3 && (!peers.length || Math.min(...peers.map(item => item.overall)) < player.overall);
+      const bestPeer = Math.max(0, ...peers.map(item => item.overall));
+      const competitiveClub = buyerAverage >= sellerAverage - 5;
+      const eliteOpportunity = player.overall >= 86 && buyerAverage >= player.overall - 10;
+      return (competitiveClub || eliteOpportunity) && (!peers.length || player.overall >= bestPeer - 2);
     })
     .sort((first, second) => clubAverage(second) - clubAverage(first) || second.budget - first.budget || transferRoll(`${key}:${first.id}`) - transferRoll(`${key}:${second.id}`));
   const buyer = buyers[0];
