@@ -28,15 +28,32 @@ function finishQuietly(game) {
 test("world careers create national cups and continental competitions in parallel", () => {
   const game = career();
   const competitions = ensureParallelCompetitions(game).items;
-  assert.deepEqual(competitions.map(item => item.id), ["copa-brasil", "carabao-cup", "copa-rei", "libertadores", "champions", "europa-league"]);
+  assert.deepEqual(competitions.map(item => item.id), ["copa-brasil", "carabao-cup", "copa-rei", "libertadores", "sul-americana", "champions", "europa-league"]);
   assert.equal(competitions.find(item => item.id === "copa-brasil").participants.length, 64);
   assert.equal(competitions.find(item => item.id === "libertadores").participants.length, 32);
+  assert.equal(competitions.find(item => item.id === "sul-americana").participants.length, 32);
   assert.equal(competitions.find(item => item.id === "champions").participants.length, 36);
   assert.equal(competitions.find(item => item.id === "europa-league").participants.length, 36);
   assert.equal(new Set(competitions.find(item => item.id === "libertadores").participants.map(id => game.clubs.find(club => club.id === id).country)).size, 5);
   assert.equal(new Set(competitions.find(item => item.id === "champions").participants.map(id => game.clubs.find(club => club.id === id).country)).size, 9);
   assert.ok(competitions.find(item => item.id === "copa-brasil").participants.includes(game.userClubId));
   assert.ok(competitions.find(item => item.id === "libertadores").participants.includes(game.userClubId));
+});
+
+test("continental places use the previous top-flight table and secondary tournaments take the following positions", () => {
+  const game = career();
+  const league = game.leagues.find(item => item.id === "bra-1");
+  const ordered = [...league.clubIds].reverse();
+  ordered.forEach((clubId, index) => {
+    game.clubs.find(club => club.id === clubId).history = [{ season: 1, leagueId: league.id, position: index + 1 }];
+  });
+  game.season = 2;
+  delete game.competitions;
+  const competitions = ensureParallelCompetitions(game).items;
+  const brazilianParticipants = id => competitions.find(item => item.id === id).participants.filter(clubId => game.clubs.find(club => club.id === clubId).country === "BRA");
+  assert.deepEqual(brazilianParticipants("libertadores"), ordered.slice(0, 8));
+  assert.deepEqual(brazilianParticipants("sul-americana"), ordered.slice(8, 18));
+  assert.equal(new Set([...brazilianParticipants("libertadores"), ...brazilianParticipants("sul-americana")]).size, 18);
 });
 
 test("Libertadores has eight groups, six matches per club and sends the top two to the round of 16", () => {

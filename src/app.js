@@ -670,8 +670,10 @@ function renderParallelCompetition(competition) {
   const phaseContent = competition.phase === "groups"
     ? `<div class="competition-groups">${competitionGroups(competition).map(group => competitionTableMarkup(group.table, `Grupo ${group.id}`)).join("")}</div>`
     : competition.phase === "league" ? competitionTableMarkup(competitionTable(competition), "Classificação da fase de liga") : "";
+  const qualification = (competition.qualification || []).map(entry => `<span><strong>${escapeHtml(entry.country)}</strong> ${entry.fromPosition}º ao ${entry.toPosition}º${entry.sportingMerit ? "" : " · seleção inicial"}</span>`).join("");
   content.innerHTML = `${pageHeading("Competições paralelas", escapeHtml(competition.name), `${competition.participants.length} clubes · ${formatLabel}`)}
     ${competitionPicker(competition.id)}
+    ${qualification ? `<p class="view-note competition-qualification"><strong>Vagas pela liga nacional:</strong> ${qualification}</p>` : ""}
     <section class="card competition-overview"><div class="card-body"><div><small>Fase atual</small><strong>${escapeHtml(competition.roundLabel)}</strong></div><div><small>Premiação do campeão</small><strong>${formatMoney(competition.championPrize)}</strong></div><div><small>Status</small><strong>${competition.finished ? `Campeão: ${escapeHtml(getClub(game, competition.championId)?.name || "Definido")}` : competition.awaitingUser ? "Aguardando seu jogo" : "Em andamento"}</strong></div></div></section>
     ${currentFixtures ? `<section class="card"><div class="card-header"><h3>${escapeHtml(competition.roundLabel)}</h3><span>Próximos confrontos</span></div><div class="competition-fixtures">${currentFixtures}</div></section>` : ""}
     ${phaseContent}

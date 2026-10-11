@@ -925,6 +925,11 @@ button:focus-visible { outline: 3px solid #5b99d4; outline-offset: 3px; }
   margin: 0;
 }
 
+.competition-qualification span {
+  display: inline-block;
+  margin: 4px 14px 4px 0;
+}
+
 @media (max-width: 800px) {
   .competition-overview .card-body,
   .competition-groups {

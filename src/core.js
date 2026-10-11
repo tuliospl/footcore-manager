@@ -1028,7 +1028,10 @@ export function startNextSeason(game) {
   startFanSeason(game);
   startSponsorshipSeason(game);
   payPendingPrizes(game);
-  ensureParallelCompetitions(game);
+  const competitions = ensureParallelCompetitions(game);
+  for (const competition of competitions.items.filter(item => item.qualification.length && item.participants.includes(game.userClubId))) {
+    game.news.unshift({ id: `qualified-${game.season}-${competition.id}`, type: "positive", title: `Classificado para a ${competition.name}`, body: "A colocação no campeonato nacional garantiu a vaga para esta temporada." });
+  }
   return { ok: true };
 }
 

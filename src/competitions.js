@@ -2,14 +2,19 @@ import { recordSeasonFinance } from "./season-tracking.js";
 
 const EUROPE = new Set(["DEU", "ENG", "ESP", "FRA", "ITA", "NLD", "PRT", "RUS", "TUR"]);
 const SOUTH_AMERICA = new Set(["ARG", "BRA", "COL", "PRY", "URY"]);
+const LIBERTADORES_SLOTS = { BRA: 8, ARG: 7, COL: 4, PRY: 4, URY: 9 };
+const SUDAMERICANA_SLOTS = { BRA: 10, ARG: 8, COL: 4, PRY: 4, URY: 6 };
+const CHAMPIONS_SLOTS = { ENG: 5, ESP: 5, DEU: 4, ITA: 4, FRA: 4, NLD: 4, PRT: 4, TUR: 3, RUS: 3 };
+const EUROPA_SLOTS = { ENG: 4, ESP: 4, DEU: 4, ITA: 4, FRA: 4, NLD: 4, PRT: 4, TUR: 4, RUS: 4 };
 
 const DEFINITIONS = [
   { id: "copa-brasil", name: "Copa do Brasil", countries: new Set(["BRA"]), format: "knockout", teams: 64, cadenceRounds: 7, championPrize: 80_000_000, winPrize: 1_500_000 },
   { id: "carabao-cup", name: "Carabao Cup", countries: new Set(["ENG"]), format: "knockout", teams: 32, cadenceRounds: 6, championPrize: 55_000_000, winPrize: 1_200_000 },
   { id: "copa-rei", name: "Copa da Espanha", countries: new Set(["ESP"]), format: "knockout", teams: 32, cadenceRounds: 6, championPrize: 60_000_000, winPrize: 1_300_000 },
-  { id: "libertadores", name: "CONMEBOL Libertadores", countries: SOUTH_AMERICA, format: "groups", teams: 32, cadenceRounds: 11, championPrize: 140_000_000, winPrize: 2_500_000 },
-  { id: "champions", name: "UEFA Champions League", countries: EUROPE, format: "league", teams: 36, offset: 0, cadenceRounds: 14, championPrize: 240_000_000, winPrize: 4_000_000 },
-  { id: "europa-league", name: "UEFA Europa League", countries: EUROPE, format: "league", teams: 36, offset: 4, cadenceRounds: 14, championPrize: 150_000_000, winPrize: 2_800_000 }
+  { id: "libertadores", name: "CONMEBOL Libertadores", countries: SOUTH_AMERICA, format: "groups", teams: 32, slots: LIBERTADORES_SLOTS, cadenceRounds: 11, championPrize: 140_000_000, winPrize: 2_500_000 },
+  { id: "sul-americana", name: "CONMEBOL Sul-Americana", countries: SOUTH_AMERICA, format: "groups", teams: 32, slots: SUDAMERICANA_SLOTS, previousSlots: LIBERTADORES_SLOTS, cadenceRounds: 11, championPrize: 85_000_000, winPrize: 1_800_000 },
+  { id: "champions", name: "UEFA Champions League", countries: EUROPE, format: "league", teams: 36, slots: CHAMPIONS_SLOTS, cadenceRounds: 14, championPrize: 240_000_000, winPrize: 4_000_000 },
+  { id: "europa-league", name: "UEFA Europa League", countries: EUROPE, format: "league", teams: 36, slots: EUROPA_SLOTS, previousSlots: CHAMPIONS_SLOTS, cadenceRounds: 14, championPrize: 150_000_000, winPrize: 2_800_000 }
 ];
 
 function hash(value) {
@@ -80,10 +85,31 @@ function knockoutLabel(size) {
   return "Primeira fase";
 }
 
+function nationalRanking(game, country) {
+  const topLeague = game.leagues?.filter(league => league.country === country).sort((first, second) => Number(first.tier) - Number(second.tier))[0];
+  if (!topLeague) return [];
+  const completed = game.clubs.map(club => {
+    const history = [...(club.history || [])].reverse().find(entry => entry.season === game.season - 1 && entry.leagueId === topLeague.id && Number.isFinite(entry.position));
+    return history ? { club, position: history.position, sportingMerit: true } : null;
+  }).filter(Boolean).sort((first, second) => first.position - second.position);
+  if (completed.length === topLeague.clubIds.length) return completed;
+  return topLeague.clubIds.map(clubId => game.clubs.find(club => club.id === clubId)).filter(Boolean)
+    .sort((first, second) => qualificationScore(second) - qualificationScore(first) || first.name.localeCompare(second.name, "pt-BR"))
+    .map((club, index) => ({ club, position: index + 1, sportingMerit: false }));
+}
+
 function selectedClubs(game, definition) {
   const candidates = game.clubs.filter(club => definition.countries.has(club.country)).sort((first, second) => qualificationScore(second) - qualificationScore(first) || first.name.localeCompare(second.name, "pt-BR"));
   let selected;
-  if (definition.countries.size > 1) {
+  let qualification = [];
+  if (definition.slots) {
+    selected = Object.entries(definition.slots).flatMap(([country, places]) => {
+      const offset = definition.previousSlots?.[country] || 0;
+      const qualified = nationalRanking(game, country).slice(offset, offset + places);
+      qualification.push({ country, places, fromPosition: offset + 1, toPosition: offset + qualified.length, sportingMerit: qualified.every(item => item.sportingMerit) });
+      return qualified.map(item => item.club);
+    });
+  } else if (definition.countries.size > 1) {
     const countries = [...definition.countries];
     const basePlaces = Math.floor(definition.teams / countries.length);
     const extraPlaces = definition.teams % countries.length;
@@ -101,7 +127,7 @@ function selectedClubs(game, definition) {
   }
   const user = game.clubs.find(club => club.id === game.userClubId);
   if (definition.format === "knockout" && user && definition.countries.has(user.country) && !selected.some(club => club.id === user.id) && selected.length) selected[selected.length - 1] = user;
-  return selected.map(club => club.id);
+  return { participants: selected.map(club => club.id), qualification };
 }
 
 function createGroups(participants) {
@@ -116,10 +142,11 @@ function createGroups(participants) {
 }
 
 function createCompetition(game, definition) {
-  const participants = selectedClubs(game, definition);
+  const selection = selectedClubs(game, definition);
+  const participants = selection.participants;
   if (participants.length < 4) return null;
   const cadence = Math.max(1, Math.floor(game.schedule.length / definition.cadenceRounds));
-  const competition = { ...definition, countries: [...definition.countries], participants, season: game.season, cadence, nextWeek: 1, roundIndex: 0, history: [], finished: false, championId: null, awaitingUser: false };
+  const competition = { ...definition, countries: [...definition.countries], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: 1, roundIndex: 0, history: [], finished: false, championId: null, awaitingUser: false };
   if (definition.format === "groups") {
     const { groups, rounds } = createGroups(participants.slice(0, 32));
     Object.assign(competition, { phase: "groups", groups, phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de grupos · rodada 1" });
@@ -137,11 +164,11 @@ function createCompetition(game, definition) {
 
 export function ensureParallelCompetitions(game) {
   if (!game.leagues) {
-    game.competitions ??= { version: 1, season: game.season, items: [] };
+    game.competitions ??= { version: 2, season: game.season, items: [] };
     return game.competitions;
   }
-  if (!game.competitions || game.competitions.version !== 1 || game.competitions.season !== game.season || !game.competitions.items?.length) {
-    game.competitions = { version: 1, season: game.season, items: DEFINITIONS.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
+  if (!game.competitions || game.competitions.version !== 2 || game.competitions.season !== game.season || !game.competitions.items?.length) {
+    game.competitions = { version: 2, season: game.season, items: DEFINITIONS.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
   }
   game.competitions.history ??= [];
   return game.competitions;
