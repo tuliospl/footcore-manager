@@ -360,7 +360,7 @@ function playerSquadRole(club, player, starters) {
 }
 
 function findPlayerContext(playerId) {
-  for (const club of game.clubs) {
+  for (const club of [...game.clubs, ...(game.externalClubs || [])]) {
     const player = club.squad.find(item => item.id === playerId);
     if (player) return { player, club };
   }
@@ -402,6 +402,7 @@ function renderClubDetails() {
   const squad = [...club.squad].sort((first, second) => second.overall - first.overall || first.name.localeCompare(second.name, "pt-BR"));
   const action = player => {
     if (ownClub) return `<span class="view-note">Seu atleta</span>`;
+    if (club.externalCompetitionClub) return `<span class="view-note">Convidado internacional</span>`;
     if (player.loan) return `<span class="view-note">Emprestado</span>`;
     const listing = getClubListing(game, club.id, player.id);
     const terms = getTransferTerms(game, club.id, player.id);
@@ -414,7 +415,7 @@ function renderClubDetails() {
       <div><p class="eyebrow">${escapeHtml(league?.name || club.country || "Clube")}</p><h3>${escapeHtml(club.name)}</h3><p>${escapeHtml(club.stadium.name)} · ${escapeHtml(club.coach || "Comissão técnica")}</p></div>
       <div class="club-profile-summary"><small>Nível médio</small><strong>${Math.round(squad.reduce((total, player) => total + player.overall, 0) / Math.max(1, squad.length))}</strong></div>
     </section>
-    <p class="view-note">Clique em qualquer jogador para abrir a ficha completa com jogos, gols, assistências, cartões e nota média. Pela ficha ou pelo botão da tabela você pode iniciar uma negociação.</p>
+    <p class="view-note">Clique em qualquer jogador para abrir a ficha completa com jogos, gols, assistências, cartões e nota média.${club.externalCompetitionClub ? " Este representante internacional participa apenas dos torneios da FIFA." : " Pela ficha ou pelo botão da tabela você pode iniciar uma negociação."}</p>
     <section class="card data-card"><table class="data-table club-squad-table"><thead><tr><th>Atleta</th><th>Pos.</th><th>Idade</th><th>Geral</th><th>Jogos</th><th>Gols</th><th>Assist.</th><th>Nota média</th><th>Valor</th><th></th></tr></thead><tbody>
       ${squad.map(player => `<tr class="player-detail-row" data-player-details="${player.id}" data-player-return="club" tabindex="0" aria-label="Abrir ficha de ${escapeHtml(player.name)}"><td class="player-name"><div class="player-with-shirt">${teamShirtMarkup(club, player.position)}<div><strong>${escapeHtml(player.name)}</strong><small>${starters.has(player.id) ? "Titular" : "Reserva"}${player.loan ? " · Emprestado" : ""}</small><small class="discipline-status">${playerDisciplineStatus(player)}</small></div></div></td><td><span class="position-pill">${player.position}</span></td><td>${player.age}</td><td><span class="rating ${ratingClass(player.overall)}">${player.overall}</span></td><td>${player.appearances ?? 0}</td><td>${player.goals ?? 0}</td><td>${player.assists ?? 0}</td><td><strong>${formatRating(averageRating(player))}</strong><small>${player.ratedMatches || 0} avaliados</small></td><td>${formatMoney(player.value)}</td><td>${action(player)}</td></tr>`).join("")}
     </tbody></table></section>`;
@@ -488,8 +489,8 @@ function renderMarket() {
   content.innerHTML = `${pageHeading("Scouting e negócios", "Mercado", "Observe os rivais. Encontre seu próximo reforço.")}
     <div class="market-filters card">
       <label>Pesquisar atleta ou clube<input id="market-query" type="search" placeholder="Nome do jogador ou do time" autocomplete="off"></label>
-      <label>Clube<select id="market-club"><option value="all">Todos os clubes</option><option value="market">Sem clube</option>${game.clubs.filter(club => club.id !== game.userClubId).map(club => `<option value="${club.id}">${escapeHtml(club.name)}</option>`).join("")}</select></label>
-      <label>País do clube<select data-market-filter="country"><option value="all">Todos os países</option>${[...new Set(game.clubs.map(c=>c.country).filter(Boolean))].sort().map(c=>`<option>${escapeHtml(c)}</option>`).join('')}</select></label>
+      <label>Clube<select id="market-club"><option value="all">Todos os clubes</option><option value="market">Sem clube</option>${game.clubs.filter(club => !club.externalCompetitionClub && club.id !== game.userClubId).map(club => `<option value="${club.id}">${escapeHtml(club.name)}</option>`).join("")}</select></label>
+      <label>País do clube<select data-market-filter="country"><option value="all">Todos os países</option>${[...new Set(game.clubs.filter(c=>!c.externalCompetitionClub).map(c=>c.country).filter(Boolean))].sort().map(c=>`<option>${escapeHtml(c)}</option>`).join('')}</select></label>
       <label>Campeonato<select data-market-filter="leagueId"><option value="all">Todos os campeonatos</option>${(game.leagues || []).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.country)} · ${escapeHtml(l.name)}</option>`).join('')}</select></label>
       <label>Disponibilidade<select id="market-type"><option value="all">Todas as modalidades</option><option value="free">Sem contrato</option><option value="fixed">Preço fixo</option><option value="loan">Empréstimo</option><option value="negotiation">Sob proposta</option></select></label>
 
@@ -657,7 +658,7 @@ function competitionTableMarkup(rows, title = "Classificação") {
 }
 
 function renderParallelCompetition(competition) {
-  const formatLabel = competition.format === "groups" ? "Fase de grupos e mata-mata" : competition.format === "league" ? "Fase de liga e mata-mata" : "Mata-mata";
+  const formatLabel = competition.format === "groups" ? "Fase de grupos e mata-mata" : competition.format === "league" ? "Fase de liga e mata-mata" : competition.format === "intercontinental" ? "Campeões das seis confederações" : "Mata-mata";
   const currentFixtures = (competition.currentFixtures || []).map(fixture => {
     const home = getClub(game, fixture.homeId);
     const away = getClub(game, fixture.awayId);
@@ -673,13 +674,20 @@ function renderParallelCompetition(competition) {
   const phaseContent = competition.phase === "groups"
     ? `<div class="competition-groups">${competitionGroups(competition).map(group => competitionTableMarkup(group.table, `Grupo ${group.id}`)).join("")}</div>`
     : competition.phase === "league" ? competitionTableMarkup(competitionTable(competition), "Classificação da fase de liga") : "";
-  const qualification = (competition.qualification || []).map(entry => `<span><strong>${escapeHtml(entry.country)}</strong> ${entry.fromPosition}º ao ${entry.toPosition}º${entry.sportingMerit ? "" : " · seleção inicial"}</span>`).join("");
+  const qualification = (competition.qualification || []).map(entry => {
+    if (entry.country) return `<span><strong>${escapeHtml(entry.country)}</strong> ${entry.fromPosition}º ao ${entry.toPosition}º${entry.sportingMerit ? "" : " · seleção inicial"}</span>`;
+    if (entry.clubId) return `<span><strong>${escapeHtml(entry.confederation)}</strong> ${escapeHtml(getClub(game, entry.clubId)?.name || "Representante")} · ${escapeHtml(entry.route)}</span>`;
+    return `<span><strong>${escapeHtml(entry.confederation)}</strong> ${entry.slots} vaga${entry.slots === 1 ? "" : "s"}${entry.champions ? ` · ${entry.champions} por título` : ""}${entry.ranking ? ` · ${entry.ranking} por ranking` : ""}${entry.hostCountry ? ` · sede ${escapeHtml(entry.hostCountry)}` : ""}</span>`;
+  }).join("");
+  const qualificationEntries = (competition.qualificationEntries || []).map(entry => `<tr><td>${escapeHtml(getClub(game, entry.clubId)?.name || "Clube")}</td><td>${escapeHtml(entry.confederation)}</td><td>${escapeHtml(entry.route)}${entry.season ? ` · ${entry.season}` : ""}</td><td>${Number.isFinite(entry.points) ? entry.points : "—"}</td></tr>`).join("");
   content.innerHTML = `${pageHeading("Competições paralelas", escapeHtml(competition.name), `${competition.participants.length} clubes · ${formatLabel}`)}
     ${competitionPicker(competition.id)}
-    ${qualification ? `<p class="view-note competition-qualification"><strong>Vagas pela liga nacional:</strong> ${qualification}</p>` : ""}
+    ${competition.cycle ? `<p class="view-note"><strong>Ciclo classificatório:</strong> ${escapeHtml(competition.cycle)} · campeões continentais e ranking acumulado, com limite de dois clubes por país salvo campeões adicionais.</p>` : ""}
+    ${qualification ? `<p class="view-note competition-qualification"><strong>Classificação:</strong> ${qualification}</p>` : ""}
     <section class="card competition-overview"><div class="card-body"><div><small>Fase atual</small><strong>${escapeHtml(competition.roundLabel)}</strong></div><div><small>Premiação do campeão</small><strong>${formatMoney(competition.championPrize)}</strong></div><div><small>Status</small><strong>${competition.finished ? `Campeão: ${escapeHtml(getClub(game, competition.championId)?.name || "Definido")}` : competition.awaitingUser ? "Aguardando seu jogo" : "Em andamento"}</strong></div></div></section>
     ${currentFixtures ? `<section class="card"><div class="card-header"><h3>${escapeHtml(competition.roundLabel)}</h3><span>Próximos confrontos</span></div><div class="competition-fixtures">${currentFixtures}</div></section>` : ""}
     ${phaseContent}
+    ${qualificationEntries ? `<section class="card data-card"><div class="card-header"><h3>Clubes classificados</h3><span>Critério oficial adaptado ao ciclo do jogo</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Clube</th><th>Confederação</th><th>Via</th><th>Pontos</th></tr></thead><tbody>${qualificationEntries}</tbody></table></div></section>` : ""}
     ${recentResults ? `<section class="card"><div class="card-header"><h3>${escapeHtml(recent.label)}</h3><span>Últimos resultados</span></div><div class="competition-fixtures">${recentResults}</div></section>` : ""}`;
 }
 

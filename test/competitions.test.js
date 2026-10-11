@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { advanceWeek, createGameFromDatabase, finishLiveRound } from "../src/core.js";
 import { startMatch } from "../src/match.js";
 import { completeCompetitionRound, competitionGroups, competitionTable, ensureParallelCompetitions, pendingCompetitionFixture } from "../src/competitions.js";
+import { CLUB_WORLD_CUP_SLOTS, rankingPointsForResult, selectClubWorldCupParticipants, stageRankingBonus } from "../src/world-club-competitions.js";
 
 const database = JSON.parse(readFileSync(new URL("../data/world/database.json", import.meta.url)));
 
@@ -28,7 +29,7 @@ function finishQuietly(game) {
 test("world careers create national cups and continental competitions in parallel", () => {
   const game = career();
   const competitions = ensureParallelCompetitions(game).items;
-  assert.deepEqual(competitions.map(item => item.id), ["copa-brasil", "carabao-cup", "copa-rei", "libertadores", "sul-americana", "champions", "europa-league"]);
+  assert.deepEqual(competitions.map(item => item.id), ["copa-brasil", "carabao-cup", "copa-rei", "libertadores", "sul-americana", "champions", "europa-league", "intercontinental"]);
   assert.equal(competitions.find(item => item.id === "copa-brasil").participants.length, 64);
   assert.equal(competitions.find(item => item.id === "libertadores").participants.length, 32);
   assert.equal(competitions.find(item => item.id === "sul-americana").participants.length, 32);
@@ -38,6 +39,86 @@ test("world careers create national cups and continental competitions in paralle
   assert.equal(new Set(competitions.find(item => item.id === "champions").participants.map(id => game.clubs.find(club => club.id === id).country)).size, 9);
   assert.ok(competitions.find(item => item.id === "copa-brasil").participants.includes(game.userClubId));
   assert.ok(competitions.find(item => item.id === "libertadores").participants.includes(game.userClubId));
+});
+
+test("the annual Intercontinental Cup uses six champions, five matches and sends UEFA directly to the final", () => {
+  const game = career();
+  const competition = ensureParallelCompetitions(game).items.find(item => item.id === "intercontinental");
+  assert.equal(competition.participants.length, 6);
+  assert.equal(new Set(Object.keys(competition.confederationEntrants)).size, 6);
+  assert.equal(competition.currentFixtures.length, 2);
+  assert.ok(competition.currentFixtures.every(fixture => ![fixture.homeId, fixture.awayId].includes(competition.confederationEntrants.UEFA)));
+  let matches = 0;
+  while (!competition.finished) {
+    matches += competition.currentFixtures.length;
+    completeCompetitionRound(game, competition.id, competition.currentFixtures.map(fixture => resultFor(fixture)));
+    if (competition.phase === "intercontinental-final" && !competition.finished) assert.ok(competition.currentFixtures[0].awayId === competition.confederationEntrants.UEFA || competition.currentFixtures[0].homeId === competition.confederationEntrants.UEFA);
+  }
+  assert.equal(matches, 5);
+});
+
+test("the expanded Club World Cup appears every four years with the official 32-slot distribution", () => {
+  const game = career();
+  assert.equal(ensureParallelCompetitions(game).items.some(item => item.id === "club-world-cup"), false);
+  game.worldSeason = 2029;
+  game.season = 4;
+  delete game.competitions;
+  const competition = ensureParallelCompetitions(game).items.find(item => item.id === "club-world-cup");
+  assert.ok(competition);
+  assert.equal(competition.participants.length, 32);
+  assert.deepEqual(Object.fromEntries(competition.qualification.map(item => [item.confederation === "País-sede" ? "HOST" : item.confederation, item.slots])), CLUB_WORLD_CUP_SLOTS);
+  assert.equal(competition.groups.length, 8);
+  assert.ok(competition.groups.every(group => group.clubIds.length === 4));
+  assert.equal(competition.phaseRounds.length, 3);
+  const appearances = new Map();
+  for (const round of competition.phaseRounds) for (const fixture of round) {
+    appearances.set(fixture.homeId, (appearances.get(fixture.homeId) || 0) + 1);
+    appearances.set(fixture.awayId, (appearances.get(fixture.awayId) || 0) + 1);
+  }
+  assert.ok([...appearances.values()].every(total => total === 3));
+  for (let round = 0; round < 3; round += 1) completeCompetitionRound(game, competition.id, competition.currentFixtures.map(fixture => resultFor(fixture)));
+  assert.equal(competition.phase, "knockout");
+  assert.equal(competition.knockoutIds.length, 16);
+});
+
+test("Club World Cup ranking applies the country cap and FIFA cycle scoring", () => {
+  const game = career();
+  const selection = selectClubWorldCupParticipants(game, 2029);
+  assert.equal(selection.participants.length, 32);
+  assert.equal(new Set(selection.participants.map(item => item.clubId)).size, 32);
+  for (const confederation of ["UEFA", "CONMEBOL", "AFC", "CAF", "CONCACAF", "OFC"]) {
+    const entries = selection.participants.filter(item => item.confederation === confederation);
+    assert.equal(entries.length, CLUB_WORLD_CUP_SLOTS[confederation]);
+    const countries = new Map();
+    for (const entry of entries) {
+      const country = (game.clubs.find(club => club.id === entry.clubId) || game.externalClubs.find(club => club.id === entry.clubId)).country;
+      countries.set(country, (countries.get(country) || 0) + 1);
+    }
+    for (const [country, total] of countries) {
+      if (total <= 2) continue;
+      assert.ok(entries.filter(entry => (game.clubs.find(club => club.id === entry.clubId) || game.externalClubs.find(club => club.id === entry.clubId)).country === country).every(entry => entry.route === "Campeão continental"));
+    }
+  }
+  assert.equal(rankingPointsForResult("UEFA", 2, 1), 2);
+  assert.equal(rankingPointsForResult("CONMEBOL", 2, 1), 3);
+  assert.equal(rankingPointsForResult("AFC", 1, 1), 1);
+  assert.equal(stageRankingBonus("UEFA", "league-entry"), 4);
+  assert.equal(stageRankingBonus("UEFA", "round-of-16"), 5);
+  assert.equal(stageRankingBonus("CONMEBOL", "round-of-16"), 3);
+});
+
+test("the expanded tournament is absent outside its four-year cycle", () => {
+  const game = career();
+  for (const year of [2026, 2027, 2028, 2030, 2031, 2032]) {
+    game.worldSeason = year;
+    game.season = year - 2025;
+    delete game.competitions;
+    assert.equal(ensureParallelCompetitions(game).items.some(item => item.id === "club-world-cup"), false);
+  }
+  game.worldSeason = 2033;
+  game.season = 8;
+  delete game.competitions;
+  assert.equal(ensureParallelCompetitions(game).items.some(item => item.id === "club-world-cup"), true);
 });
 
 test("continental places use the previous top-flight table and secondary tournaments take the following positions", () => {

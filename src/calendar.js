@@ -30,6 +30,16 @@ export function leagueRoundDate(game, leagueId = game.leagueId, roundIndex) {
 }
 
 export function competitionRoundDate(game, competition) {
+  if (competition?.calendarKind === "club-world-cup") {
+    const date = utcDate(game.worldSeason || 2029, 6, 14);
+    date.setUTCDate(date.getUTCDate() + (competition.roundIndex || 0) * 5);
+    return date;
+  }
+  if (competition?.calendarKind === "intercontinental") {
+    const date = utcDate(game.worldSeason || 2026, 12, 9);
+    date.setUTCDate(date.getUTCDate() + (competition.roundIndex || 0) * 4);
+    return date;
+  }
   const leagueDate = leagueRoundDate(game, game.leagueId, game.week);
   if (!competition) return leagueDate;
   const date = new Date(leagueDate);

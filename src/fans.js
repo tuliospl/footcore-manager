@@ -31,7 +31,7 @@ function ensureClubFanbase(club, season) {
 }
 
 export function ensureFanbases(game) {
-  game.clubs.forEach(club => ensureClubFanbase(club, game.season));
+  [...game.clubs, ...(game.externalClubs || [])].forEach(club => ensureClubFanbase(club, game.season));
   return game.clubs.map(club => club.fanbase);
 }
 
@@ -51,8 +51,8 @@ function changeSupporters(club, season, amount, reason) {
 export function processFanRound(game, results) {
   ensureFanbases(game);
   for (const result of results) {
-    const home = game.clubs.find(club => club.id === result.homeId);
-    const away = game.clubs.find(club => club.id === result.awayId);
+    const home = game.clubs.find(club => club.id === result.homeId) || game.externalClubs?.find(club => club.id === result.homeId);
+    const away = game.clubs.find(club => club.id === result.awayId) || game.externalClubs?.find(club => club.id === result.awayId);
     if (!home || !away) continue;
     const draw = result.homeGoals === result.awayGoals;
     const homeWon = result.homeGoals > result.awayGoals;

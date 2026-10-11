@@ -64,7 +64,7 @@ export function recruitFreeAgents(game) {
   if(game.freeAgentReview===reviewKey) return;
   game.freeAgentReview=reviewKey;
   // A changing deterministic order avoids favoring the first club in the database.
-  const clubs=game.clubs.filter(c=>c.id!==game.userClubId).sort((a,b)=>chance(`${game.seed}:${reviewKey}:${a.id}:order`)-chance(`${game.seed}:${reviewKey}:${b.id}:order`));
+  const clubs=game.clubs.filter(c=>!c.externalCompetitionClub&&c.id!==game.userClubId).sort((a,b)=>chance(`${game.seed}:${reviewKey}:${a.id}:order`)-chance(`${game.seed}:${reviewKey}:${b.id}:order`));
   let signed=0;
   for(const club of clubs) {
     if(signed>=4) break;

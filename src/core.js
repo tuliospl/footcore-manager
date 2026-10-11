@@ -355,7 +355,7 @@ export function leagueSeasonRules(game, leagueId) {
 }
 
 export function getClub(game, clubId) {
-  return game.clubs.find(club => club.id === clubId);
+  return game.clubs.find(club => club.id === clubId) || game.externalClubs?.find(club => club.id === clubId);
 }
 
 export function getUserClub(game) {
@@ -1030,7 +1030,8 @@ export function startNextSeason(game) {
   payPendingPrizes(game);
   const competitions = ensureParallelCompetitions(game);
   for (const competition of competitions.items.filter(item => item.qualification.length && item.participants.includes(game.userClubId))) {
-    game.news.unshift({ id: `qualified-${game.season}-${competition.id}`, type: "positive", title: `Classificado para a ${competition.name}`, body: "A colocação no campeonato nacional garantiu a vaga para esta temporada." });
+    const body = competition.id === "club-world-cup" ? "O clube garantiu uma das 32 vagas pelo título continental, pelo ranking acumulado de quatro anos ou pela vaga do país-sede." : competition.id === "intercontinental" ? "O título continental garantiu a participação no torneio anual entre os campeões das seis confederações." : "A colocação no campeonato nacional garantiu a vaga para esta temporada.";
+    game.news.unshift({ id: `qualified-${game.season}-${competition.id}`, type: "positive", title: `Classificado para a ${competition.name}`, body });
   }
   return { ok: true };
 }
@@ -1063,6 +1064,7 @@ export function getTransferTerms(game, sellerId, playerId) {
   const seller = getClub(game, sellerId);
   const player = seller?.squad.find(item => item.id === playerId);
   if (!player || seller.id === game.userClubId) return null;
+  if (seller.externalCompetitionClub) return { role: "Convidado internacional", available: false, askingPrice: null, reasons: ["Este representante participa apenas das competições mundiais."] };
   const ranked = [...seller.squad].sort((a, b) => b.overall - a.overall);
   const keyPlayer = ranked.slice(0, 3).some(item => item.id === player.id);
   const starter = getLineup(seller).some(item => item.id === player.id);
@@ -1351,7 +1353,7 @@ function generateIncomingInterest(game) {
   const key = `${game.seed}:${game.season}:${game.week}:incoming`;
   if (transferRoll(key) >= interestChance) return;
   const player = eligible[Math.min(eligible.length - 1, Math.floor(transferRoll(`${key}:player`) * Math.min(eligible.length, 4)))].player;
-  const buyers = game.clubs.filter(club => club.id !== seller.id && club.budget > player.value && squadSlots(game, club.id) < (game.leagues ? 40 : 24))
+  const buyers = game.clubs.filter(club => !club.externalCompetitionClub && club.id !== seller.id && club.budget > player.value && squadSlots(game, club.id) < (game.leagues ? 40 : 24))
     .filter(club => {
       const buyerAverage = clubAverage(club);
       const peers = club.squad.filter(item => item.position === player.position);
@@ -1373,9 +1375,9 @@ function simulateAiClubTransfer(game) {
   const key = `${game.seed}:${game.season}:${game.week}:ai-transfer`;
   if (game.finished || transferRoll(key) >= 0.42) return;
   const limit = game.leagues ? 40 : 24;
-  const buyers = game.clubs.filter(club => club.id !== game.userClubId && club.budget > 500_000 && squadSlots(game, club.id) < limit)
+  const buyers = game.clubs.filter(club => !club.externalCompetitionClub && club.id !== game.userClubId && club.budget > 500_000 && squadSlots(game, club.id) < limit)
     .sort((first, second) => transferRoll(`${key}:${first.id}:buyer`) - transferRoll(`${key}:${second.id}:buyer`)).slice(0, 20);
-  const sellers = game.clubs.filter(club => club.id !== game.userClubId && club.squad.length > 14)
+  const sellers = game.clubs.filter(club => !club.externalCompetitionClub && club.id !== game.userClubId && club.squad.length > 14)
     .sort((first, second) => transferRoll(`${key}:${first.id}:seller`) - transferRoll(`${key}:${second.id}:seller`)).slice(0, 30);
   for (const buyer of buyers) {
     const buyerAverage = clubAverage(buyer);
@@ -1442,7 +1444,7 @@ export function loanOutPlayer(game, playerId) {
   if (!canTransferOut(owner, player)) return { ok: false, message: "O elenco não permite este empréstimo agora." };
   const limit = game.leagues ? 40 : 24;
   const ownerAverage = clubAverage(owner);
-  const candidates = game.clubs.filter(club => club.id !== owner.id && squadSlots(game, club.id) < limit).map(club => {
+  const candidates = game.clubs.filter(club => !club.externalCompetitionClub && club.id !== owner.id && squadSlots(game, club.id) < limit).map(club => {
     const peers = getLineup(club).filter(item => item.position === player.position && !item.loan);
     const competition = peers.length ? Math.min(...peers.map(item => item.overall)) : clubAverage(club);
     const smallerClub = club.reputation < owner.reputation || clubAverage(club) < ownerAverage - 1;
@@ -1505,7 +1507,7 @@ export function searchTransferMarket(game, filters = {}) {
   const needle = normalize(query.trim());
   const inRange = (value, low, high) => (low === undefined || low === '' || low === null || value >= Number(low)) && (high === undefined || high === '' || high === null || value <= Number(high));
   const leagueClubs = leagueId === 'all' ? null : new Set(game.leagues?.find(l => l.id === leagueId)?.clubIds || []);
-  const entries = game.clubs.filter(club => club.id !== game.userClubId).flatMap(club => club.squad.map(player => ({ player, club })));
+  const entries = game.clubs.filter(club => !club.externalCompetitionClub && club.id !== game.userClubId).flatMap(club => club.squad.map(player => ({ player, club })));
   entries.push(...game.market.map(player => ({ player, club: null })));
   const price = entry => entry.listing?.price ?? entry.player.askingPrice ?? entry.terms?.askingPrice ?? entry.player.value;
   const results = entries.filter(({ player, club }) =>

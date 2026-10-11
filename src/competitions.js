@@ -1,4 +1,5 @@
 import { recordSeasonFinance } from "./season-tracking.js";
+import { ensureWorldClubCompetitions, recordContinentalChampion, recordContinentalRound, worldCompetitionDefinitions } from "./world-club-competitions.js";
 
 const EUROPE = new Set(["DEU", "ENG", "ESP", "FRA", "ITA", "NLD", "PRT", "RUS", "TUR"]);
 const SOUTH_AMERICA = new Set(["ARG", "BRA", "COL", "PRY", "URY"]);
@@ -26,6 +27,10 @@ function hash(value) {
 function clubStrength(club) {
   const players = [...club.squad].sort((first, second) => second.overall - first.overall).slice(0, 11);
   return players.reduce((total, player) => total + player.overall, 0) / Math.max(1, players.length);
+}
+
+function findClub(game, clubId) {
+  return game.clubs.find(club => club.id === clubId) || game.externalClubs?.find(club => club.id === clubId);
 }
 
 function qualificationScore(club) {
@@ -99,6 +104,7 @@ function nationalRanking(game, country) {
 }
 
 function selectedClubs(game, definition) {
+  if (definition.participantIds) return { participants: [...definition.participantIds], qualification: definition.qualification || [] };
   const candidates = game.clubs.filter(club => definition.countries.has(club.country)).sort((first, second) => qualificationScore(second) - qualificationScore(first) || first.name.localeCompare(second.name, "pt-BR"));
   let selected;
   let qualification = [];
@@ -130,15 +136,31 @@ function selectedClubs(game, definition) {
   return { participants: selected.map(club => club.id), qualification };
 }
 
-function createGroups(participants) {
+function createGroups(participants, legs = 2) {
   const groups = Array.from({ length: 8 }, (_, index) => ({ id: String.fromCharCode(65 + index), clubIds: [], table: [] }));
   participants.forEach((clubId, index) => groups[index % groups.length].clubIds.push(clubId));
   groups.forEach(group => { group.table = freshTable(group.clubIds); });
   const schedules = groups.map(group => {
     const firstLeg = roundRobinRounds(group.clubIds);
-    return [...firstLeg, ...firstLeg.map(round => round.map(fixture => ({ homeId: fixture.awayId, awayId: fixture.homeId })))];
+    return legs === 1 ? firstLeg : [...firstLeg, ...firstLeg.map(round => round.map(fixture => ({ homeId: fixture.awayId, awayId: fixture.homeId })))];
   });
-  return { groups, rounds: Array.from({ length: 6 }, (_, round) => schedules.flatMap(schedule => schedule[round] || [])) };
+  return { groups, rounds: Array.from({ length: 3 * legs }, (_, round) => schedules.flatMap(schedule => schedule[round] || [])) };
+}
+
+function createIntercontinental(game, competition) {
+  const entrants = competition.confederationEntrants;
+  const afcStarts = (game.worldSeason || 2026) % 2 === 0;
+  const firstAsiaAfrica = afcStarts ? entrants.AFC : entrants.CAF;
+  const remainingAsiaAfrica = afcStarts ? entrants.CAF : entrants.AFC;
+  const conmebolHosts = (game.worldSeason || 2026) % 2 === 0;
+  competition.phase = "intercontinental-opening";
+  competition.roundIndex = 0;
+  competition.bracket = { uefaId: entrants.UEFA, remainingAsiaAfrica, asiaAfricaWinner: null, americasWinner: null };
+  competition.currentFixtures = [
+    { homeId: firstAsiaAfrica, awayId: entrants.OFC, bracketKey: "asia-africa-opening" },
+    { homeId: conmebolHosts ? entrants.CONMEBOL : entrants.CONCACAF, awayId: conmebolHosts ? entrants.CONCACAF : entrants.CONMEBOL, bracketKey: "americas" }
+  ];
+  competition.roundLabel = "Eliminatórias continentais";
 }
 
 function createCompetition(game, definition) {
@@ -146,14 +168,16 @@ function createCompetition(game, definition) {
   const participants = selection.participants;
   if (participants.length < 4) return null;
   const cadence = Math.max(1, Math.floor(game.schedule.length / definition.cadenceRounds));
-  const competition = { ...definition, countries: [...definition.countries], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: 1, roundIndex: 0, history: [], finished: false, championId: null, awaitingUser: false };
+  const competition = { ...definition, countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1, roundIndex: 0, history: [], finished: false, championId: null, awaitingUser: false };
   if (definition.format === "groups") {
-    const { groups, rounds } = createGroups(participants.slice(0, 32));
+    const { groups, rounds } = createGroups(participants.slice(0, 32), definition.groupLegs || 2);
     Object.assign(competition, { phase: "groups", groups, phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de grupos · rodada 1" });
   } else if (definition.format === "league") {
     const ids = participants.slice(0, 36);
     const rounds = roundRobinRounds(ids).slice(0, 8);
     Object.assign(competition, { phase: "league", table: freshTable(ids), phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de liga · rodada 1", directIds: [] });
+  } else if (definition.format === "intercontinental") {
+    createIntercontinental(game, competition);
   } else {
     const size = 2 ** Math.floor(Math.log2(participants.length));
     competition.participants = participants.slice(0, size);
@@ -163,12 +187,14 @@ function createCompetition(game, definition) {
 }
 
 export function ensureParallelCompetitions(game) {
-  if (!game.leagues) {
+  if (!game.leagues?.length) {
     game.competitions ??= { version: 2, season: game.season, items: [] };
     return game.competitions;
   }
-  if (!game.competitions || game.competitions.version !== 2 || game.competitions.season !== game.season || !game.competitions.items?.length) {
-    game.competitions = { version: 2, season: game.season, items: DEFINITIONS.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
+  ensureWorldClubCompetitions(game);
+  if (!game.competitions || game.competitions.version !== 3 || game.competitions.season !== game.season || !game.competitions.items?.length) {
+    const definitions = [...DEFINITIONS, ...worldCompetitionDefinitions(game)];
+    game.competitions = { version: 3, season: game.season, items: definitions.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
   }
   game.competitions.history ??= [];
   return game.competitions;
@@ -187,7 +213,7 @@ function payRoundRewards(game, competition, results) {
     let winnerId = null;
     if (result.homeGoals !== result.awayGoals) winnerId = result.homeGoals > result.awayGoals ? result.homeId : result.awayId;
     else if (["knockout", "playoff"].includes(competition.phase)) winnerId = winner({ ...result }, competition);
-    const club = game.clubs.find(item => item.id === winnerId);
+    const club = findClub(game, winnerId);
     if (!club) continue;
     club.budget += competition.winPrize;
     recordSeasonFinance(game, club.id, "copas", competition.winPrize, "income");
@@ -199,13 +225,15 @@ function finishCompetition(game, competition, championId) {
   competition.championId = championId;
   competition.currentFixtures = [];
   competition.roundLabel = "Encerrada";
-  const champion = game.clubs.find(club => club.id === championId);
+  const champion = findClub(game, championId);
   if (champion) {
     champion.budget += competition.championPrize;
     recordSeasonFinance(game, champion.id, "copas", competition.championPrize, "income");
   }
   game.competitions.history.unshift({ season: game.season, id: competition.id, name: competition.name, championId, championName: champion?.name || "Clube", prize: competition.championPrize });
   game.competitions.history = game.competitions.history.slice(0, 40);
+  recordContinentalChampion(game, competition, championId);
+  if (["intercontinental", "club-world-cup"].includes(competition.id)) game.worldClubCompetitions.history.unshift({ year: game.worldSeason, competitionId: competition.id, championId, championName: champion?.name || "Clube" });
   game.news.unshift({ id: `competition-champion-${game.season}-${competition.id}`, type: championId === game.userClubId ? "positive" : "info", title: `${champion?.name || "Clube"} venceu a ${competition.name}`, body: championId === game.userClubId ? `O título rendeu ${competition.championPrize.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} ao clube.` : "A competição chegou ao fim." });
 }
 
@@ -251,6 +279,36 @@ function advanceStage(game, competition, results) {
     }
     return;
   }
+  if (competition.phase === "intercontinental-opening") {
+    const asiaAfrica = results.find(result => competition.currentFixtures.find(fixture => fixture.homeId === result.homeId && fixture.bracketKey === "asia-africa-opening"));
+    const americas = results.find(result => competition.currentFixtures.find(fixture => fixture.homeId === result.homeId && fixture.bracketKey === "americas"));
+    competition.bracket.asiaAfricaWinner = winner(asiaAfrica, competition);
+    competition.bracket.americasWinner = winner(americas, competition);
+    competition.phase = "intercontinental-playoff";
+    competition.roundIndex += 1;
+    competition.currentFixtures = [{ homeId: competition.bracket.asiaAfricaWinner, awayId: competition.bracket.remainingAsiaAfrica, bracketKey: "asia-africa-final" }];
+    competition.roundLabel = "Copa África–Ásia–Pacífico";
+    return;
+  }
+  if (competition.phase === "intercontinental-playoff") {
+    competition.bracket.asiaAfricaWinner = winner(results[0], competition);
+    competition.phase = "intercontinental-challenger";
+    competition.roundIndex += 1;
+    competition.currentFixtures = [{ homeId: competition.bracket.asiaAfricaWinner, awayId: competition.bracket.americasWinner, bracketKey: "challenger" }];
+    competition.roundLabel = "Copa Challenger";
+    return;
+  }
+  if (competition.phase === "intercontinental-challenger") {
+    competition.phase = "intercontinental-final";
+    competition.roundIndex += 1;
+    competition.currentFixtures = [{ homeId: winner(results[0], competition), awayId: competition.bracket.uefaId, bracketKey: "final" }];
+    competition.roundLabel = "Final";
+    return;
+  }
+  if (competition.phase === "intercontinental-final") {
+    finishCompetition(game, competition, winner(results[0], competition));
+    return;
+  }
   const winners = results.map(result => winner(result, competition));
   if (competition.phase === "playoff") {
     startKnockout(competition, [...competition.directIds, ...winners], `${game.season}:${competition.id}:oitavas`);
@@ -269,7 +327,8 @@ function advanceStage(game, competition, results) {
 export function completeCompetitionRound(game, competitionId, results) {
   const competition = ensureParallelCompetitions(game).items.find(item => item.id === competitionId);
   if (!competition || competition.finished) return null;
-  results.forEach(result => { if (result.homeGoals === result.awayGoals && ["knockout", "playoff"].includes(competition.phase)) winner(result, competition); });
+  results.forEach(result => { if (result.homeGoals === result.awayGoals && (["knockout", "playoff"].includes(competition.phase) || competition.phase.startsWith("intercontinental"))) winner(result, competition); });
+  recordContinentalRound(game, competition, results);
   payRoundRewards(game, competition, results);
   advanceStage(game, competition, results);
   competition.awaitingUser = false;
@@ -296,7 +355,7 @@ export function pendingCompetitionFixture(game) {
   const competition = ensureParallelCompetitions(game).items.find(item => item.awaitingUser && !item.finished);
   if (!competition) return null;
   const fixture = competition.currentFixtures.find(item => item.homeId === game.userClubId || item.awayId === game.userClubId);
-  return fixture ? { ...fixture, competitionId: competition.id, competitionName: competition.name, competitionRound: competition.roundLabel } : null;
+  return fixture ? { ...fixture, competitionId: competition.id, competitionName: competition.name, competitionRound: competition.roundLabel, calendarKind: competition.calendarKind, roundIndex: competition.roundIndex } : null;
 }
 
 export function competitionRoundFixtures(game, competitionId) {

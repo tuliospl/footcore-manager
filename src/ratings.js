@@ -36,7 +36,7 @@ export function playerMatchStats(match, clubId, player) {
 export function matchReport(game, match) {
   if (match.playerReports) return match;
   const playerReports = Object.fromEntries(Object.entries(match.teams).map(([clubId, team]) => [clubId,
-    game.clubs.find(club => club.id === clubId).squad.map(player => playerMatchStats(match, clubId, player))
+    (game.clubs.find(club => club.id === clubId) || game.externalClubs?.find(club => club.id === clubId)).squad.map(player => playerMatchStats(match, clubId, player))
       .sort((a, b) => Number(team.onField.includes(b.id)) - Number(team.onField.includes(a.id)) || ["GOL", "ZAG", "LAT", "VOL", "MC", "ATA"].indexOf(a.position) - ["GOL", "ZAG", "LAT", "VOL", "MC", "ATA"].indexOf(b.position) || b.minutes - a.minutes)
   ]));
   return { homeId: match.homeId, awayId: match.awayId, homeGoals: match.homeGoals, awayGoals: match.awayGoals, events: match.events, minute: match.minute, phase: match.phase, playerReports,
