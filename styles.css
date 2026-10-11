@@ -216,6 +216,30 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .stadium-info h3 { font: 800 29px "Barlow Condensed"; text-transform: uppercase; margin: 0 0 4px; }
 .stadium-info > p { color: var(--muted); margin: 0 0 24px; }
 .stadium-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.stadium-construction { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 18px; padding: 22px 26px; border-left: 5px solid var(--lime); }
+.stadium-construction h3, .stadium-section-title h3, .stadium-card-heading h3 { margin: 0; font: 800 25px "Barlow Condensed"; text-transform: uppercase; }
+.stadium-construction p { margin: 4px 0 0; color: var(--muted); }
+.stadium-construction > strong { min-width: 88px; text-align: center; font: 800 42px/1 "Barlow Condensed"; }
+.stadium-construction > strong small { display: block; margin-top: 4px; color: var(--muted); font: 700 9px Inter; letter-spacing: 1px; text-transform: uppercase; }
+.stadium-section { margin-top: 28px; }
+.stadium-section-title { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
+.stadium-section-title p { max-width: 520px; margin: 0; color: var(--muted); font-size: 12px; }
+.stadium-management-grid, .stadium-facility-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.stadium-sector-card, .stadium-facility-card { display: flex; min-width: 0; flex-direction: column; gap: 16px; padding: 20px; }
+.stadium-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.stadium-card-heading small { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.stadium-card-heading > span { padding: 5px 8px; border-radius: 5px; background: #e9eee9; color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
+.stadium-card-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.stadium-card-stats p { min-width: 0; margin: 0; padding: 9px; border-radius: 6px; background: #f3f6f2; }
+.stadium-card-stats small, .stadium-card-stats strong { display: block; }
+.stadium-card-stats small { min-height: 24px; color: var(--muted); font-size: 8px; text-transform: uppercase; }
+.stadium-card-stats strong { margin-top: 3px; overflow-wrap: anywhere; font: 800 17px "Barlow Condensed"; }
+.ticket-price-control { display: grid; grid-template-columns: 1fr auto; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.ticket-price-control span { color: var(--ink); }
+.ticket-price-control input { grid-column: 1 / -1; width: 100%; accent-color: var(--forest); }
+.stadium-project-button { width: 100%; margin-top: auto; white-space: normal; }
+.stadium-facility-card > p { min-height: 38px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.stadium-facility-card > strong { font-size: 12px; }
 .sponsor-layout { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 20px; align-items: start; }
 .sponsor-commercial-card { margin-bottom: 18px; }
 .sponsor-commercial-factors { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
@@ -474,6 +498,8 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .team h4 { font-size: 15px; }
   .stadium-hero { grid-template-columns: 1fr; }
   .stadium-visual { min-height: 240px; }
+  .stadium-management-grid, .stadium-facility-grid { grid-template-columns: 1fr; }
+  .stadium-section-title { align-items: flex-start; flex-direction: column; }
   .sponsor-layout { grid-template-columns: 1fr; }
   .sponsor-commercial-factors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sponsor-commercial-factors article { border-bottom: 1px solid var(--line); }

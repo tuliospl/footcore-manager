@@ -10,6 +10,7 @@ import { escapeHtml } from "./html.js";
 import { teamShirtMarkup } from "./team-shirt.js";
 import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel, sponsorshipCommercialProfile } from "./sponsorships.js";
 import { fanbaseProfile } from "./fans.js";
+import { ensureStadiumOperations, setStadiumTicketPrice, stadiumExpansionQuote, stadiumFacilityQuote, stadiumRevenueProjection, startStadiumProject, STADIUM_FACILITIES, STADIUM_SECTORS } from "./stadium.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -39,9 +40,7 @@ import {
   rejectIncomingOffer,
   setTactic,
   setMarkingIntensity,
-  stadiumUpgradeCost,
   startNextSeason,
-  upgradeStadium
 } from "./core.js";
 import { startMatch, resumeMatch, pauseMatch, advanceMatchMinute, setPenaltyTaker, takePenalty, ensureLiveRound, setMatchFormation, moveMatchPlayer } from "./match.js";
 import { renderMatchEvents } from "./match-view.js";
@@ -654,6 +653,7 @@ function renderCompetition() {
 
 const financeLabels = {
   bilheteria: "Bilheteria",
+  operacoesEstadio: "Restaurantes e loja do estádio",
   salarios: "Salários do elenco",
   transferencias: "Transferências",
   emprestimos: "Empréstimos",
@@ -741,15 +741,27 @@ function renderSeasonReport() {
 
 function renderStadium() {
   const club = getUserClub(game);
+  ensureStadiumOperations(game);
   const fanbase = fanbaseProfile(club);
-  const cost = stadiumUpgradeCost(club);
-  content.innerHTML = `${pageHeading("Patrimônio do clube", "Estádio", "Amplie para aumentar a renda de bilheteria")}
-    <section class="card stadium-hero"><div class="stadium-visual"><div class="pitch"></div></div><div class="stadium-info">
-      <p class="eyebrow">Nível ${club.stadium.level} de 5</p><h3>${escapeHtml(club.stadium.name)}</h3><p>A casa do ${escapeHtml(club.name)} e o principal ponto de encontro da torcida.</p>
-      <div class="stadium-facts"><div class="fact"><small>Capacidade</small><strong>${club.stadium.capacity.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Torcedores</small><strong>${fanbase.supporters.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Crescimento no ano</small><strong class="${fanbase.seasonChange >= 0 ? "positive-number" : "negative-number"}">${fanbase.seasonChange >= 0 ? "+" : ""}${fanbase.seasonChange.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Ingresso médio</small><strong>${formatMoney(club.stadium.ticketPrice)}</strong></div><div class="fact"><small>Moral da torcida</small><strong>${club.fanMorale}/100</strong></div><div class="fact"><small>Próximo nível</small><strong>+5.000</strong></div></div>
-      <button id="upgrade-button" class="primary-button" ${club.stadium.level >= 5 ? "disabled" : ""}>${club.stadium.level >= 5 ? "Nível máximo" : `Ampliar por ${formatMoney(cost)}`} <span>↑</span></button>
-      <p class="upgrade-note">Cada ampliação aumenta a capacidade, melhora a moral e ajuda o clube a conquistar novos torcedores.</p>
-    </div></section>`;
+  const projection = stadiumRevenueProjection(game, club);
+  const construction = club.stadium.construction;
+  const sectors = STADIUM_SECTORS.map(definition => {
+    const sector = club.stadium.sectors[definition.id];
+    const forecast = projection.sectors.find(item => item.id === definition.id);
+    const quote = stadiumExpansionQuote(club, definition.id);
+    return `<article class="card stadium-sector-card"><div class="stadium-card-heading"><div><small>Setor</small><h3>${escapeHtml(definition.label)}</h3></div><span>Nível ${sector.level}</span></div><div class="stadium-card-stats"><p><small>Capacidade</small><strong>${sector.capacity.toLocaleString("pt-BR")}</strong></p><p><small>Ocupação prevista</small><strong>${Math.round(forecast.occupancy * 100)}%</strong></p><p><small>Receita prevista</small><strong>${formatMoney(forecast.income)}</strong></p></div><label class="ticket-price-control">Preço do ingresso <span>${formatMoney(sector.ticketPrice)}</span><input type="range" min="${definition.minPrice}" max="${definition.maxPrice}" step="1" value="${sector.ticketPrice}" data-stadium-price="${definition.id}"></label><button type="button" class="secondary-button stadium-project-button" data-stadium-project="${quote.id}" ${construction || !quote.available ? "disabled" : ""}>${quote.available ? `+ ${quote.addedCapacity.toLocaleString("pt-BR")} lugares · ${formatMoney(quote.cost)} · ${quote.rounds} rodadas` : "Limite estrutural atingido"}</button></article>`;
+  }).join("");
+  const facilities = STADIUM_FACILITIES.map(definition => {
+    const facility = club.stadium.facilities[definition.id];
+    const quote = stadiumFacilityQuote(club, definition.id);
+    const effect = definition.id === "medical" ? `Risco de lesão −${Math.round((1 - Math.max(0.6, 1 - facility.level * 0.08)) * 100)}%${facility.level >= 3 ? ` · recuperação −${facility.level >= 5 ? 2 : 1} partidas` : ""}` : definition.id === "restaurants" ? `${formatMoney(projection.restaurants)} previstos por jogo em casa` : `${formatMoney(projection.store)} previstos por rodada`;
+    return `<article class="card stadium-facility-card"><div class="stadium-card-heading"><div><small>Instalação</small><h3>${escapeHtml(definition.label)}</h3></div><span>Nível ${facility.level}/${definition.maxLevel}</span></div><p>${escapeHtml(definition.description)}</p><strong>${effect}</strong><button type="button" class="secondary-button stadium-project-button" data-stadium-project="${quote.id}" ${construction || !quote.available ? "disabled" : ""}>${quote.available ? `Melhorar · ${formatMoney(quote.cost)} · ${quote.rounds} rodadas` : "Nível máximo"}</button></article>`;
+  }).join("");
+  content.innerHTML = `${pageHeading("Patrimônio do clube", "Estádio", "Administre preços, setores e instalações do complexo")}
+    <section class="card stadium-hero"><div class="stadium-visual"><div class="pitch"></div></div><div class="stadium-info"><p class="eyebrow">Complexo esportivo</p><h3>${escapeHtml(club.stadium.name)}</h3><p>A capacidade cresce por setor. Cada obra exige investimento e várias rodadas para ficar pronta.</p><div class="stadium-facts"><div class="fact"><small>Capacidade</small><strong>${club.stadium.capacity.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Público previsto</small><strong>${projection.attendance.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Receita por jogo em casa</small><strong>${formatMoney(projection.total)}</strong></div><div class="fact"><small>Torcedores</small><strong>${fanbase.supporters.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Moral da torcida</small><strong>${club.fanMorale}/100</strong></div><div class="fact"><small>Receita comercial</small><strong>${formatMoney(projection.commercial)}</strong></div></div></div></section>
+    ${construction ? `<section class="card stadium-construction"><div><p class="eyebrow">Obra em andamento</p><h3>${escapeHtml(construction.label)}</h3><p>Conclusão em ${construction.roundsRemaining} ${construction.roundsRemaining === 1 ? "rodada" : "rodadas"}. Novos projetos ficam bloqueados até a entrega.</p></div><strong>${construction.roundsRemaining}<small>rodadas</small></strong></section>` : `<p class="view-note">Não há obra em andamento. O clube pode iniciar um projeto por vez.</p>`}
+    <section class="stadium-section"><div class="stadium-section-title"><div><p class="eyebrow">Bilheteria</p><h3>Setores e preços</h3></div><p>Preços maiores aumentam a renda por ingresso, mas reduzem a ocupação.</p></div><div class="stadium-management-grid">${sectors}</div></section>
+    <section class="stadium-section"><div class="stadium-section-title"><div><p class="eyebrow">Estrutura</p><h3>Instalações do complexo</h3></div><p>Restaurantes e loja geram receita; o departamento médico protege o elenco.</p></div><div class="stadium-facility-grid">${facilities}</div></section>`;
 }
 
 function renderSponsors() {
@@ -1247,10 +1259,11 @@ content.addEventListener("click", event => {
     if (result.ok) saveGame();
     showToast(result.message, !result.ok); render(); return;
   }
-  if (event.target.closest("#upgrade-button")) {
-    const result = upgradeStadium(game);
+  const stadiumProject = event.target.closest("[data-stadium-project]");
+  if (stadiumProject) {
+    const result = startStadiumProject(game, stadiumProject.dataset.stadiumProject);
     if (result.ok) saveGame();
-    showToast(result.message, !result.ok); render();
+    showToast(result.message, !result.ok); render(); return;
   }
 });
 
@@ -1268,6 +1281,11 @@ content.addEventListener("input", event => {
 
 content.addEventListener("change", event => {
   if (event.target.id === "competition-league") { competitionLeagueId = event.target.value; renderCompetition(); return; }
+  if (event.target.dataset.stadiumPrice) {
+    const result = setStadiumTicketPrice(game, event.target.dataset.stadiumPrice, Number(event.target.value));
+    if (result.ok) saveGame();
+    showToast(result.message, !result.ok); renderStadium(); return;
+  }
   if (event.target.id !== "tactic") return;
   setTactic(game, event.target.value);
   saveGame();

@@ -12,7 +12,8 @@ import { ensureYouthAcademy, advanceYouthAcademy, ageYouthAcademy } from "./yout
 import { MARKING_STYLES, markingStyle } from "./marking.js";
 import { ensureSeasonTracking, playerValueChanges, recordSeasonFinance, seasonFinanceSummary } from "./season-tracking.js";
 import { ensureSponsorships, finishSponsorshipSeason, processSponsorshipRound, startSponsorshipSeason } from "./sponsorships.js";
-import { applyDivisionFanImpact, ensureFanbases, processFanRound, recordPlayerArrival, recordPlayerDeparture, recordStadiumExpansion, settleFanSeason, startFanSeason } from "./fans.js";
+import { applyDivisionFanImpact, ensureFanbases, processFanRound, recordPlayerArrival, recordPlayerDeparture, settleFanSeason, startFanSeason } from "./fans.js";
+import { ensureStadiumOperations, medicalInjuryRisk, medicalRecoveryReduction, processStadiumRound, stadiumExpansionQuote, stadiumRevenueProjection, startStadiumProject } from "./stadium.js";
 
 const FIRST_NAMES = ["Caio", "Davi", "Enzo", "Felipe", "Gabriel", "Hugo", "João", "Léo", "Lucas", "Mateus", "Rafael", "Vitor"];
 const LAST_NAMES = ["Almeida", "Barbosa", "Costa", "Dias", "Ferreira", "Gomes", "Lima", "Mendes", "Nunes", "Oliveira", "Rocha", "Silva"];
@@ -191,6 +192,7 @@ export function createGameFromDatabase(input, userClubId, seed = Date.now(), wor
 
 export function ensureCareerManagement(game) {
   ensureFanbases(game);
+  ensureStadiumOperations(game);
   ensureContracts(game);
   ensureYouthAcademy(game);
   ensureSponsorships(game);
@@ -529,15 +531,20 @@ function processFinances(game, results) {
     if (!match) return;
     const payroll = club.squad.reduce((sum, player) => sum + player.salary, 0);
     let income = 0;
+    let stadiumCommercial = 0;
     if (match?.homeId === club.id) {
-      const demand = clamp((club.fanMorale + club.reputation) / 150, 0.45, 1);
-      const attendance = Math.round(club.stadium.capacity * demand);
-      income = attendance * club.stadium.ticketPrice;
-      match.attendance = attendance;
-      match.income = income;
+      const projection = stadiumRevenueProjection(game, club, true);
+      income = projection.gate;
+      stadiumCommercial = projection.commercial;
+      match.attendance = projection.attendance;
+      match.income = projection.total;
+      match.stadiumRevenue = projection;
+    } else {
+      stadiumCommercial = stadiumRevenueProjection(game, club, false).commercial;
     }
-    club.budget += income - payroll;
+    club.budget += income + stadiumCommercial - payroll;
     recordSeasonFinance(game, club.id, "bilheteria", income, "income");
+    recordSeasonFinance(game, club.id, "operacoesEstadio", stadiumCommercial, "income");
     recordSeasonFinance(game, club.id, "salarios", payroll, "expense");
   });
   processSponsorshipRound(game, results);
@@ -842,6 +849,7 @@ function applyRound(game, results, random) {
   updateAvailability(game, results, random);
   game.lastRound = results;
   game.week += 1;
+  processStadiumRound(game);
   advanceYouthAcademy(game);
   if (game.leagues) {
     const own = game.leagues.find(l => l.id === game.leagueId);
@@ -903,11 +911,11 @@ function updateAvailability(game, results, random) {
           player.suspensionReason = "red";
           if (clubId === game.userClubId) game.news?.unshift({ id: `red-suspension-${game.season}-${game.week}-${player.id}`, type: "negative", title: `${player.name} está suspenso`, body: "O cartão vermelho deixa o atleta fora da próxima partida." });
         }
-        if (stats.minutes > 0 && !player.injuryMatches && random() < 0.012) {
+        if (stats.minutes > 0 && !player.injuryMatches && random() < 0.012 * medicalInjuryRisk(club)) {
           const injury = injuryFromRoll(random(), random());
-          player.injuryMatches = injury.matches;
+          player.injuryMatches = Math.max(1, injury.matches - medicalRecoveryReduction(club));
           player.injuryLabel = injury.label;
-          if (clubId === game.userClubId) game.news?.unshift({ id: `injury-${game.season}-${game.week}-${player.id}`, type: "negative", title: `${player.name} se lesionou`, body: `${injury.label}: previsão de retorno em ${injury.matches} ${injury.matches === 1 ? "partida" : "partidas"}.` });
+          if (clubId === game.userClubId) game.news?.unshift({ id: `injury-${game.season}-${game.week}-${player.id}`, type: "negative", title: `${player.name} se lesionou`, body: `${injury.label}: previsão de retorno em ${player.injuryMatches} ${player.injuryMatches === 1 ? "partida" : "partidas"}.` });
         }
       }
     }
@@ -1658,22 +1666,11 @@ export function sellPlayer(game, playerId) {
 }
 
 export function upgradeStadium(game) {
-  const club = getUserClub(game);
-  const cost = stadiumUpgradeCost(club);
-  if (club.stadium.level >= 5) return { ok: false, message: "O estádio já está no nível máximo." };
-  if (club.budget < cost) return { ok: false, message: "Orçamento insuficiente para a ampliação." };
-  club.budget -= cost;
-  recordSeasonFinance(game, club.id, "estadio", cost, "expense");
-  club.stadium.level += 1;
-  club.stadium.capacity += 5000;
-  club.fanMorale = clamp(club.fanMorale + 7, 0, 100);
-  const newSupporters = recordStadiumExpansion(game, club, 5000);
-  game.news.unshift({ id: `stadium-${club.stadium.level}`, type: "positive", title: "Estádio ampliado", body: `A nova capacidade é de ${club.stadium.capacity.toLocaleString("pt-BR")} torcedores${newSupporters ? ` e o projeto atraiu ${newSupporters.toLocaleString("pt-BR")} novos fãs` : ""}.` });
-  return { ok: true, message: "Ampliação concluída." };
+  return startStadiumProject(game, "expand:stands");
 }
 
 export function stadiumUpgradeCost(club) {
-  return 1800000 * club.stadium.level;
+  return stadiumExpansionQuote(club, "stands").cost;
 }
 
 export function setTactic(game, tactic) {

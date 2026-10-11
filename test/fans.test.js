@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { buyPlayer, createGame, getUserClub, upgradeStadium } from "../src/core.js";
 import { ensureFanbases, processFanRound, settleFanSeason, startFanSeason } from "../src/fans.js";
 import { sponsorshipCommercialProfile } from "../src/sponsorships.js";
+import { processStadiumRound } from "../src/stadium.js";
 
 test("fanbase persists and reacts gradually to match results", () => {
   const game = createGame(2101);
@@ -37,6 +38,7 @@ test("stadium growth and a stronger signing expand supporters and commercial val
   const initialFans = club.fanbase.supporters;
   const initialCommercial = sponsorshipCommercialProfile(game).basePayment;
   assert.equal(upgradeStadium(game).ok, true);
+  while (club.stadium.construction) processStadiumRound(game);
   assert.ok(club.fanbase.supporters > initialFans);
 
   const target = game.market[0];

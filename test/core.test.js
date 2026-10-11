@@ -120,14 +120,14 @@ test("transfers reject insufficient funds and protect the last goalkeeper withou
   assert.equal(JSON.stringify(game), afterSale);
 });
 
-test("stadium upgrades stop at level five without charging again", () => {
+test("stadium permits only one construction project at a time", () => {
   const game = createGame(42);
   const club = getUserClub(game);
   club.budget = 100_000_000;
-  while (club.stadium.level < 5) assert.equal(upgradeStadium(game).ok, true);
-  const before = JSON.stringify(game);
+  assert.equal(upgradeStadium(game).ok, true);
+  const budget = club.budget;
   assert.equal(upgradeStadium(game).ok, false);
-  assert.equal(JSON.stringify(game), before);
+  assert.equal(club.budget, budget);
 });
 
 test("development preserves rating bounds and depends on match evidence", () => {
@@ -183,13 +183,14 @@ test("buys and sells players while updating budget", () => {
   assert.ok(club.budget > beforeSell);
 });
 
-test("upgrades stadium capacity and fan morale", () => {
+test("stadium expansion charges upfront and starts construction", () => {
   const game = createGame(99);
   const club = getUserClub(game);
   club.budget = 100_000_000;
   const capacity = club.stadium.capacity;
   const cost = stadiumUpgradeCost(club);
   assert.equal(upgradeStadium(game).ok, true);
-  assert.equal(club.stadium.capacity, capacity + 5000);
+  assert.equal(club.stadium.capacity, capacity);
   assert.equal(club.budget, 100_000_000 - cost);
+  assert.equal(club.stadium.construction.addedCapacity, 5000);
 });
