@@ -8,7 +8,7 @@ import { CareerSetup } from "./career-setup.js";
 import { badgeContent } from "./club-badge.js";
 import { escapeHtml } from "./html.js";
 import { teamShirtMarkup } from "./team-shirt.js";
-import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorObjectiveLabel } from "./sponsorships.js";
+import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel } from "./sponsorships.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -753,18 +753,21 @@ function renderSponsors() {
   const remainingRounds = Math.max(0, game.schedule.length - game.week);
   const contracts = SPONSOR_SLOTS.map(slot => {
     const contract = sponsorships.contracts[slot.id];
-    return `<article><strong>${escapeHtml(slot.label)}</strong>${contract ? `<span>${escapeHtml(contract.name)} · ${formatMoney(contract.roundPayment)}/rodada</span><small>Meta: ${escapeHtml(sponsorObjectiveLabel(game, contract.objective))} · bônus ${formatMoney(contract.bonus)}</small>` : `<span>Espaço disponível</span><small>${escapeHtml(slot.placement)}</small>`}</article>`;
+    return `<article><strong>${escapeHtml(slot.label)}</strong>${contract ? `<span>${escapeHtml(contract.name)} · ${escapeHtml(sponsorPaymentLabel(game, contract))}</span><small>${contract.goals.length} ${contract.goals.length === 1 ? "meta extra" : "metas extras"} · até ${formatMoney(contract.bonus)} em bônus</small>` : `<span>Espaço disponível</span><small>${escapeHtml(slot.placement)}</small>`}</article>`;
   }).join("");
   const sections = SPONSOR_SLOTS.map(slot => {
     const contract = sponsorships.contracts[slot.id];
     const offers = sponsorships.offers.filter(offer => offer.slot === slot.id);
     const body = contract
-      ? `<div class="card-body"><p><strong>${escapeHtml(contract.name)}</strong> ocupa este espaço até o fim da temporada.</p><p>${formatMoney(contract.roundPayment)} por rodada · ${formatMoney(contract.totalPaid)} já recebidos · bônus de ${formatMoney(contract.bonus)} se a meta “${escapeHtml(sponsorObjectiveLabel(game, contract.objective))}” for alcançada.</p><p class="view-note">O contrato não pode ser substituído durante a temporada.</p></div>`
-      : `<div class="sponsor-offer-grid">${offers.map(offer => `<article class="sponsor-offer"><small>${escapeHtml(offer.profileLabel)}</small><h4>${escapeHtml(offer.name)}</h4><strong>${formatMoney(offer.roundPayment)} / rodada</strong><p>Receita possível no restante da temporada: ${formatMoney(offer.roundPayment * remainingRounds)}</p><p>Meta: ${escapeHtml(sponsorObjectiveLabel(game, offer.objective))}</p><p>Bônus: ${formatMoney(offer.bonus)}</p><button type="button" class="primary-button" data-sign-sponsor="${offer.id}">Assinar contrato</button></article>`).join("")}</div>`;
+      ? `<div class="card-body"><p><strong>${escapeHtml(contract.name)}</strong> ocupa este espaço até o fim da temporada.</p><p><strong>${escapeHtml(sponsorPaymentLabel(game, contract))}</strong> · ${formatMoney(contract.fixedPaid)} da cota fixa já recebidos.</p><div class="sponsor-goals"><strong>Metas extras</strong>${contract.goals.map(goal => `<p><span>${escapeHtml(sponsorGoalLabel(game, goal))}</span><b>+ ${formatMoney(goal.bonus)}</b></p>`).join("")}</div><p class="view-note">As metas são avaliadas separadamente no fim da temporada. O contrato não pode ser substituído.</p></div>`
+      : `<div class="sponsor-offer-grid">${offers.map(offer => {
+        const projected = { ...offer, fixedValue: offer.roundPayment * remainingRounds };
+        return `<article class="sponsor-offer"><small>${escapeHtml(offer.profileLabel)}</small><h4>${escapeHtml(offer.name)}</h4><strong>${escapeHtml(sponsorPaymentLabel(game, projected))}</strong><p>Cota fixa restante: ${formatMoney(projected.fixedValue)}</p><div class="sponsor-goals"><strong>Metas extras</strong>${offer.goals.map(goal => `<p><span>${escapeHtml(sponsorGoalLabel(game, goal))}</span><b>+ ${formatMoney(goal.bonus)}</b></p>`).join("")}</div><p>Bônus máximo: ${formatMoney(offer.bonus)}</p><button type="button" class="primary-button" data-sign-sponsor="${offer.id}">Assinar contrato</button></article>`;
+      }).join("")}</div>`;
     return `<section class="card sponsor-slot-section"><div class="card-header"><h3>${escapeHtml(slot.label)}</h3><span>${escapeHtml(slot.placement)}</span></div>${body}</section>`;
   }).join("");
-  content.innerHTML = `${pageHeading("Receitas comerciais", "Patrocínios", "Contratos anuais, pagamentos por rodada e bônus por desempenho")}
-    <p class="view-note">Cada espaço aceita apenas um contrato por temporada. Contratos seguros pagam mais por rodada; contratos ambiciosos transferem parte do valor para o bônus e aumentam o risco.</p>
+  content.innerHTML = `${pageHeading("Receitas comerciais", "Patrocínios", "Escolha quando receber e quais metas deseja perseguir")}
+    <p class="view-note">Cada espaço aceita um contrato por temporada. O pagamento por temporada antecipa a cota fixa com desconto; o semanal mantém fluxo constante; o pagamento por turno divide uma cota um pouco maior em até duas parcelas. Cada meta extra paga seu próprio bônus.</p>
     <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview">${teamShirtMarkup(club)}</div><div><p class="eyebrow">Uniforme comercial</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;
 }
 

@@ -231,6 +231,11 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .sponsor-offer p { margin: 0; color: var(--muted); font-size: 12px; }
 .sponsor-offer strong { font-size: 17px; }
 .sponsor-offer .primary-button { width: 100%; margin: auto 0 0; }
+.sponsor-goals { display: grid; gap: 6px; padding: 10px; border-radius: 7px; background: #eef2eb; }
+.sponsor-goals > strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.sponsor-goals p { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.sponsor-goals p span { line-height: 1.3; }
+.sponsor-goals p b { color: var(--green); font-size: 11px; white-space: nowrap; }
 .fact { border-left: 3px solid var(--lime); padding-left: 12px; }
 .fact small { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; }
 .fact strong { font: 700 20px "Barlow Condensed"; }

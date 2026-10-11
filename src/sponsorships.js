@@ -13,9 +13,9 @@ const SPONSOR_NAMES = [
 ];
 
 const OFFER_PROFILES = [
-  { id: "safe", label: "Contrato seguro", roundFactor: 1, objective: "topHalf", bonusRounds: 2 },
-  { id: "balanced", label: "Contrato equilibrado", roundFactor: 0.88, objective: "topFour", bonusRounds: 5 },
-  { id: "ambitious", label: "Contrato ambicioso", roundFactor: 0.72, objective: "champion", bonusRounds: 10 }
+  { id: "season", label: "Pagamento por temporada", paymentSchedule: "season", roundFactor: 0.94, objective: "topHalf", fanTarget: 70, bonusRounds: 2 },
+  { id: "weekly", label: "Pagamento semanal", paymentSchedule: "weekly", roundFactor: 1, objective: "topFour", fanTarget: 80, bonusRounds: 5 },
+  { id: "turn", label: "Pagamento por turno", paymentSchedule: "turn", roundFactor: 1.04, objective: "champion", fanTarget: 90, bonusRounds: 10 }
 ];
 
 function clamp(value, minimum, maximum) {
@@ -55,6 +55,21 @@ export function sponsorObjectiveLabel(game, objective) {
   return `Terminar entre os ${target} primeiros`;
 }
 
+export function sponsorGoalLabel(game, goal) {
+  if (goal.type === "fanMorale") return `Encerrar a temporada com moral da torcida em ${goal.target} ou mais`;
+  return sponsorObjectiveLabel(game, goal.objective);
+}
+
+export function sponsorPaymentLabel(game, contract) {
+  const fixedValue = contract.fixedValue ?? contract.roundPayment * Math.max(0, game.schedule.length - (contract.signedWeek ?? game.week));
+  if (contract.paymentSchedule === "season") return `${fixedValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} na assinatura`;
+  if (contract.paymentSchedule === "turn") {
+    const installments = contract.turnPayments?.length || (game.week < Math.ceil(game.schedule.length / 2) ? 2 : 1);
+    return `${installments} ${installments === 1 ? "parcela" : "parcelas"} por turno · total ${fixedValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}`;
+  }
+  return `${contract.roundPayment.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} por semana (rodada)`;
+}
+
 function sponsorBasePayment(game) {
   const club = userClub(game);
   const quality = clubQuality(club);
@@ -75,18 +90,35 @@ function generateOffers(game) {
     usedNames.add(name);
     const variation = 0.92 + sponsorRoll(`${key}:value`) * 0.16;
     const roundPayment = Math.max(5_000, Math.round(basePayment * slot.factor * profile.roundFactor * variation / 1000) * 1000);
+    const totalBonus = roundPayment * profile.bonusRounds;
+    const positionBonus = Math.round(totalBonus * 0.65 / 1000) * 1000;
     return {
       id: `sponsor-${game.season}-${slotIndex}-${profileIndex}`,
       name,
       slot: slot.id,
       profile: profile.id,
       profileLabel: profile.label,
+      paymentSchedule: profile.paymentSchedule,
       roundPayment,
       objective: profile.objective,
-      bonus: roundPayment * profile.bonusRounds,
+      goals: [
+        { id: "position", type: "position", objective: profile.objective, bonus: positionBonus },
+        { id: "fanMorale", type: "fanMorale", target: profile.fanTarget, bonus: totalBonus - positionBonus }
+      ],
+      bonus: totalBonus,
       endSeason: game.season
     };
   }));
+}
+
+function normalizeContractGoals(contract) {
+  contract.paymentSchedule ??= "weekly";
+  contract.goals ??= [{ id: "position", type: "position", objective: contract.objective || "topHalf", bonus: contract.bonus || 0 }];
+  contract.bonus = contract.goals.reduce((total, goal) => total + goal.bonus, 0);
+  contract.fixedPaid ??= contract.paymentSchedule === "weekly" ? contract.totalPaid || 0 : 0;
+  contract.totalPaid ??= 0;
+  contract.paymentHistory ??= [];
+  return contract;
 }
 
 function syncClubSponsors(game) {
@@ -96,10 +128,16 @@ function syncClubSponsors(game) {
 
 export function ensureSponsorships(game) {
   if (!game.sponsorships || game.sponsorships.season !== game.season) {
-    game.sponsorships = { season: game.season, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
+    game.sponsorships = { version: 2, season: game.season, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
+  } else if (game.sponsorships.version !== 2) {
+    Object.values(game.sponsorships.contracts || {}).forEach(normalizeContractGoals);
+    const occupiedSlots = new Set(Object.keys(game.sponsorships.contracts || {}));
+    game.sponsorships.offers = generateOffers(game).filter(offer => !occupiedSlots.has(offer.slot));
+    game.sponsorships.version = 2;
   }
   game.sponsorships.offers ??= generateOffers(game);
   game.sponsorships.contracts ??= {};
+  Object.values(game.sponsorships.contracts).forEach(normalizeContractGoals);
   game.sponsorships.paidRoundKeys ??= [];
   game.sponsorships.history ??= [];
   syncClubSponsors(game);
@@ -113,28 +151,54 @@ export function signSponsor(game, offerId) {
   const offer = state.offers.find(item => item.id === offerId);
   if (!offer) return { ok: false, message: "Esta proposta não está mais disponível." };
   if (state.contracts[offer.slot]) return { ok: false, message: "Este espaço da camisa já possui contrato até o fim da temporada." };
-  const contract = { ...offer, signedWeek: game.week, totalPaid: 0 };
+  const remainingRounds = Math.max(0, game.schedule.length - game.week);
+  const fixedValue = offer.roundPayment * remainingRounds;
+  const milestones = [Math.ceil(game.schedule.length / 2), game.schedule.length].filter(round => round > game.week);
+  const turnPayments = offer.paymentSchedule === "turn" ? milestones.map((round, index) => ({
+    round,
+    amount: index === milestones.length - 1 ? fixedValue - Math.floor(fixedValue / milestones.length) * index : Math.floor(fixedValue / milestones.length),
+    paid: false
+  })) : [];
+  const contract = normalizeContractGoals({ ...offer, signedWeek: game.week, fixedValue, fixedPaid: 0, totalPaid: 0, turnPayments });
   state.contracts[offer.slot] = contract;
   state.offers = state.offers.filter(item => item.slot !== offer.slot);
+  if (contract.paymentSchedule === "season") creditSponsorPayment(game, contract, fixedValue, "season");
   syncClubSponsors(game);
   const slot = SPONSOR_SLOTS.find(item => item.id === offer.slot);
   game.news.unshift({ id: `sponsor-sign-${game.season}-${offer.slot}`, type: "positive", title: `${offer.name} é o novo ${slot.label.toLocaleLowerCase("pt-BR")}`, body: `O contrato rende ${offer.roundPayment.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} por rodada e pode pagar bônus por desempenho.` });
-  return { ok: true, message: `Contrato com ${offer.name} assinado até o fim da temporada.` };
+  return { ok: true, message: `Contrato com ${offer.name} assinado até o fim da temporada.${contract.paymentSchedule === "season" ? ` ${fixedValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} foram creditados.` : ""}` };
+}
+
+function creditSponsorPayment(game, contract, amount, type) {
+  if (amount <= 0) return 0;
+  const club = userClub(game);
+  club.budget += amount;
+  contract.fixedPaid += amount;
+  contract.totalPaid += amount;
+  contract.paymentHistory.push({ season: game.season, week: game.week, type, amount });
+  recordSeasonFinance(game, club.id, "patrocinios", amount, "income");
+  return amount;
 }
 
 export function processSponsorshipRound(game, results) {
   const state = ensureSponsorships(game);
-  if (!results.some(result => result.homeId === game.userClubId || result.awayId === game.userClubId)) return 0;
+  const played = results.some(result => result.homeId === game.userClubId || result.awayId === game.userClubId);
   const key = `${game.season}:${game.week}`;
   if (state.paidRoundKeys.includes(key)) return 0;
   const contracts = Object.values(state.contracts);
-  const total = contracts.reduce((sum, contract) => sum + contract.roundPayment, 0);
+  const completedRound = game.week + 1;
+  const total = contracts.reduce((sum, contract) => {
+    if (contract.paymentSchedule === "weekly") return sum + (played ? creditSponsorPayment(game, contract, contract.roundPayment, "weekly") : 0);
+    if (contract.paymentSchedule === "turn") {
+      const payment = contract.turnPayments.find(item => item.round === completedRound && !item.paid);
+      if (!payment) return sum;
+      payment.paid = true;
+      return sum + creditSponsorPayment(game, contract, payment.amount, "turn");
+    }
+    return sum;
+  }, 0);
   if (!total) return 0;
-  const club = userClub(game);
-  club.budget += total;
-  contracts.forEach(contract => { contract.totalPaid += contract.roundPayment; });
   state.paidRoundKeys.push(key);
-  recordSeasonFinance(game, club.id, "patrocinios", total, "income");
   return total;
 }
 
@@ -148,16 +212,23 @@ export function finishSponsorshipSeason(game) {
   if (state.settledSeason === game.season) return [];
   const position = sortedUserLeagueTable(game).findIndex(row => row.clubId === game.userClubId) + 1;
   const club = userClub(game);
+  const row = sortedUserLeagueTable(game).find(item => item.clubId === game.userClubId);
   const records = Object.values(state.contracts).map(contract => {
-    const target = objectiveTarget(game, contract.objective);
-    const achieved = position > 0 && position <= target;
-    if (achieved) {
-      club.budget += contract.bonus;
-      contract.totalPaid += contract.bonus;
-      recordSeasonFinance(game, club.id, "patrocinios", contract.bonus, "income");
-    }
-    game.news.unshift({ id: `sponsor-result-${game.season}-${contract.slot}`, type: achieved ? "positive" : "info", title: achieved ? `Bônus da ${contract.name} conquistado` : `Contrato com ${contract.name} encerrado`, body: achieved ? `A meta foi alcançada e o clube recebeu ${contract.bonus.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.` : `A meta “${sponsorObjectiveLabel(game, contract.objective)}” não foi alcançada; não houve bônus.` });
-    return { ...contract, achieved, position, season: game.season };
+    const goalResults = contract.goals.map(goal => {
+      const achieved = goal.type === "fanMorale"
+        ? club.fanMorale >= goal.target
+        : position > 0 && position <= objectiveTarget(game, goal.objective);
+      if (achieved) {
+        club.budget += goal.bonus;
+        contract.totalPaid += goal.bonus;
+        recordSeasonFinance(game, club.id, "patrocinios", goal.bonus, "income");
+      }
+      return { ...goal, achieved, label: sponsorGoalLabel(game, goal) };
+    });
+    const bonusPaid = goalResults.filter(goal => goal.achieved).reduce((total, goal) => total + goal.bonus, 0);
+    const achieved = goalResults.every(goal => goal.achieved);
+    game.news.unshift({ id: `sponsor-result-${game.season}-${contract.slot}`, type: bonusPaid ? "positive" : "info", title: bonusPaid ? `Metas da ${contract.name} renderam bônus` : `Contrato com ${contract.name} encerrado`, body: bonusPaid ? `${goalResults.filter(goal => goal.achieved).length} de ${goalResults.length} metas foram alcançadas. O clube recebeu ${bonusPaid.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.` : "Nenhuma meta extra foi alcançada; não houve bônus." });
+    return { ...contract, achieved, bonusPaid, goalResults, position, wins: row?.wins || 0, season: game.season };
   });
   state.history.unshift(...records);
   state.history = state.history.slice(0, 30);
@@ -167,7 +238,7 @@ export function finishSponsorshipSeason(game) {
 
 export function startSponsorshipSeason(game) {
   const history = game.sponsorships?.history || [];
-  game.sponsorships = { season: game.season, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
+  game.sponsorships = { version: 2, season: game.season, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
   syncClubSponsors(game);
   game.news.unshift({ id: `sponsor-market-${game.season}`, type: "info", title: "Novas propostas de patrocínio", body: "Empresas apresentaram contratos para os espaços master, costas e manga da camisa." });
   return game.sponsorships;
