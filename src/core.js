@@ -1074,6 +1074,26 @@ export function getExchangePlayerCredit(player) {
   return player ? Math.max(0, Math.floor(player.value * 0.75 / 1000) * 1000) : 0;
 }
 
+function incomingOfferBuyerLimit(offer, player) {
+  return Math.ceil(Math.max(offer.amount * 1.25, player.value * 1.2) / 1000) * 1000;
+}
+
+function canIncludeIncomingExchange(game, buyer, player, exchangePlayer, buyerLimit) {
+  if (!exchangePlayer || !canTransferOut(buyer, exchangePlayer)) return false;
+  if (exchangePlayer.overall > player.overall + 2) return false;
+  if (getExchangePlayerCredit(exchangePlayer) > buyerLimit * 0.85) return false;
+  return canCompleteExchange(game, buyer, exchangePlayer, player);
+}
+
+export function incomingExchangeCandidates(game, offerId) {
+  const offer = game.incomingOffers?.find(item => item.id === offerId);
+  const buyer = offer && getClub(game, offer.buyerId);
+  const player = offer && getUserClub(game).squad.find(item => item.id === offer.playerId);
+  if (!offer || !buyer || !player) return [];
+  const buyerLimit = incomingOfferBuyerLimit(offer, player);
+  return buyer.squad.filter(exchangePlayer => canIncludeIncomingExchange(game, buyer, player, exchangePlayer, buyerLimit));
+}
+
 function canCompleteExchange(game, club, outgoingPlayer, incomingPlayer = null) {
   if (!outgoingPlayer || outgoingPlayer.loan || incomingPlayer?.loan) return false;
   if (club.squad.length - 1 + (incomingPlayer ? 1 : 0) < 14) return false;
@@ -1187,7 +1207,11 @@ export function counterIncomingOffer(game, offerId, amount, exchangePlayerId = n
   }
   const exchangeCredit = getExchangePlayerCredit(exchangePlayer);
   const packageValue = amount + exchangeCredit;
-  const buyerLimit = Math.ceil(Math.max(offer.amount * 1.25, player.value * 1.2) / 1000) * 1000;
+  const buyerLimit = incomingOfferBuyerLimit(offer, player);
+  if (exchangePlayer && !canIncludeIncomingExchange(game, buyer, player, exchangePlayer, buyerLimit)) {
+    const counterOffer = Math.min(buyer.budget, buyerLimit);
+    return { ok: false, status: "counter", counterOffer, exchangeCredit: 0, clearExchange: true, message: `${buyer.name} não aceita incluir ${exchangePlayer.name} nessa negociação e limita sua contraproposta a ${formatMoney(counterOffer)} em dinheiro. A proposta original continua disponível.` };
+  }
   if (packageValue > buyerLimit) {
     const counterOffer = Math.max(0, buyerLimit - exchangeCredit);
     return { ok: false, status: "counter", counterOffer, exchangeCredit, message: `${buyer.name} recusou o pacote e aceita chegar a ${formatMoney(counterOffer)}${exchangePlayer ? ` mais ${exchangePlayer.name}` : ""}. A proposta original continua disponível.` };

@@ -6,6 +6,7 @@ import {
   advanceWeek,
   createGame,
   getUserClub,
+  incomingExchangeCandidates,
   processTransferActivity,
   registerIncomingOffer,
   rejectIncomingOffer
@@ -59,6 +60,7 @@ test("the manager can counter an incoming offer with more cash and an exchange p
   player.releaseClause = null;
   const exchange = buyer.squad.find(item => item.position !== "GOL");
   exchange.value = 500_000;
+  exchange.overall = player.overall;
   const proposal = registerIncomingOffer(game, buyer.id, player.id, 3_000_000);
   const sellerBudget = seller.budget;
   const buyerBudget = buyer.budget;
@@ -80,6 +82,28 @@ test("an excessive incoming counteroffer is limited without removing the origina
   const result = counterIncomingOffer(game, proposal.offer.id, 20_000_000);
   assert.equal(result.status, "counter");
   assert.ok(result.counterOffer < 20_000_000);
+  assert.equal(game.incomingOffers.length, 1);
+  assert.equal(JSON.stringify(game.clubs), clubs);
+});
+
+test("incoming negotiations protect superior players from abusive exchange packages", () => {
+  const { game, buyer, player } = offerSetup(1408);
+  player.releaseClause = null;
+  player.overall = 72;
+  player.value = 2_000_000;
+  const star = buyer.squad.find(item => item.position !== "GOL");
+  star.overall = 94;
+  star.potential = 96;
+  star.value = 30_000_000;
+  const proposal = registerIncomingOffer(game, buyer.id, player.id, 2_500_000);
+  const clubs = JSON.stringify(game.clubs);
+
+  assert.ok(!incomingExchangeCandidates(game, proposal.offer.id).some(item => item.id === star.id));
+  const result = counterIncomingOffer(game, proposal.offer.id, 2_500_000, star.id);
+
+  assert.equal(result.status, "counter");
+  assert.equal(result.clearExchange, true);
+  assert.equal(result.exchangeCredit, 0);
   assert.equal(game.incomingOffers.length, 1);
   assert.equal(JSON.stringify(game.clubs), clubs);
 });

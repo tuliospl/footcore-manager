@@ -23,6 +23,7 @@ import {
   leagueSeasonRules,
   getTransferTerms,
   getExchangePlayerCredit,
+  incomingExchangeCandidates,
   searchTransferMarket,
   makeTransferOffer,
   getClubListing,
@@ -578,7 +579,7 @@ function openIncomingNegotiation(offerId) {
   const buyer = offer && getClub(game, offer.buyerId);
   const player = offer && seller.squad.find(item => item.id === offer.playerId);
   if (!offer || !buyer || !player) return;
-  const exchangeOptions = buyer.squad.filter(item => !item.loan).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}">${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
+  const exchangeOptions = incomingExchangeCandidates(game, offer.id).sort((first, second) => second.value - first.value).map(item => `<option value="${item.id}">${escapeHtml(item.name)} · ${item.position} · GER ${item.overall} · crédito ${formatMoney(getExchangePlayerCredit(item))}</option>`).join("");
   offerTarget = { mode: "incoming", incomingOfferId: offer.id };
   offerDialog.innerHTML = `<form id="offer-form"><p class="eyebrow">Contraproposta para ${escapeHtml(buyer.name)}</p><h2 id="offer-title">${escapeHtml(player.name)}</h2>
     <p>A oferta recebida é de <strong>${formatMoney(offer.amount)}</strong>. Peça mais dinheiro, um atleta do comprador ou combine os dois.</p>
@@ -591,7 +592,9 @@ function openIncomingNegotiation(offerId) {
 offerDialog.addEventListener("click", event => {
   if (event.target.closest("#close-offer")) offerDialog.close();
   if (event.target.closest("#use-counter")) {
-    document.querySelector("#offer-amount").value = event.target.closest("#use-counter").dataset.amount;
+    const counterButton = event.target.closest("#use-counter");
+    document.querySelector("#offer-amount").value = counterButton.dataset.amount;
+    if (counterButton.dataset.clearExchange === "true") document.querySelector("#offer-exchange-player").value = "";
     document.querySelector("#offer-amount").focus();
   }
 });
@@ -613,6 +616,7 @@ offerDialog.addEventListener("submit", event => {
     button.id = "use-counter";
     button.className = "action-button";
     button.dataset.amount = result.counterOffer;
+    button.dataset.clearExchange = result.clearExchange ? "true" : "false";
     const availableBudget = mode === "incoming" ? getClub(game, game.incomingOffers.find(item => item.id === incomingOfferId)?.buyerId)?.budget ?? 0 : getUserClub(game).budget;
     button.textContent = result.counterOffer > availableBudget ? "Valor acima do caixa disponível" : "Usar valor sugerido";
     button.disabled = result.counterOffer > availableBudget;
