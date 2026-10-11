@@ -106,6 +106,12 @@ test("incoming negotiations protect superior players from abusive exchange packa
   assert.equal(result.exchangeCredit, 0);
   assert.equal(game.incomingOffers.length, 1);
   assert.equal(JSON.stringify(game.clubs), clubs);
+
+  const accepted = counterIncomingOffer(game, proposal.offer.id, result.counterOffer, null);
+  assert.equal(accepted.ok, true);
+  assert.ok(buyer.squad.includes(player));
+  assert.ok(buyer.squad.includes(star));
+  assert.equal(game.incomingOffers.length, 0);
 });
 
 test("AI clubs buy and sell players independently as rounds advance", () => {

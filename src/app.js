@@ -618,7 +618,7 @@ offerDialog.addEventListener("submit", event => {
     button.dataset.amount = result.counterOffer;
     button.dataset.clearExchange = result.clearExchange ? "true" : "false";
     const availableBudget = mode === "incoming" ? getClub(game, game.incomingOffers.find(item => item.id === incomingOfferId)?.buyerId)?.budget ?? 0 : getUserClub(game).budget;
-    button.textContent = result.counterOffer > availableBudget ? "Valor acima do caixa disponível" : "Usar valor sugerido";
+    button.textContent = result.counterOffer > availableBudget ? "Valor acima do caixa disponível" : result.clearExchange ? "Usar oferta somente em dinheiro" : "Usar valor sugerido";
     button.disabled = result.counterOffer > availableBudget;
     response.append(button);
   }
