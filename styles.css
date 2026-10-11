@@ -217,6 +217,14 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .stadium-info > p { color: var(--muted); margin: 0 0 24px; }
 .stadium-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
 .sponsor-layout { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 20px; align-items: start; }
+.sponsor-commercial-card { margin-bottom: 18px; }
+.sponsor-commercial-factors { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.sponsor-commercial-factors article { min-width: 0; padding: 16px; border-right: 1px solid var(--line); }
+.sponsor-commercial-factors article:last-child { border-right: 0; }
+.sponsor-commercial-factors small, .sponsor-commercial-factors span { display: block; color: var(--muted); }
+.sponsor-commercial-factors small { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.sponsor-commercial-factors strong { display: block; margin: 4px 0; font: 800 23px "Barlow Condensed"; }
+.sponsor-commercial-factors span { font-size: 10px; line-height: 1.3; }
 .sponsor-shirt-card { position: sticky; top: 96px; display: grid; justify-items: center; gap: 18px; padding: 28px; text-align: center; }
 .sponsor-shirt-preview .team-shirt { width: 220px; height: 210px; font-size: 25px; filter: drop-shadow(0 14px 12px #0003); }
 .sponsor-shirt-preview .team-shirt-sponsor { font-size: 20px; letter-spacing: -1px; }
@@ -463,6 +471,9 @@ dialog p { color: var(--muted); line-height: 1.5; }
   .stadium-hero { grid-template-columns: 1fr; }
   .stadium-visual { min-height: 240px; }
   .sponsor-layout { grid-template-columns: 1fr; }
+  .sponsor-commercial-factors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sponsor-commercial-factors article { border-bottom: 1px solid var(--line); }
+  .sponsor-commercial-factors article:nth-child(2n) { border-right: 0; }
   .sponsor-shirt-card { position: static; }
   .sponsor-offer-grid { grid-template-columns: 1fr; }
   .toolbar label { display: none; }

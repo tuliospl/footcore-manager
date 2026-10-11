@@ -8,7 +8,7 @@ import { CareerSetup } from "./career-setup.js";
 import { badgeContent } from "./club-badge.js";
 import { escapeHtml } from "./html.js";
 import { teamShirtMarkup } from "./team-shirt.js";
-import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel } from "./sponsorships.js";
+import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel, sponsorshipCommercialProfile } from "./sponsorships.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -750,6 +750,7 @@ function renderStadium() {
 function renderSponsors() {
   const club = getUserClub(game);
   const sponsorships = ensureSponsorships(game);
+  const commercial = sponsorshipCommercialProfile(game);
   const remainingRounds = Math.max(0, game.schedule.length - game.week);
   const contracts = SPONSOR_SLOTS.map(slot => {
     const contract = sponsorships.contracts[slot.id];
@@ -768,6 +769,14 @@ function renderSponsors() {
   }).join("");
   content.innerHTML = `${pageHeading("Receitas comerciais", "Patrocínios", "Escolha quando receber e quais metas deseja perseguir")}
     <p class="view-note">Cada espaço aceita um contrato por temporada. O pagamento por temporada antecipa a cota fixa com desconto; o semanal mantém fluxo constante; o pagamento por turno divide uma cota um pouco maior em até duas parcelas. Cada meta extra paga seu próprio bônus.</p>
+    <section class="card sponsor-commercial-card"><div class="card-header"><h3>Força comercial do clube</h3><span>Propostas livres são recalculadas a cada 4 rodadas</span></div><div class="sponsor-commercial-factors">
+      <article><small>Time titular</small><strong>${commercial.squadQuality}</strong><span>qualidade dos 11 melhores</span></article>
+      <article><small>Profundidade</small><strong>${commercial.depthQuality}</strong><span>qualidade dos 18 melhores</span></article>
+      <article><small>Potencial de título</small><strong>${commercial.titlePotential}%</strong><span>força relativa e classificação</span></article>
+      <article><small>Estádio</small><strong>${commercial.stadiumCapacity.toLocaleString("pt-BR")}</strong><span>capacidade atual</span></article>
+      <article><small>Torcida estimada</small><strong>${commercial.estimatedSupporters.toLocaleString("pt-BR")}</strong><span>alcance comercial</span></article>
+      <article><small>Engajamento</small><strong>${commercial.fanMorale}/100</strong><span>moral da torcida</span></article>
+    </div></section>
     <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview">${teamShirtMarkup(club)}</div><div><p class="eyebrow">Uniforme comercial</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;
 }
 

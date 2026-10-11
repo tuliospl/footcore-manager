@@ -7,6 +7,7 @@ import {
   finishSponsorshipSeason,
   processSponsorshipRound,
   signSponsor,
+  sponsorshipCommercialProfile,
   SPONSOR_SLOTS,
   startSponsorshipSeason
 } from "../src/sponsorships.js";
@@ -22,6 +23,39 @@ test("sponsor market offers seasonal, weekly and turn payments for every shirt s
     assert.ok(offers.every(offer => offer.goals.length === 2));
     assert.ok(offers.find(offer => offer.paymentSchedule === "turn").bonus > offers.find(offer => offer.paymentSchedule === "season").bonus);
   }
+});
+
+test("commercial value follows squad strength, title potential, stadium and supporters", () => {
+  const game = createGame(1806);
+  const club = getUserClub(game);
+  const initial = sponsorshipCommercialProfile(game);
+  club.squad.forEach(player => { player.overall += 10; });
+  club.stadium.capacity += 30_000;
+  club.reputation += 15;
+  club.fanMorale = 100;
+  const improved = sponsorshipCommercialProfile(game);
+  assert.ok(improved.squadQuality > initial.squadQuality);
+  assert.ok(improved.depthQuality > initial.depthQuality);
+  assert.ok(improved.titlePotential > initial.titlePotential);
+  assert.ok(improved.estimatedSupporters > initial.estimatedSupporters);
+  assert.ok(improved.basePayment > initial.basePayment);
+});
+
+test("unsigned offers refresh every four rounds while signed contracts stay fixed", () => {
+  const game = createGame(1807);
+  const club = getUserClub(game);
+  const state = ensureSponsorships(game);
+  const signed = state.offers.find(item => item.slot === "master" && item.paymentSchedule === "weekly");
+  const previousBackOffer = state.offers.find(item => item.slot === "back" && item.paymentSchedule === "weekly");
+  signSponsor(game, signed.id);
+  club.squad.forEach(player => { player.overall += 12; });
+  club.stadium.capacity += 40_000;
+  game.week = 4;
+  const refreshed = ensureSponsorships(game);
+  const nextBackOffer = refreshed.offers.find(item => item.slot === "back" && item.paymentSchedule === "weekly");
+  assert.equal(refreshed.contracts.master.roundPayment, signed.roundPayment);
+  assert.equal(refreshed.offers.some(item => item.slot === "master"), false);
+  assert.ok(nextBackOffer.roundPayment > previousBackOffer.roundPayment);
 });
 
 test("signed sponsors pay once per played round and cannot be replaced", () => {
