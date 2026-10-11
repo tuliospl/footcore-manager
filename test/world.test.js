@@ -81,6 +81,7 @@ test('adjacent divisions exchange clubs and award placement prizes at season end
   assert.equal(leagueMovementPlaces(upper,lower),1);
   assert.equal(leagueSeasonRules(game,'x-2').promotionPlaces,1);
   assert.ok(leaguePrizeMoney(lower,1)>leaguePrizeMoney(lower,4));
+  const seasonLeagueClubIds = new Set(lower.clubIds);
   while(!game.finished) assert.ok(advanceWeek(game).ok);
   const promoted=getSortedTable(game,'x-2')[0].clubId;
   const relegated=getSortedTable(game,'x-1').at(-1).clubId;
@@ -96,6 +97,7 @@ test('adjacent divisions exchange clubs and award placement prizes at season end
   assert.equal(game.seasonReport.leagueId,'x-2');
   assert.equal(game.seasonReport.standings.length,4);
   assert.equal(game.seasonReport.teamOfSeason.length,11);
+  assert.ok(game.seasonReport.teamOfSeason.every(player=>seasonLeagueClubIds.has(player.clubId)));
   assert.equal(game.seasonReport.awards.length,3);
   assert.equal(game.seasonReport.club.finance.net,game.seasonReport.club.finance.endingBudget-game.seasonReport.club.finance.startingBudget);
   assert.ok(game.seasonReport.club.playerChanges.length>0);

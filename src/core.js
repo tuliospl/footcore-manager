@@ -672,6 +672,7 @@ function awardIndividualHonors(game) {
 function applyPromotionAndRelegation(game) {
   if (!game.leagues) return [];
   const movements = [];
+  const previousClubIdsByLeague = Object.fromEntries(game.leagues.map(league => [league.id, [...league.clubIds]]));
   const countries = [...new Set(game.leagues.map(league => league.country))];
   for (const country of countries) {
     const divisions = game.leagues.filter(league => league.country === country && league.clubIds.length > 1).sort((first, second) => Number(first.tier) - Number(second.tier));
@@ -703,7 +704,7 @@ function applyPromotionAndRelegation(game) {
     const promoted = ownMovement.promoted.includes(game.userClubId);
     game.news.unshift({ id: `division-${game.season}-${game.userClubId}`, type: promoted ? "positive" : "negative", title: promoted ? `Acesso para ${ownMovement.upperLeagueName}` : `Rebaixamento para ${ownMovement.lowerLeagueName}`, body: promoted ? `A campanha garantiu a promoção do clube. Na próxima temporada, o desafio será na divisão superior.` : `O clube terminou na zona de rebaixamento e disputará a divisão inferior na próxima temporada.` });
   }
-  game.lastSeasonMovements = { season: game.season, previousUserLeagueId: previousLeagueId, currentUserLeagueId: nextLeagueId, movements };
+  game.lastSeasonMovements = { season: game.season, previousUserLeagueId: previousLeagueId, currentUserLeagueId: nextLeagueId, movements, previousClubIdsByLeague };
   return movements;
 }
 
@@ -712,11 +713,12 @@ function seasonTeamMinimumAppearances(game, league) {
   return Math.max(1, Math.ceil(rounds * 0.4));
 }
 
-export function seasonTeam(game, leagueId) {
+export function seasonTeam(game, leagueId, suppliedClubIds = null) {
   const league = game.leagues?.find(item => item.id === leagueId) || { clubIds: game.clubs.map(club => club.id), schedule: game.schedule };
+  const clubIds = suppliedClubIds || league.clubIds;
   const minimumAppearances = seasonTeamMinimumAppearances(game, league);
   const slots = ["GOL", "LAT", "ZAG", "ZAG", "LAT", "VOL", "MC", "MC", "ATA", "ATA", "ATA"];
-  const entries = league.clubIds.flatMap(clubId => {
+  const entries = clubIds.flatMap(clubId => {
     const club = getClub(game, clubId);
     return club.squad.filter(player => Math.min(player.appearances ?? 0, player.ratedMatches ?? 0) >= minimumAppearances).map(player => ({
       player,
@@ -738,6 +740,7 @@ export function seasonTeam(game, leagueId) {
 function buildSeasonReport(game) {
   const leagueId = game.lastSeasonMovements?.previousUserLeagueId || game.leagueId || "national";
   const league = game.leagues?.find(item => item.id === leagueId);
+  const seasonClubIds = game.lastSeasonMovements?.previousClubIdsByLeague?.[leagueId] || league?.clubIds;
   const standings = getSortedTable(game, leagueId).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId).name }));
   const awards = game.lastSeasonPlayerAwards?.leagues.find(item => item.leagueId === leagueId)?.awards || [];
   const movement = game.lastSeasonMovements?.movements.find(item => item.upperLeagueId === leagueId || item.lowerLeagueId === leagueId);
@@ -751,7 +754,7 @@ function buildSeasonReport(game) {
     leagueName: league?.name || "Liga nacional",
     standings,
     awards,
-    teamOfSeason: seasonTeam(game, leagueId),
+    teamOfSeason: seasonTeam(game, leagueId, seasonClubIds),
     teamOfSeasonMinimumAppearances: seasonTeamMinimumAppearances(game, league || { schedule: game.schedule }),
     promoted,
     relegated,
