@@ -239,6 +239,8 @@ select { border: 1px solid var(--line); background: var(--card); border-radius: 
 .sponsor-offer p { margin: 0; color: var(--muted); font-size: 12px; }
 .sponsor-offer strong { font-size: 17px; }
 .sponsor-offer .primary-button { width: 100%; margin: auto 0 0; }
+.sponsor-sector { width: max-content; max-width: 100%; padding: 3px 7px; border-radius: 999px; background: #dfe7dc; color: var(--forest-2); font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.sponsor-brand-note { margin-top: -8px; font-size: 10px; }
 .sponsor-goals { display: grid; gap: 6px; padding: 10px; border-radius: 7px; background: #eef2eb; }
 .sponsor-goals > strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 .sponsor-goals p { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }

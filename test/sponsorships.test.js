@@ -8,6 +8,7 @@ import {
   processSponsorshipRound,
   signSponsor,
   sponsorshipCommercialProfile,
+  SPONSOR_BRANDS,
   SPONSOR_SLOTS,
   startSponsorshipSeason
 } from "../src/sponsorships.js";
@@ -15,7 +16,9 @@ import {
 test("sponsor market offers seasonal, weekly and turn payments for every shirt slot", () => {
   const game = createGame(1801);
   const state = ensureSponsorships(game);
+  const knownBrands = new Map(SPONSOR_BRANDS.map(brand => [brand.name, brand]));
   assert.equal(state.offers.length, SPONSOR_SLOTS.length * 3);
+  assert.ok(state.offers.every(offer => knownBrands.get(offer.name)?.category === offer.brandCategory));
   for (const slot of SPONSOR_SLOTS) {
     const offers = state.offers.filter(offer => offer.slot === slot.id);
     assert.equal(offers.length, 3);
@@ -23,6 +26,38 @@ test("sponsor market offers seasonal, weekly and turn payments for every shirt s
     assert.ok(offers.every(offer => offer.goals.length === 2));
     assert.ok(offers.find(offer => offer.paymentSchedule === "turn").bonus > offers.find(offer => offer.paymentSchedule === "season").bonus);
   }
+});
+
+test("clubs with elite commercial reach attract globally prominent brands", () => {
+  const game = createGame(1808);
+  const club = getUserClub(game);
+  club.squad.forEach(player => { player.overall = Math.max(player.overall, 92); });
+  club.stadium.capacity = 90_000;
+  club.reputation = 100;
+  club.fanMorale = 100;
+  delete game.sponsorships;
+  const profile = sponsorshipCommercialProfile(game);
+  const offers = ensureSponsorships(game).offers;
+  const brands = new Map(SPONSOR_BRANDS.map(brand => [brand.name, brand]));
+  assert.equal(profile.commercialScore, 95);
+  assert.ok(offers.every(offer => brands.get(offer.name).minScore >= 60));
+});
+
+test("legacy fictional sponsors migrate to real brands without changing contract values", () => {
+  const game = createGame(1809);
+  const state = ensureSponsorships(game);
+  const offer = state.offers.find(item => item.slot === "master" && item.paymentSchedule === "weekly");
+  signSponsor(game, offer.id);
+  const contract = game.sponsorships.contracts.master;
+  const payment = contract.roundPayment;
+  contract.name = "Vértice";
+  delete contract.brandCategory;
+  game.news.unshift({ title: "Vértice é o novo patrocinador", body: "Contrato assinado com Vértice." });
+  game.sponsorships.version = 3;
+  ensureSponsorships(game);
+  assert.ok(SPONSOR_BRANDS.some(brand => brand.name === contract.name && brand.category === contract.brandCategory));
+  assert.equal(contract.roundPayment, payment);
+  assert.equal(game.news.some(item => item.title?.includes("Vértice") || item.body?.includes("Vértice")), false);
 });
 
 test("commercial value follows squad strength, title potential, stadium and supporters", () => {

@@ -6,11 +6,69 @@ export const SPONSOR_SLOTS = [
   { id: "sleeve", label: "Patrocínio de manga", placement: "Manga da camisa", factor: 0.35 }
 ];
 
-const SPONSOR_NAMES = [
+export const SPONSOR_BRANDS = [
+  { name: "Emirates", category: "Companhia aérea", minScore: 75 },
+  { name: "Qatar Airways", category: "Companhia aérea", minScore: 72 },
+  { name: "Etihad Airways", category: "Companhia aérea", minScore: 68 },
+  { name: "Turkish Airlines", category: "Companhia aérea", minScore: 60 },
+  { name: "LATAM Airlines", category: "Companhia aérea", minScore: 52 },
+  { name: "Iberia", category: "Companhia aérea", minScore: 50 },
+  { name: "GOL Linhas Aéreas", category: "Companhia aérea", minScore: 45 },
+  { name: "Azul", category: "Companhia aérea", minScore: 45 },
+  { name: "Spotify", category: "Tecnologia", minScore: 65 },
+  { name: "Microsoft", category: "Tecnologia", minScore: 78 },
+  { name: "Google", category: "Tecnologia", minScore: 80 },
+  { name: "Amazon", category: "Tecnologia", minScore: 75 },
+  { name: "Samsung", category: "Tecnologia", minScore: 65 },
+  { name: "Sony", category: "Tecnologia", minScore: 65 },
+  { name: "PlayStation", category: "Tecnologia", minScore: 60 },
+  { name: "Snapdragon", category: "Tecnologia", minScore: 60 },
+  { name: "HP", category: "Tecnologia", minScore: 55 },
+  { name: "Lenovo", category: "Tecnologia", minScore: 50 },
+  { name: "Motorola", category: "Tecnologia", minScore: 50 },
+  { name: "TCL", category: "Tecnologia", minScore: 45 },
+  { name: "Coca-Cola", category: "Bebidas", minScore: 60 },
+  { name: "Pepsi", category: "Bebidas", minScore: 58 },
+  { name: "Heineken", category: "Bebidas", minScore: 58 },
+  { name: "Budweiser", category: "Bebidas", minScore: 58 },
+  { name: "Carlsberg", category: "Bebidas", minScore: 52 },
+  { name: "Amstel", category: "Bebidas", minScore: 48 },
+  { name: "Brahma", category: "Bebidas", minScore: 45 },
+  { name: "Red Bull", category: "Bebidas", minScore: 65 },
+  { name: "Monster Energy", category: "Bebidas", minScore: 55 },
+  { name: "BMW", category: "Automóveis", minScore: 70 },
+  { name: "Audi", category: "Automóveis", minScore: 68 },
+  { name: "Mercedes-Benz", category: "Automóveis", minScore: 72 },
+  { name: "Toyota", category: "Automóveis", minScore: 60 },
+  { name: "Hyundai", category: "Automóveis", minScore: 55 },
+  { name: "Volkswagen", category: "Automóveis", minScore: 55 },
+  { name: "BYD", category: "Automóveis", minScore: 55 },
+  { name: "Chevrolet", category: "Automóveis", minScore: 50 },
+  { name: "Ford", category: "Automóveis", minScore: 50 },
+  { name: "Jeep", category: "Automóveis", minScore: 48 },
+  { name: "Nissan", category: "Automóveis", minScore: 48 },
+  { name: "Renault", category: "Automóveis", minScore: 45 },
+  { name: "Fiat", category: "Automóveis", minScore: 45 },
+  { name: "Visa", category: "Serviços financeiros", minScore: 65 },
+  { name: "Mastercard", category: "Serviços financeiros", minScore: 65 },
+  { name: "American Express", category: "Serviços financeiros", minScore: 65 },
+  { name: "Standard Chartered", category: "Banco", minScore: 60 },
+  { name: "Barclays", category: "Banco", minScore: 58 },
+  { name: "Santander", category: "Banco", minScore: 55 },
+  { name: "Itaú", category: "Banco", minScore: 50 },
+  { name: "Nubank", category: "Banco", minScore: 50 },
+  { name: "Banco do Brasil", category: "Banco", minScore: 45 },
+  { name: "Caixa", category: "Banco", minScore: 45 },
+  { name: "Mercado Pago", category: "Serviços financeiros", minScore: 45 },
+  { name: "PicPay", category: "Serviços financeiros", minScore: 40 },
+  { name: "Inter", category: "Banco", minScore: 40 }
+];
+
+const LEGACY_SPONSOR_NAMES = new Set([
   "Nexora", "Vértice", "Aurora", "Pulsar", "Atlas", "Movvi", "Orbe", "Kairo",
   "Lumina", "Avanti", "Tera", "Voltz", "Prisma", "Nobre", "Ritmo", "Croma",
   "Brava", "Elo", "Forte", "Zênite", "Viva", "Nativa", "Atria", "Lince"
-];
+]);
 
 const OFFER_PROFILES = [
   { id: "season", label: "Pagamento por temporada", paymentSchedule: "season", roundFactor: 0.94, objective: "topHalf", fanTarget: 70, bonusRounds: 2 },
@@ -82,6 +140,14 @@ export function sponsorshipCommercialProfile(game) {
     stadiumCapacity: club.stadium.capacity,
     estimatedSupporters,
     fanMorale: club.fanMorale,
+    commercialScore: clamp(Math.round(
+      squadQuality * 0.2
+      + depthQuality * 0.1
+      + titlePotential * 0.25
+      + Math.min(100, club.stadium.capacity / 700) * 0.15
+      + Math.min(100, estimatedSupporters / 50_000) * 0.2
+      + club.fanMorale * 0.1
+    ), 35, 95),
     basePayment: Math.max(20_000, Math.round(rawPayment * recentPerformance / 1000) * 1000)
   };
 }
@@ -118,22 +184,31 @@ function sponsorBasePayment(game) {
   return sponsorshipCommercialProfile(game).basePayment;
 }
 
+function selectSponsorBrand(game, key, usedNames = new Set()) {
+  const score = sponsorshipCommercialProfile(game).commercialScore;
+  const eligible = SPONSOR_BRANDS.filter(brand => brand.minScore <= Math.max(45, score));
+  const preferred = eligible.filter(brand => brand.minScore >= Math.max(40, score - 35));
+  const pool = preferred.length >= 9 ? preferred : eligible;
+  let index = Math.floor(sponsorRoll(key) * pool.length);
+  for (let attempts = 0; attempts < pool.length && usedNames.has(pool[index].name); attempts += 1) index = (index + 1) % pool.length;
+  return pool[index];
+}
+
 function generateOffers(game) {
   const basePayment = sponsorBasePayment(game);
   const usedNames = new Set();
   return SPONSOR_SLOTS.flatMap((slot, slotIndex) => OFFER_PROFILES.map((profile, profileIndex) => {
     const key = `${game.seed}:${game.season}:${Math.floor(game.week / 4)}:${slot.id}:${profile.id}`;
-    let nameIndex = Math.floor(sponsorRoll(key) * SPONSOR_NAMES.length);
-    while (usedNames.has(SPONSOR_NAMES[nameIndex])) nameIndex = (nameIndex + 1) % SPONSOR_NAMES.length;
-    const name = SPONSOR_NAMES[nameIndex];
-    usedNames.add(name);
+    const brand = selectSponsorBrand(game, key, usedNames);
+    usedNames.add(brand.name);
     const variation = 0.92 + sponsorRoll(`${key}:value`) * 0.16;
     const roundPayment = Math.max(5_000, Math.round(basePayment * slot.factor * profile.roundFactor * variation / 1000) * 1000);
     const totalBonus = roundPayment * profile.bonusRounds;
     const positionBonus = Math.round(totalBonus * 0.65 / 1000) * 1000;
     return {
       id: `sponsor-${game.season}-${slotIndex}-${profileIndex}`,
-      name,
+      name: brand.name,
+      brandCategory: brand.category,
       slot: slot.id,
       profile: profile.id,
       profileLabel: profile.label,
@@ -160,6 +235,24 @@ function normalizeContractGoals(contract) {
   return contract;
 }
 
+function migrateLegacySponsorBrands(game) {
+  const usedNames = new Set();
+  Object.values(game.sponsorships?.contracts || {}).forEach((contract, index) => {
+    if (LEGACY_SPONSOR_NAMES.has(contract.name)) {
+      const previousName = contract.name;
+      const brand = selectSponsorBrand(game, `${game.seed}:${game.season}:legacy:${contract.slot}:${index}`, usedNames);
+      contract.name = brand.name;
+      contract.brandCategory = brand.category;
+      game.news = (game.news || []).map(item => ({
+        ...item,
+        title: item.title?.replaceAll(previousName, brand.name),
+        body: item.body?.replaceAll(previousName, brand.name)
+      }));
+    }
+    usedNames.add(contract.name);
+  });
+}
+
 function syncClubSponsors(game) {
   const club = userClub(game);
   if (club) club.sponsors = { ...(game.sponsorships?.contracts || {}) };
@@ -168,12 +261,13 @@ function syncClubSponsors(game) {
 export function ensureSponsorships(game) {
   const offerCycle = Math.floor(game.week / 4);
   if (!game.sponsorships || game.sponsorships.season !== game.season) {
-    game.sponsorships = { version: 3, season: game.season, offerCycle, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
-  } else if (game.sponsorships.version !== 3) {
+    game.sponsorships = { version: 4, season: game.season, offerCycle, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
+  } else if (game.sponsorships.version !== 4) {
     Object.values(game.sponsorships.contracts || {}).forEach(normalizeContractGoals);
+    migrateLegacySponsorBrands(game);
     const occupiedSlots = new Set(Object.keys(game.sponsorships.contracts || {}));
     game.sponsorships.offers = generateOffers(game).filter(offer => !occupiedSlots.has(offer.slot));
-    game.sponsorships.version = 3;
+    game.sponsorships.version = 4;
     game.sponsorships.offerCycle = offerCycle;
   } else if (game.sponsorships.offerCycle !== offerCycle) {
     const occupiedSlots = new Set(Object.keys(game.sponsorships.contracts || {}));
@@ -284,7 +378,7 @@ export function finishSponsorshipSeason(game) {
 
 export function startSponsorshipSeason(game) {
   const history = game.sponsorships?.history || [];
-  game.sponsorships = { version: 3, season: game.season, offerCycle: 0, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
+  game.sponsorships = { version: 4, season: game.season, offerCycle: 0, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
   syncClubSponsors(game);
   game.news.unshift({ id: `sponsor-market-${game.season}`, type: "info", title: "Novas propostas de patrocínio", body: "Empresas apresentaram contratos para os espaços master, costas e manga da camisa." });
   return game.sponsorships;
