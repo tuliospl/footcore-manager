@@ -9,6 +9,7 @@ import { badgeContent } from "./club-badge.js";
 import { escapeHtml } from "./html.js";
 import { teamShirtMarkup } from "./team-shirt.js";
 import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel, sponsorshipCommercialProfile } from "./sponsorships.js";
+import { fanbaseProfile } from "./fans.js";
 import {
   finishLiveRound,
   ensureCareerManagement,
@@ -248,12 +249,14 @@ function renderMatchCard() {
 
 function renderMetrics() {
   const club = getUserClub(game);
+  const fanbase = fanbaseProfile(club);
   const row = game.table.find(item => item.clubId === club.id);
   const rank = getSortedTable(game).findIndex(item => item.clubId === club.id) + 1;
   const average = Math.round(club.squad.reduce((sum, player) => sum + player.overall, 0) / club.squad.length);
   return `<div class="metric-grid">
     <div class="metric"><small>Posição atual</small><strong>${rank}º</strong><em>${row.points} pontos</em><div class="progress"><i style="width:${100 - (rank - 1) * 100 / game.table.length}%"></i></div></div>
     <div class="metric"><small>Moral da torcida</small><strong>${club.fanMorale}</strong><em>/ 100</em><div class="progress lime"><i style="width:${club.fanMorale}%"></i></div></div>
+    <div class="metric"><small>Torcedores</small><strong>${fanbase.supporters.toLocaleString("pt-BR")}</strong><em class="${fanbase.seasonChange >= 0 ? "positive-number" : "negative-number"}">${fanbase.seasonChange >= 0 ? "+" : ""}${fanbase.seasonChange.toLocaleString("pt-BR")} na temporada</em></div>
     <div class="metric"><small>Nível do elenco</small><strong>${average}</strong><em>média geral</em><div class="progress"><i style="width:${average}%"></i></div></div>
   </div>`;
 }
@@ -692,6 +695,7 @@ function renderSeasonOverview(report) {
       <article><small>Saldo da temporada</small><strong class="${finance.net >= 0 ? "positive-number" : "negative-number"}">${signedMoney(finance.net)}</strong><span>Caixa final de ${formatMoney(finance.endingBudget)}</span></article>
       <article><small>Premiações</small><strong>${formatMoney(placementPrize + ownAwards.reduce((total, award) => total + award.money, 0))}</strong><span>${ownAwards.length} prêmio${ownAwards.length === 1 ? " individual" : "s individuais"}</span></article>
       <article><small>Destino</small><strong>${movement ? (report.promoted.some(item => item.clubId === game.userClubId) ? "Acesso" : "Rebaixado") : "Permanece"}</strong><span>${movement ? escapeHtml(movement.to) : escapeHtml(report.leagueName)}</span></article>
+      <article><small>Evolução da torcida</small><strong class="${report.club.fanbase.change >= 0 ? "positive-number" : "negative-number"}">${report.club.fanbase.change >= 0 ? "+" : ""}${report.club.fanbase.change.toLocaleString("pt-BR")}</strong><span>${report.club.fanbase.supporters.toLocaleString("pt-BR")} torcedores ao fim da temporada</span></article>
     </div>
     <div class="season-overview-grid">
       <section class="card card-body"><h3>Campanha</h3><p><strong>${report.club.goalsFor}</strong> gols marcados e <strong>${report.club.goalsAgainst}</strong> sofridos.</p><p>Saldo de gols: <strong>${report.club.goalsFor - report.club.goalsAgainst}</strong>.</p></section>
@@ -737,13 +741,14 @@ function renderSeasonReport() {
 
 function renderStadium() {
   const club = getUserClub(game);
+  const fanbase = fanbaseProfile(club);
   const cost = stadiumUpgradeCost(club);
   content.innerHTML = `${pageHeading("Patrimônio do clube", "Estádio", "Amplie para aumentar a renda de bilheteria")}
     <section class="card stadium-hero"><div class="stadium-visual"><div class="pitch"></div></div><div class="stadium-info">
       <p class="eyebrow">Nível ${club.stadium.level} de 5</p><h3>${escapeHtml(club.stadium.name)}</h3><p>A casa do ${escapeHtml(club.name)} e o principal ponto de encontro da torcida.</p>
-      <div class="stadium-facts"><div class="fact"><small>Capacidade</small><strong>${club.stadium.capacity.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Ingresso médio</small><strong>${formatMoney(club.stadium.ticketPrice)}</strong></div><div class="fact"><small>Moral da torcida</small><strong>${club.fanMorale}/100</strong></div><div class="fact"><small>Próximo nível</small><strong>+5.000</strong></div></div>
+      <div class="stadium-facts"><div class="fact"><small>Capacidade</small><strong>${club.stadium.capacity.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Torcedores</small><strong>${fanbase.supporters.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Crescimento no ano</small><strong class="${fanbase.seasonChange >= 0 ? "positive-number" : "negative-number"}">${fanbase.seasonChange >= 0 ? "+" : ""}${fanbase.seasonChange.toLocaleString("pt-BR")}</strong></div><div class="fact"><small>Ingresso médio</small><strong>${formatMoney(club.stadium.ticketPrice)}</strong></div><div class="fact"><small>Moral da torcida</small><strong>${club.fanMorale}/100</strong></div><div class="fact"><small>Próximo nível</small><strong>+5.000</strong></div></div>
       <button id="upgrade-button" class="primary-button" ${club.stadium.level >= 5 ? "disabled" : ""}>${club.stadium.level >= 5 ? "Nível máximo" : `Ampliar por ${formatMoney(cost)}`} <span>↑</span></button>
-      <p class="upgrade-note">Cada ampliação aumenta a capacidade e melhora a moral da torcida.</p>
+      <p class="upgrade-note">Cada ampliação aumenta a capacidade, melhora a moral e ajuda o clube a conquistar novos torcedores.</p>
     </div></section>`;
 }
 
@@ -775,7 +780,7 @@ function renderSponsors() {
       <article><small>Profundidade</small><strong>${commercial.depthQuality}</strong><span>qualidade dos 18 melhores</span></article>
       <article><small>Potencial de título</small><strong>${commercial.titlePotential}%</strong><span>força relativa e classificação</span></article>
       <article><small>Estádio</small><strong>${commercial.stadiumCapacity.toLocaleString("pt-BR")}</strong><span>capacidade atual</span></article>
-      <article><small>Torcida estimada</small><strong>${commercial.estimatedSupporters.toLocaleString("pt-BR")}</strong><span>alcance comercial</span></article>
+      <article><small>Torcida</small><strong>${commercial.supporters.toLocaleString("pt-BR")}</strong><span class="${commercial.supporterGrowth >= 0 ? "positive-number" : "negative-number"}">${commercial.supporterGrowth >= 0 ? "+" : ""}${commercial.supporterGrowth.toLocaleString("pt-BR")} na temporada</span></article>
       <article><small>Engajamento</small><strong>${commercial.fanMorale}/100</strong><span>moral da torcida</span></article>
     </div></section>
     <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview">${teamShirtMarkup(club)}</div><div><p class="eyebrow">Uniforme comercial</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;

@@ -1,4 +1,5 @@
 import { recordSeasonFinance } from "./season-tracking.js";
+import { fanbaseProfile } from "./fans.js";
 
 export const SPONSOR_SLOTS = [
   { id: "master", label: "Patrocínio master", placement: "Centro da camisa", factor: 1 },
@@ -123,29 +124,34 @@ export function sponsorshipCommercialProfile(game) {
   const position = Math.max(1, table.findIndex(item => item.clubId === club.id) + 1);
   const tableMomentum = row?.played ? ((table.length - position) / Math.max(1, table.length - 1) - 0.5) * 20 : 0;
   const titlePotential = clamp(Math.round(50 + (strength - leagueAverage) * 6 + tableMomentum), 5, 95);
-  const estimatedSupporters = Math.round((club.reputation ** 2 * 650 + club.stadium.capacity * 7) / 1000) * 1000;
+  const fanbase = fanbaseProfile(club);
+  const supporters = fanbase.supporters;
+  const supporterScore = clamp(Math.round(25 + Math.log10(Math.max(1, supporters) / 50_000) * 24), 20, 100);
   const latestSeason = club.history?.at(-1);
   const recentPerformance = latestSeason?.position === 1 ? 1.15 : latestSeason?.position <= 4 ? 1.08 : latestSeason?.position ? 0.98 : 1;
   const rawPayment = 15_000
     + Math.max(0, squadQuality - 45) ** 2 * 120
     + Math.max(0, depthQuality - 45) ** 2 * 50
     + titlePotential * 500
-    + club.reputation * 350
+    + club.reputation * 250
     + club.fanMorale * 150
-    + club.stadium.capacity * 1.5;
+    + club.stadium.capacity * 1.5
+    + supporters * 0.018;
   return {
     squadQuality: Math.round(squadQuality),
     depthQuality: Math.round(depthQuality),
     titlePotential,
     stadiumCapacity: club.stadium.capacity,
-    estimatedSupporters,
+    supporters,
+    estimatedSupporters: supporters,
+    supporterGrowth: fanbase.seasonChange,
     fanMorale: club.fanMorale,
     commercialScore: clamp(Math.round(
       squadQuality * 0.2
       + depthQuality * 0.1
       + titlePotential * 0.25
       + Math.min(100, club.stadium.capacity / 700) * 0.15
-      + Math.min(100, estimatedSupporters / 50_000) * 0.2
+      + supporterScore * 0.2
       + club.fanMorale * 0.1
     ), 35, 95),
     basePayment: Math.max(20_000, Math.round(rawPayment * recentPerformance / 1000) * 1000)
@@ -187,7 +193,7 @@ function sponsorBasePayment(game) {
 function selectSponsorBrand(game, key, usedNames = new Set()) {
   const score = sponsorshipCommercialProfile(game).commercialScore;
   const eligible = SPONSOR_BRANDS.filter(brand => brand.minScore <= Math.max(45, score));
-  const preferred = eligible.filter(brand => brand.minScore >= Math.max(40, score - 35));
+  const preferred = eligible.filter(brand => brand.minScore >= Math.max(40, score - 30));
   const pool = preferred.length >= 9 ? preferred : eligible;
   let index = Math.floor(sponsorRoll(key) * pool.length);
   for (let attempts = 0; attempts < pool.length && usedNames.has(pool[index].name); attempts += 1) index = (index + 1) % pool.length;

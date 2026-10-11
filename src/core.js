@@ -12,6 +12,7 @@ import { ensureYouthAcademy, advanceYouthAcademy, ageYouthAcademy } from "./yout
 import { MARKING_STYLES, markingStyle } from "./marking.js";
 import { ensureSeasonTracking, playerValueChanges, recordSeasonFinance, seasonFinanceSummary } from "./season-tracking.js";
 import { ensureSponsorships, finishSponsorshipSeason, processSponsorshipRound, startSponsorshipSeason } from "./sponsorships.js";
+import { applyDivisionFanImpact, ensureFanbases, processFanRound, recordPlayerArrival, recordPlayerDeparture, recordStadiumExpansion, settleFanSeason, startFanSeason } from "./fans.js";
 
 const FIRST_NAMES = ["Caio", "Davi", "Enzo", "Felipe", "Gabriel", "Hugo", "João", "Léo", "Lucas", "Mateus", "Rafael", "Vitor"];
 const LAST_NAMES = ["Almeida", "Barbosa", "Costa", "Dias", "Ferreira", "Gomes", "Lima", "Mendes", "Nunes", "Oliveira", "Rocha", "Silva"];
@@ -189,6 +190,7 @@ export function createGameFromDatabase(input, userClubId, seed = Date.now(), wor
 }
 
 export function ensureCareerManagement(game) {
+  ensureFanbases(game);
   ensureContracts(game);
   ensureYouthAcademy(game);
   ensureSponsorships(game);
@@ -779,6 +781,11 @@ function buildSeasonReport(game) {
       losses: userRow?.losses ?? 0,
       goalsFor: userRow?.gf ?? 0,
       goalsAgainst: userRow?.ga ?? 0,
+      fanbase: {
+        supporters: getUserClub(game).fanbase.supporters,
+        start: getUserClub(game).fanbase.seasonStart,
+        change: getUserClub(game).fanbase.lastSeasonChange
+      },
       finance: seasonFinanceSummary(game, game.userClubId),
       playerChanges: playerValueChanges(game, game.userClubId)
     }
@@ -799,13 +806,15 @@ function finishSeason(game) {
     club.squad.forEach(player => { archivePlayerSeason(player, game.season, seasonLabel(game, leagueId), club.name); agePlayer(player, game.season); });
   });
   awardIndividualHonors(game);
+  settleFanSeason(game);
   finishSponsorshipSeason(game);
   game.news.unshift({ id: `champion-${game.season}`, type: champion.id === game.userClubId ? "positive" : "info", title: `${champion.name} é campeão!`, body: "A temporada terminou. Um novo calendário já está pronto." });
   game.finished = true;
   game.market.forEach(player=>{ archivePlayerSeason(player, game.season, seasonLabel(game), player.previousClub || "Sem clube"); agePlayer(player, game.season); if(player.freeAgentOrigin) player.askingPrice=freeAgentFee(player); });
   ageYouthAcademy(game);
   returnExpiredLoans(game);
-  applyPromotionAndRelegation(game);
+  const movements = applyPromotionAndRelegation(game);
+  applyDivisionFanImpact(game, movements);
   buildSeasonReport(game);
   if (game.outgoingOffers?.length) {
     for (const offer of game.outgoingOffers) game.news.unshift({ id: `outgoing-season-end-${offer.id}`, type: "negative", title: `Negociação por ${offer.playerName} encerrada`, body: "O fim da temporada encerrou as conversas entre os clubes." });
@@ -828,6 +837,7 @@ function applyRound(game, results, random) {
   results.forEach(result => updateTable(game, result));
   processFinances(game, results);
   updateMorale(game, results, random);
+  processFanRound(game, results);
   developSquads(game, results);
   updateAvailability(game, results, random);
   game.lastRound = results;
@@ -844,7 +854,7 @@ function applyRound(game, results, random) {
       while (league.week < target) {
         const otherResults = league.schedule[league.week].map(f => simulateMatch(context, f, random));
         otherResults.forEach(r => updateTable(context, r));
-        processFinances(context, otherResults); updateMorale(context, otherResults, random); developSquads(context, otherResults);
+        processFinances(context, otherResults); updateMorale(context, otherResults, random); processFanRound(game, otherResults); developSquads(context, otherResults);
         updateAvailability(context, otherResults, random);
         league.lastRound = otherResults; league.week++;
       }
@@ -959,6 +969,7 @@ export function startNextSeason(game) {
   [...game.clubs.flatMap(club=>club.squad), ...game.market].forEach(player => { player.goals = 0; player.assists = 0; player.yellowCards = 0; player.yellowCardAccumulation = 0; player.redCards = 0; player.suspensionMatches = 0; player.suspensionReason = null; player.injuryMatches = 0; player.injuryLabel = null; player.appearances = 0; player.ratingTotal = 0; player.ratedMatches = 0; });
   game.news.unshift({ id: `season-${game.season}`, type: "info", title: `Temporada ${game.season}`, body: "Os clubes voltam a campo com objetivos renovados." });
   ensureSeasonTracking(game);
+  startFanSeason(game);
   startSponsorshipSeason(game);
   payPendingPrizes(game);
   return { ok: true };
@@ -982,6 +993,7 @@ export function buyPlayer(game, playerId) {
   delete player.freeSinceSeason;
   delete player.freeSinceWeek;
   club.squad.push(player);
+  recordPlayerArrival(game, club, player);
   game.market.splice(index, 1);
   game.news.unshift({ id: `buy-${player.id}`, type: "positive", title: `${player.name} foi contratado`, body: `O novo ${player.position} já está integrado ao elenco.` });
   return { ok: true, message: "Contratação concluída." };
@@ -1136,10 +1148,14 @@ function completeClubTransfer(game, seller, buyer, player, amount, exchangePlaye
     recordSeasonFinance(game, seller.id, "transferencias", amount, "income");
     recordSeasonFinance(game, buyer.id, "transferencias", amount, "expense");
   }
+  recordPlayerDeparture(game, seller, player);
+  if (exchangePlayer) recordPlayerDeparture(game, buyer, exchangePlayer);
   seller.squad.splice(seller.squad.indexOf(player), 1);
   if (exchangePlayer) buyer.squad.splice(buyer.squad.indexOf(exchangePlayer), 1);
   buyer.squad.push(player);
   if (exchangePlayer) seller.squad.push(exchangePlayer);
+  recordPlayerArrival(game, buyer, player);
+  if (exchangePlayer) recordPlayerArrival(game, seller, exchangePlayer);
   prepareTransferredPlayer(game, buyer, player);
   if (exchangePlayer) prepareTransferredPlayer(game, seller, exchangePlayer);
   if (seller.lineup) ensureLineup(seller);
@@ -1342,8 +1358,10 @@ export function acceptClubListing(game, sellerId, playerId, type, quotedPrice) {
   seller.budget += listing.price;
   recordSeasonFinance(game, buyer.id, type === "loan" ? "emprestimos" : "transferencias", listing.price, "expense");
   recordSeasonFinance(game, seller.id, type === "loan" ? "emprestimos" : "transferencias", listing.price, "income");
+  if (type !== "loan") recordPlayerDeparture(game, seller, player);
   seller.squad.splice(index, 1);
   buyer.squad.push(player);
+  if (type !== "loan") recordPlayerArrival(game, buyer, player);
   if(type!=="loan") player.contractEndSeason=game.season+2;
   if (type === "loan") player.loan = { ownerClubId: seller.id, borrowerClubId: buyer.id, endSeason: listing.endSeason, fee: listing.price };
   const message = type === "loan" ? `${player.name} chega por empréstimo até o fim da temporada ${listing.endSeason}. Seu clube paga 100% do salário por rodada.` : `${player.name} foi comprado de ${seller.name} por ${formatMoney(listing.price)}.`;
@@ -1632,6 +1650,7 @@ export function sellPlayer(game, playerId) {
   const fee = Math.round(player.value * academyGraduateRate / 1000) * 1000;
   club.budget += fee;
   recordSeasonFinance(game, club.id, "transferencias", fee, "income");
+  recordPlayerDeparture(game, club, player);
   club.squad.splice(index, 1);
   const academyNote = player.academyGraduate && academyGraduateRate < 0.88 ? " O valor foi reduzido porque o atleta ainda tem pouca experiência profissional." : "";
   game.news.unshift({ id: `sell-${player.id}`, type: "info", title: `${player.name} foi negociado`, body: `A venda rendeu ${formatMoney(fee)} ao clube.${academyNote}` });
@@ -1648,7 +1667,8 @@ export function upgradeStadium(game) {
   club.stadium.level += 1;
   club.stadium.capacity += 5000;
   club.fanMorale = clamp(club.fanMorale + 7, 0, 100);
-  game.news.unshift({ id: `stadium-${club.stadium.level}`, type: "positive", title: "Estádio ampliado", body: `A nova capacidade é de ${club.stadium.capacity.toLocaleString("pt-BR")} torcedores.` });
+  const newSupporters = recordStadiumExpansion(game, club, 5000);
+  game.news.unshift({ id: `stadium-${club.stadium.level}`, type: "positive", title: "Estádio ampliado", body: `A nova capacidade é de ${club.stadium.capacity.toLocaleString("pt-BR")} torcedores${newSupporters ? ` e o projeto atraiu ${newSupporters.toLocaleString("pt-BR")} novos fãs` : ""}.` });
   return { ok: true, message: "Ampliação concluída." };
 }
 

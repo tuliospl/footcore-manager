@@ -39,7 +39,7 @@ test("clubs with elite commercial reach attract globally prominent brands", () =
   const profile = sponsorshipCommercialProfile(game);
   const offers = ensureSponsorships(game).offers;
   const brands = new Map(SPONSOR_BRANDS.map(brand => [brand.name, brand]));
-  assert.equal(profile.commercialScore, 95);
+  assert.ok(profile.commercialScore >= 90);
   assert.ok(offers.every(offer => brands.get(offer.name).minScore >= 60));
 });
 
@@ -68,6 +68,7 @@ test("commercial value follows squad strength, title potential, stadium and supp
   club.stadium.capacity += 30_000;
   club.reputation += 15;
   club.fanMorale = 100;
+  club.fanbase.supporters += 500_000;
   const improved = sponsorshipCommercialProfile(game);
   assert.ok(improved.squadQuality > initial.squadQuality);
   assert.ok(improved.depthQuality > initial.depthQuality);
