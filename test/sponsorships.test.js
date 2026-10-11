@@ -17,6 +17,7 @@ test("sponsor market offers seasonal, weekly and turn payments for every shirt s
   const game = createGame(1801);
   const state = ensureSponsorships(game);
   const knownBrands = new Map(SPONSOR_BRANDS.map(brand => [brand.name, brand]));
+  assert.deepEqual(SPONSOR_SLOTS.map(slot => slot.id), ["master", "back", "sleeve", "chest", "shorts", "socks"]);
   assert.equal(state.offers.length, SPONSOR_SLOTS.length * 3);
   assert.ok(state.offers.every(offer => knownBrands.get(offer.name)?.category === offer.brandCategory));
   for (const slot of SPONSOR_SLOTS) {
@@ -26,6 +27,14 @@ test("sponsor market offers seasonal, weekly and turn payments for every shirt s
     assert.ok(offers.every(offer => offer.goals.length === 2));
     assert.ok(offers.find(offer => offer.paymentSchedule === "turn").bonus > offers.find(offer => offer.paymentSchedule === "season").bonus);
   }
+});
+
+test("master sponsorship is meaningful relative to squad market value", () => {
+  const game = createGame(1810);
+  const profile = sponsorshipCommercialProfile(game);
+  const seasonal = ensureSponsorships(game).offers.find(offer => offer.slot === "master" && offer.paymentSchedule === "season");
+  const fixedValue = seasonal.roundPayment * game.schedule.length;
+  assert.ok(fixedValue >= profile.squadMarketValue * 0.13);
 });
 
 test("clubs with elite commercial reach attract globally prominent brands", () => {

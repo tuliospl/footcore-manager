@@ -3,8 +3,11 @@ import { fanbaseProfile } from "./fans.js";
 
 export const SPONSOR_SLOTS = [
   { id: "master", label: "Patrocínio master", placement: "Centro da camisa", factor: 1 },
-  { id: "back", label: "Patrocínio nas costas", placement: "Parte inferior das costas", factor: 0.55 },
-  { id: "sleeve", label: "Patrocínio de manga", placement: "Manga da camisa", factor: 0.35 }
+  { id: "back", label: "Patrocínio nas costas", placement: "Parte inferior das costas", factor: 0.45 },
+  { id: "sleeve", label: "Patrocínio de manga", placement: "Duas mangas da camisa", factor: 0.28 },
+  { id: "chest", label: "Patrocínio no peito", placement: "Parte superior da camisa", factor: 0.22 },
+  { id: "shorts", label: "Patrocínio no calção", placement: "Frente do calção", factor: 0.25 },
+  { id: "socks", label: "Patrocínio nas meias", placement: "Duas meias do uniforme", factor: 0.12 }
 ];
 
 export const SPONSOR_BRANDS = [
@@ -106,6 +109,10 @@ function clubDepth(club) {
   return leadingPlayers.reduce((total, player) => total + player.overall, 0) / Math.max(1, leadingPlayers.length);
 }
 
+function squadMarketValue(club) {
+  return club.squad.reduce((total, player) => total + Math.max(0, player.value || 0), 0);
+}
+
 function leagueClubs(game) {
   const ids = userLeague(game)?.clubIds;
   return ids?.length ? ids.map(id => game.clubs.find(club => club.id === id)).filter(Boolean) : game.clubs;
@@ -126,6 +133,7 @@ export function sponsorshipCommercialProfile(game) {
   const titlePotential = clamp(Math.round(50 + (strength - leagueAverage) * 6 + tableMomentum), 5, 95);
   const fanbase = fanbaseProfile(club);
   const supporters = fanbase.supporters;
+  const marketValue = squadMarketValue(club);
   const supporterScore = clamp(Math.round(25 + Math.log10(Math.max(1, supporters) / 50_000) * 24), 20, 100);
   const latestSeason = club.history?.at(-1);
   const recentPerformance = latestSeason?.position === 1 ? 1.15 : latestSeason?.position <= 4 ? 1.08 : latestSeason?.position ? 0.98 : 1;
@@ -137,6 +145,9 @@ export function sponsorshipCommercialProfile(game) {
     + club.fanMorale * 150
     + club.stadium.capacity * 1.5
     + supporters * 0.018;
+  const scheduleRounds = Math.max(1, game.schedule?.length || 38);
+  const marketValuePayment = marketValue * 0.16 / scheduleRounds;
+  const performancePayment = rawPayment * recentPerformance * 2.1;
   return {
     squadQuality: Math.round(squadQuality),
     depthQuality: Math.round(depthQuality),
@@ -145,6 +156,7 @@ export function sponsorshipCommercialProfile(game) {
     supporters,
     estimatedSupporters: supporters,
     supporterGrowth: fanbase.seasonChange,
+    squadMarketValue: marketValue,
     fanMorale: club.fanMorale,
     commercialScore: clamp(Math.round(
       squadQuality * 0.2
@@ -154,7 +166,7 @@ export function sponsorshipCommercialProfile(game) {
       + supporterScore * 0.2
       + club.fanMorale * 0.1
     ), 35, 95),
-    basePayment: Math.max(20_000, Math.round(rawPayment * recentPerformance / 1000) * 1000)
+    basePayment: Math.max(50_000, Math.round(Math.max(performancePayment, marketValuePayment) / 1000) * 1000)
   };
 }
 
@@ -267,13 +279,13 @@ function syncClubSponsors(game) {
 export function ensureSponsorships(game) {
   const offerCycle = Math.floor(game.week / 4);
   if (!game.sponsorships || game.sponsorships.season !== game.season) {
-    game.sponsorships = { version: 4, season: game.season, offerCycle, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
-  } else if (game.sponsorships.version !== 4) {
+    game.sponsorships = { version: 5, season: game.season, offerCycle, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history: game.sponsorships?.history || [] };
+  } else if (game.sponsorships.version !== 5) {
     Object.values(game.sponsorships.contracts || {}).forEach(normalizeContractGoals);
     migrateLegacySponsorBrands(game);
     const occupiedSlots = new Set(Object.keys(game.sponsorships.contracts || {}));
     game.sponsorships.offers = generateOffers(game).filter(offer => !occupiedSlots.has(offer.slot));
-    game.sponsorships.version = 4;
+    game.sponsorships.version = 5;
     game.sponsorships.offerCycle = offerCycle;
   } else if (game.sponsorships.offerCycle !== offerCycle) {
     const occupiedSlots = new Set(Object.keys(game.sponsorships.contracts || {}));
@@ -384,8 +396,8 @@ export function finishSponsorshipSeason(game) {
 
 export function startSponsorshipSeason(game) {
   const history = game.sponsorships?.history || [];
-  game.sponsorships = { version: 4, season: game.season, offerCycle: 0, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
+  game.sponsorships = { version: 5, season: game.season, offerCycle: 0, offers: generateOffers(game), contracts: {}, paidRoundKeys: [], history };
   syncClubSponsors(game);
-  game.news.unshift({ id: `sponsor-market-${game.season}`, type: "info", title: "Novas propostas de patrocínio", body: "Empresas apresentaram contratos para os espaços master, costas e manga da camisa." });
+  game.news.unshift({ id: `sponsor-market-${game.season}`, type: "info", title: "Novas propostas de patrocínio", body: "Empresas apresentaram contratos para os espaços comerciais do uniforme completo." });
   return game.sponsorships;
 }

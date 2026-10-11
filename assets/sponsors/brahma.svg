@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" role="img" aria-labelledby="title">
+  <title id="title">Brahma</title>
+  <defs>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="2" dy="3" stdDeviation="1.4" flood-color="#580000" flood-opacity=".85"/>
+    </filter>
+  </defs>
+  <path fill="#d80d18" d="M8 20C93 4 250 0 352 12l-13 91C238 91 98 96 18 112Z"/>
+  <path fill="none" stroke="#f4bf32" stroke-width="5" d="M18 108c91-17 221-18 321-5"/>
+  <path fill="#f22931" d="M18 27C112 11 252 8 342 19l-8 70C241 80 105 84 25 99Z" opacity=".72"/>
+  <text x="180" y="78" fill="#fff" stroke="#fff" stroke-width="2" paint-order="stroke" text-anchor="middle" font-family="Arial Narrow,Arial,sans-serif" font-size="58" font-weight="900" letter-spacing="-3" filter="url(#shadow)">BRAHMA</text>
+</svg>

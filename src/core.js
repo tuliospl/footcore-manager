@@ -735,43 +735,87 @@ export function worldAwardWinners(game) {
   const entries = game.clubs.flatMap(club => {
     const league = leagueByClub.get(club.id);
     const rounds = league?.schedule?.length || game.schedule?.length || 1;
-    const ballonMinimum = Math.max(5, Math.ceil(rounds * 0.4));
-    const bootMinimum = Math.max(3, Math.ceil(rounds * 0.2));
+    const minimumAppearances = Math.max(21, Math.ceil(rounds * 0.7));
     const titleBonus = (leagueChampionIds.has(club.id) ? 0.25 : 0) + (competitionTitles.get(club.id) || 0) * 0.2;
     return club.squad.map(player => {
       const appearances = player.appearances ?? 0;
       const average = player.ratedMatches ? player.ratingTotal / player.ratedMatches : 0;
       const goalsPerGame = (player.goals ?? 0) / Math.max(1, appearances);
       const assistsPerGame = (player.assists ?? 0) / Math.max(1, appearances);
-      return { player, club, appearances, average, ballonMinimum, bootMinimum, titleBonus, ballonScore: average + Math.min(1.2, goalsPerGame) * 0.9 + Math.min(1, assistsPerGame) * 0.55 + player.overall / 500 + titleBonus };
+      const progression = player.progression?.season === game.season ? player.progression : {};
+      const cleanSheetRate = (progression.cleanSheets ?? 0) / Math.max(1, appearances);
+      const savesPerGame = (progression.saves ?? 0) / Math.max(1, appearances);
+      const tacklesPerGame = (progression.tackles ?? 0) / Math.max(1, appearances);
+      const keyPassesPerGame = (progression.keyPasses ?? 0) / Math.max(1, appearances);
+      const preAssistsPerGame = (progression.preAssists ?? 0) / Math.max(1, appearances);
+      const common = average + player.overall / 500 + titleBonus;
+      let positionalScore = common;
+      if (player.position === "GOL") positionalScore += Math.min(0.9, savesPerGame * 0.18) + Math.min(0.8, cleanSheetRate * 1.25) + Math.min(0.6, (progression.penaltySaves ?? 0) * 0.18);
+      else if (player.position === "ZAG") positionalScore += Math.min(0.85, tacklesPerGame * 0.16) + Math.min(0.65, cleanSheetRate) + Math.min(0.35, goalsPerGame * 1.8) + Math.min(0.3, assistsPerGame * 1.3);
+      else if (player.position === "LAT") positionalScore += Math.min(0.7, tacklesPerGame * 0.13) + Math.min(0.5, cleanSheetRate * 0.75) + Math.min(0.55, assistsPerGame * 1.5) + Math.min(0.35, keyPassesPerGame * 0.1);
+      else if (["VOL", "MC"].includes(player.position)) positionalScore += Math.min(0.65, tacklesPerGame * 0.1) + Math.min(0.65, keyPassesPerGame * 0.11) + Math.min(0.45, preAssistsPerGame * 1.5) + Math.min(0.55, assistsPerGame * 1.2) + Math.min(0.45, goalsPerGame);
+      else positionalScore += Math.min(1.15, goalsPerGame * 0.95) + Math.min(0.65, assistsPerGame * 0.7) + Math.min(0.25, keyPassesPerGame * 0.06);
+      return { player, club, appearances, average, minimumAppearances, titleBonus, goalsPerGame, assistsPerGame, cleanSheetRate, savesPerGame, tacklesPerGame, keyPassesPerGame, preAssistsPerGame, positionalScore, ballonScore: positionalScore };
     });
   });
   const byName = (first, second) => first.player.name.localeCompare(second.player.name, "pt-BR");
-  const ballonEligible = entries.filter(entry => entry.player.ratedMatches >= entry.ballonMinimum && entry.appearances >= entry.ballonMinimum);
-  const bootEligible = entries.filter(entry => entry.appearances >= entry.bootMinimum);
-  const ballon = [...(ballonEligible.length ? ballonEligible : entries.filter(entry => entry.player.ratedMatches > 0))].sort((first, second) => second.ballonScore - first.ballonScore || second.average - first.average || second.player.goals - first.player.goals || byName(first, second))[0];
-  const boot = [...(bootEligible.length ? bootEligible : entries)].sort((first, second) => second.player.goals - first.player.goals || (second.player.goals / Math.max(1, second.appearances)) - (first.player.goals / Math.max(1, first.appearances)) || second.player.assists - first.player.assists || second.average - first.average || byName(first, second))[0];
+  const eligible = entries.filter(entry => entry.player.ratedMatches >= entry.minimumAppearances && entry.appearances >= entry.minimumAppearances);
+  const ranked = candidates => [...candidates].sort((first, second) => second.positionalScore - first.positionalScore || second.average - first.average || second.appearances - first.appearances || byName(first, second))[0];
+  const ballon = [...eligible].sort((first, second) => second.ballonScore - first.ballonScore || second.average - first.average || second.player.goals - first.player.goals || byName(first, second))[0];
+  const boot = [...eligible].sort((first, second) => second.player.goals - first.player.goals || second.goalsPerGame - first.goalsPerGame || second.player.assists - first.player.assists || second.average - first.average || byName(first, second))[0];
+  const keeper = ranked(eligible.filter(entry => entry.player.position === "GOL"));
+  const fullback = ranked(eligible.filter(entry => entry.player.position === "LAT"));
+  const defender = ranked(eligible.filter(entry => entry.player.position === "ZAG"));
+  const midfielder = ranked(eligible.filter(entry => ["VOL", "MC"].includes(entry.player.position)));
+  const forward = ranked(eligible.filter(entry => entry.player.position === "ATA"));
+  const coachCandidates = (game.leagues || []).flatMap(league => {
+    const table = getSortedTable(game, league.id);
+    const strengthRanking = league.clubIds.map(clubId => getClub(game, clubId)).filter(Boolean).sort((first, second) => clubStrength(second) - clubStrength(first));
+    return table.map((row, index) => {
+      const club = getClub(game, row.clubId);
+      const minimumMatches = Math.max(21, Math.ceil((league.schedule?.length || 1) * 0.7));
+      if (!club?.coach || row.played < minimumMatches) return null;
+      const expectedPosition = strengthRanking.findIndex(item => item.id === club.id) + 1;
+      const overachievement = (expectedPosition - (index + 1)) / Math.max(1, league.clubIds.length - 1);
+      const pointsPerGame = row.points / Math.max(1, row.played);
+      const goalDifferencePerGame = (row.gf - row.ga) / Math.max(1, row.played);
+      const titles = (leagueChampionIds.has(club.id) ? 1 : 0) + (competitionTitles.get(club.id) || 0);
+      const coachScore = pointsPerGame * 2 + Math.max(-0.5, Math.min(0.8, goalDifferencePerGame * 0.12)) + overachievement * 1.5 + titles * 0.5 + clubStrength(club) / 500;
+      return { coachAward: true, coachName: club.coach, club, appearances: row.played, minimumAppearances: minimumMatches, coachScore, pointsPerGame, overachievement, titles };
+    }).filter(Boolean);
+  });
+  const coach = coachCandidates.sort((first, second) => second.coachScore - first.coachScore || second.titles - first.titles || second.pointsPerGame - first.pointsPerGame || first.coachName.localeCompare(second.coachName, "pt-BR"))[0];
   return [
     ballon && { type: "ballonDor", label: "Bola de Ouro", stat: ballon.ballonScore, statLabel: `nota média ${ballon.average.toFixed(1).replace(".", ",")} · ${ballon.player.goals} gols · ${ballon.player.assists} assistências`, money: 12_000_000, ...ballon },
-    boot && { type: "goldenBoot", label: "Chuteira de Ouro", stat: boot.player.goals, statLabel: `${boot.player.goals} gols em ${boot.appearances} jogos`, money: 8_000_000, ...boot }
+    boot && { type: "goldenBoot", label: "Chuteira de Ouro", stat: boot.player.goals, statLabel: `${boot.player.goals} gols em ${boot.appearances} jogos`, money: 8_000_000, ...boot },
+    keeper && { type: "bestGoalkeeper", label: "Melhor goleiro do mundo", stat: keeper.positionalScore, statLabel: `nota ${keeper.average.toFixed(1).replace(".", ",")} · ${keeper.player.progression?.cleanSheets ?? 0} jogos sem sofrer gols · ${keeper.player.progression?.saves ?? 0} defesas`, money: 5_000_000, ...keeper },
+    fullback && { type: "bestFullback", label: "Melhor lateral do mundo", stat: fullback.positionalScore, statLabel: `nota ${fullback.average.toFixed(1).replace(".", ",")} · ${fullback.player.progression?.tackles ?? 0} desarmes · ${fullback.player.assists} assistências`, money: 5_000_000, ...fullback },
+    defender && { type: "bestDefender", label: "Melhor zagueiro do mundo", stat: defender.positionalScore, statLabel: `nota ${defender.average.toFixed(1).replace(".", ",")} · ${defender.player.progression?.tackles ?? 0} desarmes · ${defender.player.progression?.cleanSheets ?? 0} jogos sem sofrer gols`, money: 5_000_000, ...defender },
+    midfielder && { type: "bestMidfielder", label: "Melhor meio-campista do mundo", stat: midfielder.positionalScore, statLabel: `nota ${midfielder.average.toFixed(1).replace(".", ",")} · ${midfielder.player.assists} assistências · ${midfielder.player.progression?.keyPasses ?? 0} passes decisivos`, money: 5_000_000, ...midfielder },
+    forward && { type: "bestForward", label: "Melhor atacante do mundo", stat: forward.positionalScore, statLabel: `nota ${forward.average.toFixed(1).replace(".", ",")} · ${forward.player.goals} gols · ${forward.player.assists} assistências`, money: 5_000_000, ...forward },
+    coach && { type: "bestCoach", label: "Melhor técnico do mundo", stat: coach.coachScore, statLabel: `${coach.pointsPerGame.toFixed(2).replace(".", ",")} pontos por jogo · ${coach.titles} título${coach.titles === 1 ? "" : "s"}`, money: 6_000_000, ...coach }
   ].filter(Boolean);
 }
 
 function awardWorldHonors(game) {
   const awards = worldAwardWinners(game).map(winner => {
     const { player, club } = winner;
-    const overallBefore = player.overall;
-    const potentialBefore = player.potential;
-    player.potential = Math.min(99, player.potential + 1);
-    player.overall = Math.min(player.potential, player.overall + 1);
-    player.value = playerValue(player);
-    queuePrizePayment(game, club.id, "premiosIndividuais", winner.money, `${winner.label}: ${player.name}`);
-    const record = { season: game.season, competitionId: "world-awards", competitionName: "Prêmios mundiais", type: winner.type, label: winner.label, stat: winner.stat, statLabel: winner.statLabel, playerId: player.id, playerName: player.name, clubId: club.id, clubName: club.name, money: winner.money, overallGain: player.overall - overallBefore, potentialGain: player.potential - potentialBefore };
-    player.awards ??= [];
-    player.awards.push(record);
+    const overallBefore = player?.overall ?? 0;
+    const potentialBefore = player?.potential ?? 0;
+    if (player) {
+      player.potential = Math.min(99, player.potential + 1);
+      player.overall = Math.min(player.potential, player.overall + 1);
+      player.value = playerValue(player);
+    }
+    queuePrizePayment(game, club.id, "premiosIndividuais", winner.money, `${winner.label}: ${player?.name || winner.coachName}`);
+    const record = { season: game.season, competitionId: "world-awards", competitionName: "Prêmios mundiais", type: winner.type, label: winner.label, stat: winner.stat, statLabel: winner.statLabel, playerId: player?.id ?? null, playerName: player?.name ?? null, coachName: winner.coachName ?? null, clubId: club.id, clubName: club.name, money: winner.money, overallGain: player ? player.overall - overallBefore : 0, potentialGain: player ? player.potential - potentialBefore : 0 };
+    if (player) {
+      player.awards ??= [];
+      player.awards.push(record);
+    }
     const history = club.history.find(entry => entry.season === game.season);
     if (history) history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + winner.money;
-    if (club.id === game.userClubId) game.news.unshift({ id: `world-award-${game.season}-${winner.type}-${player.id}`, type: "positive", title: `${player.name} venceu a ${winner.label}`, body: `${winner.statLabel}. O prêmio de ${formatMoney(winner.money)} será pago ao clube no início da próxima temporada.` });
+    if (club.id === game.userClubId) game.news.unshift({ id: `world-award-${game.season}-${winner.type}-${player?.id || club.id}`, type: "positive", title: `${player?.name || winner.coachName} venceu: ${winner.label}`, body: `${winner.statLabel}. O prêmio de ${formatMoney(winner.money)} será pago ao clube no início da próxima temporada.` });
     return record;
   });
   game.lastWorldAwards = { season: game.season, awards };

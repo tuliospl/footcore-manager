@@ -199,20 +199,27 @@ test('one player can win scorer, assister and best-player awards together',()=>{
   assert.ok(leagueIndividualAwardMoney(league,'bestPlayer')>leagueIndividualAwardMoney(league,'topAssister'));
 });
 
-test('world awards consider every club and reject a one-match rating outlier',()=>{
+test('world awards require 70 percent and more than 20 matches and cover every position plus coach',()=>{
   const game=career();
   const players=game.clubs.flatMap(club=>club.squad);
-  for(const player of players){player.goals=0;player.assists=0;player.appearances=20;player.ratedMatches=20;player.ratingTotal=120;}
+  for(const player of players){
+    player.goals=0;player.assists=0;player.appearances=30;player.ratedMatches=30;player.ratingTotal=180;
+    player.progression={season:game.season,cleanSheets:8,saves:0,penaltySaves:0,tackles:30,keyPasses:20,preAssists:2};
+  }
+  for(const league of game.leagues) for(const [index,row] of league.table.entries()) Object.assign(row,{played:30,wins:18-index%4,draws:6,losses:6+index%4,gf:54-index,ga:24+index,points:60-index});
   const premierClub=game.clubs.find(club=>game.leagues.find(league=>league.id==='eng-1').clubIds.includes(club.id));
   const [eligible,scorer,outlier]=premierClub.squad;
-  eligible.goals=28;eligible.assists=14;eligible.ratingTotal=164;
-  scorer.goals=36;scorer.assists=4;scorer.ratingTotal=150;
-  outlier.appearances=1;outlier.ratedMatches=1;outlier.ratingTotal=10;outlier.goals=1;
+  eligible.goals=28;eligible.assists=14;eligible.ratingTotal=246;
+  scorer.goals=36;scorer.assists=4;scorer.ratingTotal=225;
+  outlier.appearances=26;outlier.ratedMatches=26;outlier.ratingTotal=260;outlier.goals=80;
   const awards=worldAwardWinners(game);
-  assert.equal(awards.length,2);
+  assert.equal(awards.length,8);
   assert.equal(awards.find(award=>award.type==='ballonDor').player.id,eligible.id);
   assert.equal(awards.find(award=>award.type==='goldenBoot').player.id,scorer.id);
-  assert.ok(awards.every(award=>award.player.id!==outlier.id));
+  assert.deepEqual(new Set(awards.map(award=>award.type)),new Set(['ballonDor','goldenBoot','bestGoalkeeper','bestFullback','bestDefender','bestMidfielder','bestForward','bestCoach']));
+  assert.ok(awards.filter(award=>award.player).every(award=>award.appearances>=21));
+  assert.ok(awards.find(award=>award.type==='bestCoach').coachName);
+  assert.ok(awards.every(award=>award.player?.id!==outlier.id));
 });
 
 test('club filters search without accents and keep divisions independent',()=>{

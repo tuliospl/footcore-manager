@@ -7,7 +7,7 @@ import { openCareerRepository } from "./career-repository.js";
 import { CareerSetup } from "./career-setup.js";
 import { badgeContent } from "./club-badge.js";
 import { escapeHtml } from "./html.js";
-import { teamShirtMarkup } from "./team-shirt.js";
+import { teamShirtMarkup, teamUniformMarkup } from "./team-shirt.js";
 import { ensureSponsorships, signSponsor, SPONSOR_SLOTS, sponsorGoalLabel, sponsorPaymentLabel, sponsorshipCommercialProfile } from "./sponsorships.js";
 import { fanbaseProfile } from "./fans.js";
 import { ensureStadiumOperations, setStadiumTicketPrice, stadiumExpansionQuote, stadiumFacilityQuote, stadiumRevenueProjection, startStadiumProject, STADIUM_FACILITIES, STADIUM_SECTORS } from "./stadium.js";
@@ -810,9 +810,14 @@ function renderSeasonStandings(report) {
 }
 
 function renderSeasonAwards(report) {
-  const cards = awards => awards.map(award => `<article class="card season-award"><span>${award.type === "topScorer" || award.type === "goldenBoot" ? "⚽" : award.type === "topAssister" ? "◎" : "★"}</span><small>${escapeHtml(award.label)}</small><h3>${escapeHtml(award.playerName)}</h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong><em>${formatMoney(award.money)} para o clube · geral +${award.overallGain} · potencial +${award.potentialGain}</em></article>`).join("");
+  const cards = awards => awards.map(award => {
+    const recipient = award.playerName || award.coachName || "—";
+    const icon = award.type === "topScorer" || award.type === "goldenBoot" ? "⚽" : award.type === "topAssister" ? "◎" : award.type === "bestCoach" ? "▣" : award.type === "bestGoalkeeper" ? "◈" : "★";
+    const development = award.playerName ? ` · geral +${award.overallGain} · potencial +${award.potentialGain}` : "";
+    return `<article class="card season-award"><span>${icon}</span><small>${escapeHtml(award.label)}</small><h3>${escapeHtml(recipient)}</h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong><em>${formatMoney(award.money)} para o clube${development}</em></article>`;
+  }).join("");
   const worldAwards = report.worldAwards || [];
-  return `${worldAwards.length ? `<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">Futebol mundial</p><h3>Prêmios do ano</h3></div><p>Desempenho acumulado por atletas de todos os clubes.</p></div><div class="season-awards-grid">${cards(worldAwards)}</div></section>` : ""}<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">${escapeHtml(report.leagueName)}</p><h3>Prêmios da liga</h3></div></div><div class="season-awards-grid">${cards(report.awards) || `<section class="card card-body"><p>Nenhuma premiação individual registrada.</p></section>`}</div></section>`;
+  return `${worldAwards.length ? `<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">Futebol mundial</p><h3>Prêmios do ano</h3></div><p>Atletas precisam disputar e receber nota em pelo menos 70% das rodadas, sempre com mais de 20 jogos.</p></div><div class="season-awards-grid">${cards(worldAwards)}</div></section>` : ""}<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">${escapeHtml(report.leagueName)}</p><h3>Prêmios da liga</h3></div></div><div class="season-awards-grid">${cards(report.awards) || `<section class="card card-body"><p>Nenhuma premiação individual registrada.</p></section>`}</div></section>`;
 }
 
 function renderSeasonTeam(report) {
@@ -896,8 +901,9 @@ function renderSponsors() {
       <article><small>Estádio</small><strong>${commercial.stadiumCapacity.toLocaleString("pt-BR")}</strong><span>capacidade atual</span></article>
       <article><small>Torcida</small><strong>${commercial.supporters.toLocaleString("pt-BR")}</strong><span class="${commercial.supporterGrowth >= 0 ? "positive-number" : "negative-number"}">${commercial.supporterGrowth >= 0 ? "+" : ""}${commercial.supporterGrowth.toLocaleString("pt-BR")} na temporada</span></article>
       <article><small>Engajamento</small><strong>${commercial.fanMorale}/100</strong><span>moral da torcida</span></article>
+      <article><small>Valor do elenco</small><strong>${formatMoney(commercial.squadMarketValue)}</strong><span>eleva o alcance das marcas</span></article>
     </div></section>
-    <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview">${teamShirtMarkup(club)}</div><div><p class="eyebrow">Uniforme comercial</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;
+    <div class="sponsor-layout"><section class="card sponsor-shirt-card"><div class="sponsor-shirt-preview"><div class="sponsor-shirt-pair"><figure>${teamUniformMarkup(club)}<figcaption>Frente</figcaption></figure><figure>${teamUniformMarkup(club, { side: "back", name: club.shortName || club.name, number: "10" })}<figcaption>Costas</figcaption></figure></div></div><div><p class="eyebrow">Uniforme comercial completo</p><h3>${escapeHtml(club.name)}</h3></div><div class="sponsor-contract-list">${contracts}</div></section><div>${sections}</div></div>`;
 }
 
 function renderYouthAcademy() {
