@@ -188,3 +188,32 @@ test("a scheduled cup match is played without advancing the main league round", 
   assert.equal(ensureParallelCompetitions(game).items.find(item => item.id === "copa-brasil").history.length, 1);
   assert.equal(pendingCompetitionFixture(game).competitionId, "libertadores");
 });
+
+test("parallel competitions award scorer, assister and best player from their own matches", () => {
+  const game = career();
+  const competition = ensureParallelCompetitions(game).items.find(item => item.id === "copa-brasil");
+  const club = game.clubs.find(item => item.id === game.userClubId);
+  const player = club.squad[0];
+  const initialBudget = club.budget;
+  const initialOverall = player.overall;
+  while (!competition.finished) {
+    const results = competition.currentFixtures.map(fixture => {
+      const userHome = fixture.homeId === club.id;
+      const userAway = fixture.awayId === club.id;
+      return {
+        ...fixture,
+        homeGoals: userAway ? 0 : userHome ? 3 : 1,
+        awayGoals: userAway ? 3 : 0,
+        playerReports: userHome || userAway ? { [club.id]: [{ id: player.id, minutes: 90, goals: 2, assists: 1, yellows: 0, red: false, rating: 8.5 }] } : {}
+      };
+    });
+    completeCompetitionRound(game, competition.id, results);
+  }
+  assert.equal(competition.awards.length, 3);
+  assert.ok(competition.awards.every(award => award.playerId === player.id));
+  assert.ok(competition.awards.every(award => award.competitionId === competition.id));
+  assert.ok(player.awards.filter(award => award.competitionId === competition.id).length === 3);
+  assert.ok(club.budget > initialBudget + competition.championPrize);
+  assert.ok(player.overall >= initialOverall);
+  assert.equal(game.competitions.history[0].awards.length, 3);
+});

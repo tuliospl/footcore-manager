@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney } from '../src/core.js';
+import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney, worldAwardWinners } from '../src/core.js';
 import { startMatch } from '../src/match.js';
 import { filterCareerClubs } from '../src/career-setup.js';
 const database = JSON.parse(readFileSync(new URL('../data/world/database.json', import.meta.url)));
@@ -172,6 +172,22 @@ test('one player can win scorer, assister and best-player awards together',()=>{
   assert.equal(winners.length,3);
   assert.ok(winners.every(winner=>winner.player.id===star.id));
   assert.ok(leagueIndividualAwardMoney(league,'bestPlayer')>leagueIndividualAwardMoney(league,'topAssister'));
+});
+
+test('world awards consider every club and reject a one-match rating outlier',()=>{
+  const game=career();
+  const players=game.clubs.flatMap(club=>club.squad);
+  for(const player of players){player.goals=0;player.assists=0;player.appearances=20;player.ratedMatches=20;player.ratingTotal=120;}
+  const premierClub=game.clubs.find(club=>game.leagues.find(league=>league.id==='eng-1').clubIds.includes(club.id));
+  const [eligible,scorer,outlier]=premierClub.squad;
+  eligible.goals=28;eligible.assists=14;eligible.ratingTotal=164;
+  scorer.goals=36;scorer.assists=4;scorer.ratingTotal=150;
+  outlier.appearances=1;outlier.ratedMatches=1;outlier.ratingTotal=10;outlier.goals=1;
+  const awards=worldAwardWinners(game);
+  assert.equal(awards.length,2);
+  assert.equal(awards.find(award=>award.type==='ballonDor').player.id,eligible.id);
+  assert.equal(awards.find(award=>award.type==='goldenBoot').player.id,scorer.id);
+  assert.ok(awards.every(award=>award.player.id!==outlier.id));
 });
 
 test('club filters search without accents and keep divisions independent',()=>{

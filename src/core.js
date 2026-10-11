@@ -726,6 +726,59 @@ function awardIndividualHonors(game) {
   return leagueAwards;
 }
 
+export function worldAwardWinners(game) {
+  const leagueByClub = new Map((game.leagues || []).flatMap(league => league.clubIds.map(clubId => [clubId, league])));
+  const leagueChampionIds = new Set((game.leagues || []).filter(league => league.clubIds.length > 1).map(league => getSortedTable(game, league.id)[0]?.clubId).filter(Boolean));
+  const competitionTitles = new Map();
+  for (const competition of game.competitions?.items || []) if (competition.finished && competition.season === game.season && competition.championId) competitionTitles.set(competition.championId, (competitionTitles.get(competition.championId) || 0) + 1);
+  const entries = game.clubs.flatMap(club => {
+    const league = leagueByClub.get(club.id);
+    const rounds = league?.schedule?.length || game.schedule?.length || 1;
+    const ballonMinimum = Math.max(5, Math.ceil(rounds * 0.4));
+    const bootMinimum = Math.max(3, Math.ceil(rounds * 0.2));
+    const titleBonus = (leagueChampionIds.has(club.id) ? 0.25 : 0) + (competitionTitles.get(club.id) || 0) * 0.2;
+    return club.squad.map(player => {
+      const appearances = player.appearances ?? 0;
+      const average = player.ratedMatches ? player.ratingTotal / player.ratedMatches : 0;
+      const goalsPerGame = (player.goals ?? 0) / Math.max(1, appearances);
+      const assistsPerGame = (player.assists ?? 0) / Math.max(1, appearances);
+      return { player, club, appearances, average, ballonMinimum, bootMinimum, titleBonus, ballonScore: average + Math.min(1.2, goalsPerGame) * 0.9 + Math.min(1, assistsPerGame) * 0.55 + player.overall / 500 + titleBonus };
+    });
+  });
+  const byName = (first, second) => first.player.name.localeCompare(second.player.name, "pt-BR");
+  const ballonEligible = entries.filter(entry => entry.player.ratedMatches >= entry.ballonMinimum && entry.appearances >= entry.ballonMinimum);
+  const bootEligible = entries.filter(entry => entry.appearances >= entry.bootMinimum);
+  const ballon = [...(ballonEligible.length ? ballonEligible : entries.filter(entry => entry.player.ratedMatches > 0))].sort((first, second) => second.ballonScore - first.ballonScore || second.average - first.average || second.player.goals - first.player.goals || byName(first, second))[0];
+  const boot = [...(bootEligible.length ? bootEligible : entries)].sort((first, second) => second.player.goals - first.player.goals || (second.player.goals / Math.max(1, second.appearances)) - (first.player.goals / Math.max(1, first.appearances)) || second.player.assists - first.player.assists || second.average - first.average || byName(first, second))[0];
+  return [
+    ballon && { type: "ballonDor", label: "Bola de Ouro", stat: ballon.ballonScore, statLabel: `nota média ${ballon.average.toFixed(1).replace(".", ",")} · ${ballon.player.goals} gols · ${ballon.player.assists} assistências`, money: 12_000_000, ...ballon },
+    boot && { type: "goldenBoot", label: "Chuteira de Ouro", stat: boot.player.goals, statLabel: `${boot.player.goals} gols em ${boot.appearances} jogos`, money: 8_000_000, ...boot }
+  ].filter(Boolean);
+}
+
+function awardWorldHonors(game) {
+  const awards = worldAwardWinners(game).map(winner => {
+    const { player, club } = winner;
+    const overallBefore = player.overall;
+    const potentialBefore = player.potential;
+    player.potential = Math.min(99, player.potential + 1);
+    player.overall = Math.min(player.potential, player.overall + 1);
+    player.value = playerValue(player);
+    queuePrizePayment(game, club.id, "premiosIndividuais", winner.money, `${winner.label}: ${player.name}`);
+    const record = { season: game.season, competitionId: "world-awards", competitionName: "Prêmios mundiais", type: winner.type, label: winner.label, stat: winner.stat, statLabel: winner.statLabel, playerId: player.id, playerName: player.name, clubId: club.id, clubName: club.name, money: winner.money, overallGain: player.overall - overallBefore, potentialGain: player.potential - potentialBefore };
+    player.awards ??= [];
+    player.awards.push(record);
+    const history = club.history.find(entry => entry.season === game.season);
+    if (history) history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + winner.money;
+    if (club.id === game.userClubId) game.news.unshift({ id: `world-award-${game.season}-${winner.type}-${player.id}`, type: "positive", title: `${player.name} venceu a ${winner.label}`, body: `${winner.statLabel}. O prêmio de ${formatMoney(winner.money)} será pago ao clube no início da próxima temporada.` });
+    return record;
+  });
+  game.lastWorldAwards = { season: game.season, awards };
+  game.worldAwardHistory ??= [];
+  game.worldAwardHistory = [{ season: game.season, awards }, ...game.worldAwardHistory.filter(entry => entry.season !== game.season)].slice(0, 10);
+  return awards;
+}
+
 function applyPromotionAndRelegation(game) {
   if (!game.leagues) return [];
   const movements = [];
@@ -800,6 +853,7 @@ function buildSeasonReport(game) {
   const seasonClubIds = game.lastSeasonMovements?.previousClubIdsByLeague?.[leagueId] || league?.clubIds;
   const standings = getSortedTable(game, leagueId).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId).name }));
   const awards = game.lastSeasonPlayerAwards?.leagues.find(item => item.leagueId === leagueId)?.awards || [];
+  const worldAwards = game.lastWorldAwards?.season === game.season ? game.lastWorldAwards.awards : [];
   const movement = game.lastSeasonMovements?.movements.find(item => item.upperLeagueId === leagueId || item.lowerLeagueId === leagueId);
   const promoted = movement?.promoted.map(id => ({ clubId: id, clubName: getClub(game, id).name, from: movement.lowerLeagueName, to: movement.upperLeagueName })) || [];
   const relegated = movement?.relegated.map(id => ({ clubId: id, clubName: getClub(game, id).name, from: movement.upperLeagueName, to: movement.lowerLeagueName })) || [];
@@ -811,6 +865,7 @@ function buildSeasonReport(game) {
     leagueName: league?.name || "Liga nacional",
     standings,
     awards,
+    worldAwards,
     teamOfSeason: seasonTeam(game, leagueId, seasonClubIds),
     teamOfSeasonMinimumAppearances: seasonTeamMinimumAppearances(game, league || { schedule: game.schedule }),
     promoted,
@@ -849,6 +904,7 @@ function finishSeason(game) {
     club.squad.forEach(player => { archivePlayerSeason(player, game.season, seasonLabel(game, leagueId), club.name); agePlayer(player, game.season); });
   });
   awardIndividualHonors(game);
+  awardWorldHonors(game);
   settleFanSeason(game);
   finishSponsorshipSeason(game);
   game.news.unshift({ id: `champion-${game.season}`, type: champion.id === game.userClubId ? "positive" : "info", title: `${champion.name} é campeão!`, body: "A temporada terminou. Um novo calendário já está pronto." });

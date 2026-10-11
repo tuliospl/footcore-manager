@@ -1,4 +1,5 @@
 import { recordSeasonFinance } from "./season-tracking.js";
+import { playerValue } from "./player-balance.js";
 import { ensureWorldClubCompetitions, recordContinentalChampion, recordContinentalRound, worldCompetitionDefinitions } from "./world-club-competitions.js";
 
 const EUROPE = new Set(["DEU", "ENG", "ESP", "FRA", "ITA", "NLD", "PRT", "RUS", "TUR"]);
@@ -168,7 +169,7 @@ function createCompetition(game, definition) {
   const participants = selection.participants;
   if (participants.length < 4) return null;
   const cadence = Math.max(1, Math.floor(game.schedule.length / definition.cadenceRounds));
-  const competition = { ...definition, countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1, roundIndex: 0, history: [], finished: false, championId: null, awaitingUser: false };
+  const competition = { ...definition, countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1, roundIndex: 0, history: [], playerStats: {}, awards: [], finished: false, championId: null, awaitingUser: false };
   if (definition.format === "groups") {
     const { groups, rounds } = createGroups(participants.slice(0, 32), definition.groupLegs || 2);
     Object.assign(competition, { phase: "groups", groups, phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de grupos · rodada 1" });
@@ -220,6 +221,67 @@ function payRoundRewards(game, competition, results) {
   }
 }
 
+function recordCompetitionStats(competition, results) {
+  competition.playerStats ??= {};
+  for (const result of results) for (const [clubId, reports] of Object.entries(result.playerReports || {})) {
+    for (const report of reports) {
+      if (!(report.minutes > 0)) continue;
+      const stats = competition.playerStats[report.id] ??= { playerId: report.id, clubId, appearances: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0, ratingTotal: 0, ratedMatches: 0 };
+      stats.clubId = clubId;
+      stats.appearances += 1;
+      stats.goals += report.goals ?? 0;
+      stats.assists += report.assists ?? 0;
+      stats.yellowCards += report.yellows ?? 0;
+      stats.redCards += Number(report.red || 0);
+      if (Number.isFinite(report.rating)) {
+        stats.ratingTotal = Math.round((stats.ratingTotal + report.rating) * 10) / 10;
+        stats.ratedMatches += 1;
+      }
+    }
+  }
+}
+
+function competitionAwardWinners(game, competition) {
+  const entries = Object.values(competition.playerStats || {}).map(stats => {
+    const club = findClub(game, stats.clubId);
+    const player = club?.squad.find(item => item.id === stats.playerId);
+    return player && club ? { stats, player, club, average: stats.ratedMatches ? stats.ratingTotal / stats.ratedMatches : 0 } : null;
+  }).filter(Boolean);
+  if (!entries.length) return [];
+  const byName = (first, second) => first.player.name.localeCompare(second.player.name, "pt-BR");
+  const scorer = [...entries].sort((first, second) => second.stats.goals - first.stats.goals || second.stats.assists - first.stats.assists || second.average - first.average || byName(first, second))[0];
+  const assister = [...entries].sort((first, second) => second.stats.assists - first.stats.assists || second.stats.goals - first.stats.goals || second.average - first.average || byName(first, second))[0];
+  const maximumAppearances = Math.max(...entries.map(entry => entry.stats.appearances));
+  const minimumAppearances = Math.max(1, Math.min(maximumAppearances, Math.max(2, Math.ceil(maximumAppearances * 0.4))));
+  const eligible = entries.filter(entry => entry.stats.ratedMatches >= minimumAppearances);
+  const best = [...(eligible.length ? eligible : entries.filter(entry => entry.stats.ratedMatches > 0))].sort((first, second) => second.average - first.average || second.stats.appearances - first.stats.appearances || second.stats.goals - first.stats.goals || byName(first, second))[0];
+  return [
+    scorer && { type: "topScorer", label: "Artilheiro da competição", stat: scorer.stats.goals, statLabel: `${scorer.stats.goals} gols`, moneyRate: 0.03, ...scorer },
+    assister && { type: "topAssister", label: "Líder de assistências", stat: assister.stats.assists, statLabel: `${assister.stats.assists} assistências`, moneyRate: 0.025, ...assister },
+    best && { type: "bestPlayer", label: "Melhor jogador da competição", stat: best.average, statLabel: `nota média ${best.average.toFixed(1).replace(".", ",")}`, moneyRate: 0.04, ...best }
+  ].filter(Boolean);
+}
+
+function awardCompetitionHonors(game, competition) {
+  competition.awards = competitionAwardWinners(game, competition).map(winner => {
+    const { player, club } = winner;
+    const money = Math.max(100_000, Math.round(competition.championPrize * winner.moneyRate / 1000) * 1000);
+    const overallBefore = player.overall;
+    const potentialBefore = player.potential;
+    player.potential = Math.min(99, player.potential + 1);
+    player.overall = Math.min(player.potential, player.overall + 1);
+    player.value = playerValue(player);
+    club.budget = (club.budget ?? 0) + money;
+    if (game.clubs.some(item => item.id === club.id)) recordSeasonFinance(game, club.id, "premiosIndividuais", money, "income");
+    const record = { season: game.season, competitionId: competition.id, competitionName: competition.name, type: winner.type, label: winner.label, stat: winner.stat, statLabel: winner.statLabel, playerId: player.id, playerName: player.name, clubId: club.id, clubName: club.name, money, overallGain: player.overall - overallBefore, potentialGain: player.potential - potentialBefore };
+    player.awards ??= [];
+    player.awards.push(record);
+    if (club.id === game.userClubId) game.news.unshift({ id: `competition-award-${game.season}-${competition.id}-${winner.type}-${player.id}`, type: "positive", title: `${player.name}: ${winner.label}`, body: `${winner.statLabel} na ${competition.name}. O clube recebeu ${money.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.` });
+    return record;
+  });
+  return competition.awards;
+}
+
 function finishCompetition(game, competition, championId) {
   competition.finished = true;
   competition.championId = championId;
@@ -230,7 +292,8 @@ function finishCompetition(game, competition, championId) {
     champion.budget += competition.championPrize;
     recordSeasonFinance(game, champion.id, "copas", competition.championPrize, "income");
   }
-  game.competitions.history.unshift({ season: game.season, id: competition.id, name: competition.name, championId, championName: champion?.name || "Clube", prize: competition.championPrize });
+  const awards = awardCompetitionHonors(game, competition);
+  game.competitions.history.unshift({ season: game.season, id: competition.id, name: competition.name, championId, championName: champion?.name || "Clube", prize: competition.championPrize, awards });
   game.competitions.history = game.competitions.history.slice(0, 40);
   recordContinentalChampion(game, competition, championId);
   if (["intercontinental", "club-world-cup"].includes(competition.id)) game.worldClubCompetitions.history.unshift({ year: game.worldSeason, competitionId: competition.id, championId, championName: champion?.name || "Clube" });
@@ -328,6 +391,7 @@ export function completeCompetitionRound(game, competitionId, results) {
   const competition = ensureParallelCompetitions(game).items.find(item => item.id === competitionId);
   if (!competition || competition.finished) return null;
   results.forEach(result => { if (result.homeGoals === result.awayGoals && (["knockout", "playoff"].includes(competition.phase) || competition.phase.startsWith("intercontinental"))) winner(result, competition); });
+  recordCompetitionStats(competition, results);
   recordContinentalRound(game, competition, results);
   payRoundRewards(game, competition, results);
   advanceStage(game, competition, results);

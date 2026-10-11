@@ -680,6 +680,7 @@ function renderParallelCompetition(competition) {
     return `<span><strong>${escapeHtml(entry.confederation)}</strong> ${entry.slots} vaga${entry.slots === 1 ? "" : "s"}${entry.champions ? ` · ${entry.champions} por título` : ""}${entry.ranking ? ` · ${entry.ranking} por ranking` : ""}${entry.hostCountry ? ` · sede ${escapeHtml(entry.hostCountry)}` : ""}</span>`;
   }).join("");
   const qualificationEntries = (competition.qualificationEntries || []).map(entry => `<tr><td>${escapeHtml(getClub(game, entry.clubId)?.name || "Clube")}</td><td>${escapeHtml(entry.confederation)}</td><td>${escapeHtml(entry.route)}${entry.season ? ` · ${entry.season}` : ""}</td><td>${Number.isFinite(entry.points) ? entry.points : "—"}</td></tr>`).join("");
+  const awards = (competition.awards || []).map(award => `<article class="card season-award"><span>${award.type === "topScorer" ? "⚽" : award.type === "topAssister" ? "◎" : "★"}</span><small>${escapeHtml(award.label)}</small><h3><button class="player-detail-link" data-player-details="${award.playerId}" data-player-return="competition">${escapeHtml(award.playerName)}</button></h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong><em>${formatMoney(award.money)} para o clube · geral +${award.overallGain} · potencial +${award.potentialGain}</em></article>`).join("");
   content.innerHTML = `${pageHeading("Competições paralelas", escapeHtml(competition.name), `${competition.participants.length} clubes · ${formatLabel}`)}
     ${competitionPicker(competition.id)}
     ${competition.cycle ? `<p class="view-note"><strong>Ciclo classificatório:</strong> ${escapeHtml(competition.cycle)} · campeões continentais e ranking acumulado, com limite de dois clubes por país salvo campeões adicionais.</p>` : ""}
@@ -688,6 +689,7 @@ function renderParallelCompetition(competition) {
     ${currentFixtures ? `<section class="card"><div class="card-header"><h3>${escapeHtml(competition.roundLabel)}</h3><span>Próximos confrontos</span></div><div class="competition-fixtures">${currentFixtures}</div></section>` : ""}
     ${phaseContent}
     ${qualificationEntries ? `<section class="card data-card"><div class="card-header"><h3>Clubes classificados</h3><span>Critério oficial adaptado ao ciclo do jogo</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Clube</th><th>Confederação</th><th>Via</th><th>Pontos</th></tr></thead><tbody>${qualificationEntries}</tbody></table></div></section>` : ""}
+    ${awards ? `<section><div class="stadium-section-title"><div><p class="eyebrow">Destaques</p><h3>Prêmios individuais</h3></div><p>Um atleta pode vencer mais de uma categoria.</p></div><div class="season-awards-grid">${awards}</div></section>` : ""}
     ${recentResults ? `<section class="card"><div class="card-header"><h3>${escapeHtml(recent.label)}</h3><span>Últimos resultados</span></div><div class="competition-fixtures">${recentResults}</div></section>` : ""}`;
 }
 
@@ -750,6 +752,7 @@ function renderSeasonOverview(report) {
   const finance = report.club.finance;
   const placementPrize = game.lastSeasonAwards?.clubs?.[game.userClubId]?.prize ?? 0;
   const ownAwards = report.awards.filter(award => award.clubId === game.userClubId);
+  const ownWorldAwards = (report.worldAwards || []).filter(award => award.clubId === game.userClubId);
   const movement = report.promoted.find(item => item.clubId === game.userClubId) || report.relegated.find(item => item.clubId === game.userClubId);
   const bestChange = report.club.playerChanges[0];
   return `<div class="season-report-summary">
@@ -757,7 +760,7 @@ function renderSeasonOverview(report) {
     <div class="season-kpi-grid">
       <article><small>Sua colocação</small><strong>${report.club.position}º</strong><span>${report.club.points} pontos · ${report.club.wins}V ${report.club.draws}E ${report.club.losses}D</span></article>
       <article><small>Saldo da temporada</small><strong class="${finance.net >= 0 ? "positive-number" : "negative-number"}">${signedMoney(finance.net)}</strong><span>Caixa final de ${formatMoney(finance.endingBudget)}</span></article>
-      <article><small>Premiações</small><strong>${formatMoney(placementPrize + ownAwards.reduce((total, award) => total + award.money, 0))}</strong><span>${ownAwards.length} prêmio${ownAwards.length === 1 ? " individual" : "s individuais"}</span></article>
+      <article><small>Premiações</small><strong>${formatMoney(placementPrize + [...ownAwards, ...ownWorldAwards].reduce((total, award) => total + award.money, 0))}</strong><span>${ownAwards.length + ownWorldAwards.length} prêmio${ownAwards.length + ownWorldAwards.length === 1 ? " individual" : "s individuais"}</span></article>
       <article><small>Destino</small><strong>${movement ? (report.promoted.some(item => item.clubId === game.userClubId) ? "Acesso" : "Rebaixado") : "Permanece"}</strong><span>${movement ? escapeHtml(movement.to) : escapeHtml(report.leagueName)}</span></article>
       <article><small>Evolução da torcida</small><strong class="${report.club.fanbase.change >= 0 ? "positive-number" : "negative-number"}">${report.club.fanbase.change >= 0 ? "+" : ""}${report.club.fanbase.change.toLocaleString("pt-BR")}</strong><span>${report.club.fanbase.supporters.toLocaleString("pt-BR")} torcedores ao fim da temporada</span></article>
     </div>
@@ -774,7 +777,9 @@ function renderSeasonStandings(report) {
 }
 
 function renderSeasonAwards(report) {
-  return `<div class="season-awards-grid">${report.awards.map(award => `<article class="card season-award"><span>${award.type === "topScorer" ? "⚽" : award.type === "topAssister" ? "◎" : "★"}</span><small>${escapeHtml(award.label)}</small><h3>${escapeHtml(award.playerName)}</h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong><em>${formatMoney(award.money)} para o clube · geral +${award.overallGain} · potencial +${award.potentialGain}</em></article>`).join("") || `<section class="card card-body"><p>Nenhuma premiação individual registrada.</p></section>`}</div>`;
+  const cards = awards => awards.map(award => `<article class="card season-award"><span>${award.type === "topScorer" || award.type === "goldenBoot" ? "⚽" : award.type === "topAssister" ? "◎" : "★"}</span><small>${escapeHtml(award.label)}</small><h3>${escapeHtml(award.playerName)}</h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong><em>${formatMoney(award.money)} para o clube · geral +${award.overallGain} · potencial +${award.potentialGain}</em></article>`).join("");
+  const worldAwards = report.worldAwards || [];
+  return `${worldAwards.length ? `<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">Futebol mundial</p><h3>Prêmios do ano</h3></div><p>Desempenho acumulado por atletas de todos os clubes.</p></div><div class="season-awards-grid">${cards(worldAwards)}</div></section>` : ""}<section class="season-award-section"><div class="stadium-section-title"><div><p class="eyebrow">${escapeHtml(report.leagueName)}</p><h3>Prêmios da liga</h3></div></div><div class="season-awards-grid">${cards(report.awards) || `<section class="card card-body"><p>Nenhuma premiação individual registrada.</p></section>`}</div></section>`;
 }
 
 function renderSeasonTeam(report) {
