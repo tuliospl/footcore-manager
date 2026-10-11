@@ -283,6 +283,7 @@ export function worldCompetitionDefinitions(game) {
     championPrize: 100_000_000,
     winPrize: 8_000_000,
     calendarKind: "intercontinental",
+    reportPeriod: "endyear",
     qualification: Object.entries(confederationEntrants).map(([confederation, clubId]) => ({ confederation, clubId, route: "Campeão continental" }))
   };
   if ((year - 2025) % 4 !== 0) return [annual];
@@ -303,6 +304,7 @@ export function worldCompetitionDefinitions(game) {
     nextWeekRatio: 0.28,
     championPrize: 700_000_000,
     winPrize: 20_000_000,
-    calendarKind: "club-world-cup"
+    calendarKind: "club-world-cup",
+    reportPeriod: "midyear"
   }];
 }

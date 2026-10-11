@@ -11,12 +11,12 @@ const EUROPA_SLOTS = { ENG: 4, ESP: 4, DEU: 4, ITA: 4, FRA: 4, NLD: 4, PRT: 4, T
 
 const DEFINITIONS = [
   { id: "copa-brasil", name: "Copa do Brasil", countries: new Set(["BRA"]), format: "knockout", teams: 64, cadenceRounds: 7, championPrize: 80_000_000, winPrize: 1_500_000 },
-  { id: "carabao-cup", name: "Carabao Cup", countries: new Set(["ENG"]), format: "knockout", teams: 32, cadenceRounds: 6, championPrize: 55_000_000, winPrize: 1_200_000 },
-  { id: "copa-rei", name: "Copa da Espanha", countries: new Set(["ESP"]), format: "knockout", teams: 32, cadenceRounds: 6, championPrize: 60_000_000, winPrize: 1_300_000 },
+  { id: "carabao-cup", name: "Carabao Cup", countries: new Set(["ENG"]), format: "knockout", teams: 32, cadenceRounds: 6, reportPeriod: "midyear", championPrize: 55_000_000, winPrize: 1_200_000 },
+  { id: "copa-rei", name: "Copa da Espanha", countries: new Set(["ESP"]), format: "knockout", teams: 32, cadenceRounds: 6, reportPeriod: "midyear", championPrize: 60_000_000, winPrize: 1_300_000 },
   { id: "libertadores", name: "CONMEBOL Libertadores", countries: SOUTH_AMERICA, format: "groups", teams: 32, slots: LIBERTADORES_SLOTS, cadenceRounds: 11, championPrize: 140_000_000, winPrize: 2_500_000 },
   { id: "sul-americana", name: "CONMEBOL Sul-Americana", countries: SOUTH_AMERICA, format: "groups", teams: 32, slots: SUDAMERICANA_SLOTS, previousSlots: LIBERTADORES_SLOTS, cadenceRounds: 11, championPrize: 85_000_000, winPrize: 1_800_000 },
-  { id: "champions", name: "UEFA Champions League", countries: EUROPE, format: "league", teams: 36, slots: CHAMPIONS_SLOTS, cadenceRounds: 14, championPrize: 240_000_000, winPrize: 4_000_000 },
-  { id: "europa-league", name: "UEFA Europa League", countries: EUROPE, format: "league", teams: 36, slots: EUROPA_SLOTS, previousSlots: CHAMPIONS_SLOTS, cadenceRounds: 14, championPrize: 150_000_000, winPrize: 2_800_000 }
+  { id: "champions", name: "UEFA Champions League", countries: EUROPE, format: "league", teams: 36, slots: CHAMPIONS_SLOTS, cadenceRounds: 14, reportPeriod: "midyear", championPrize: 240_000_000, winPrize: 4_000_000 },
+  { id: "europa-league", name: "UEFA Europa League", countries: EUROPE, format: "league", teams: 36, slots: EUROPA_SLOTS, previousSlots: CHAMPIONS_SLOTS, cadenceRounds: 14, reportPeriod: "midyear", championPrize: 150_000_000, winPrize: 2_800_000 }
 ];
 
 function hash(value) {
@@ -168,8 +168,10 @@ function createCompetition(game, definition) {
   const selection = selectedClubs(game, definition);
   const participants = selection.participants;
   if (participants.length < 4) return null;
-  const cadence = Math.max(1, Math.floor(game.schedule.length / definition.cadenceRounds));
-  const competition = { ...definition, countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek: definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1, roundIndex: 0, history: [], playerStats: {}, awards: [], finished: false, championId: null, awaitingUser: false };
+  const nextWeek = definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1;
+  const availableWeeks = definition.reportPeriod === "midyear" ? Math.max(1, Math.floor(game.schedule.length * 0.5)) : Math.max(1, game.schedule.length - nextWeek);
+  const cadence = Math.max(1, Math.floor(availableWeeks / definition.cadenceRounds));
+  const competition = { ...definition, reportPeriod: definition.reportPeriod || "endyear", countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek, roundIndex: 0, history: [], playerStats: {}, awards: [], finished: false, championId: null, awaitingUser: false };
   if (definition.format === "groups") {
     const { groups, rounds } = createGroups(participants.slice(0, 32), definition.groupLegs || 2);
     Object.assign(competition, { phase: "groups", groups, phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de grupos · rodada 1" });
@@ -189,13 +191,13 @@ function createCompetition(game, definition) {
 
 export function ensureParallelCompetitions(game) {
   if (!game.leagues?.length) {
-    game.competitions ??= { version: 2, season: game.season, items: [] };
+    game.competitions ??= { version: 4, season: game.season, items: [] };
     return game.competitions;
   }
   ensureWorldClubCompetitions(game);
-  if (!game.competitions || game.competitions.version !== 3 || game.competitions.season !== game.season || !game.competitions.items?.length) {
+  if (!game.competitions || game.competitions.version !== 4 || game.competitions.season !== game.season || !game.competitions.items?.length) {
     const definitions = [...DEFINITIONS, ...worldCompetitionDefinitions(game)];
-    game.competitions = { version: 3, season: game.season, items: definitions.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
+    game.competitions = { version: 4, season: game.season, items: definitions.map(definition => createCompetition(game, definition)).filter(Boolean), history: game.competitions?.history || [] };
   }
   game.competitions.history ??= [];
   return game.competitions;
@@ -260,6 +262,28 @@ function competitionAwardWinners(game, competition) {
     assister && { type: "topAssister", label: "Líder de assistências", stat: assister.stats.assists, statLabel: `${assister.stats.assists} assistências`, moneyRate: 0.025, ...assister },
     best && { type: "bestPlayer", label: "Melhor jogador da competição", stat: best.average, statLabel: `nota média ${best.average.toFixed(1).replace(".", ",")}`, moneyRate: 0.04, ...best }
   ].filter(Boolean);
+}
+
+export function competitionTeam(game, competition) {
+  const entries = Object.values(competition?.playerStats || {}).map(stats => {
+    const club = findClub(game, stats.clubId);
+    const player = club?.squad.find(item => item.id === stats.playerId);
+    return player && club ? { stats, player, club, average: stats.ratedMatches ? stats.ratingTotal / stats.ratedMatches : 0 } : null;
+  }).filter(Boolean);
+  if (!entries.length) return [];
+  const minimumAppearances = Math.max(1, Math.ceil(Math.max(...entries.map(entry => entry.stats.appearances)) * 0.4));
+  const eligible = entries.filter(entry => entry.stats.ratedMatches >= minimumAppearances);
+  const pool = eligible.length >= 11 ? eligible : entries.filter(entry => entry.stats.ratedMatches > 0);
+  const slots = ["GOL", "LAT", "ZAG", "ZAG", "LAT", "VOL", "MC", "MC", "ATA", "ATA", "ATA"];
+  const selected = new Set();
+  return slots.map(position => {
+    const natural = pool.filter(entry => !selected.has(entry.player.id) && entry.player.position === position);
+    const compatible = pool.filter(entry => !selected.has(entry.player.id) && (position === "LAT" || position === "ZAG" ? ["LAT", "ZAG"].includes(entry.player.position) : position === "VOL" || position === "MC" ? ["VOL", "MC"].includes(entry.player.position) : true));
+    const entry = [...(natural.length ? natural : compatible)].sort((first, second) => second.average - first.average || second.stats.appearances - first.stats.appearances || second.player.overall - first.player.overall)[0];
+    if (!entry) return null;
+    selected.add(entry.player.id);
+    return { playerId: entry.player.id, playerName: entry.player.name, position, naturalPosition: entry.player.position, clubId: entry.club.id, clubName: entry.club.name, average: entry.average, appearances: entry.stats.appearances, goals: entry.stats.goals, assists: entry.stats.assists };
+  }).filter(Boolean);
 }
 
 function awardCompetitionHonors(game, competition) {

@@ -14,7 +14,8 @@ import { ensureSeasonTracking, playerValueChanges, recordSeasonFinance, seasonFi
 import { ensureSponsorships, finishSponsorshipSeason, processSponsorshipRound, startSponsorshipSeason } from "./sponsorships.js";
 import { applyDivisionFanImpact, ensureFanbases, processFanRound, recordPlayerArrival, recordPlayerDeparture, settleFanSeason, startFanSeason } from "./fans.js";
 import { ensureStadiumOperations, medicalInjuryRisk, medicalRecoveryReduction, processStadiumRound, stadiumExpansionQuote, stadiumRevenueProjection, startStadiumProject } from "./stadium.js";
-import { completeCompetitionRound, ensureParallelCompetitions, pendingCompetitionFixture, processCompetitionCalendar } from "./competitions.js";
+import { completeCompetitionRound, competitionTeam, ensureParallelCompetitions, pendingCompetitionFixture, processCompetitionCalendar } from "./competitions.js";
+import { leagueCalendarProfile } from "./calendar.js";
 
 const FIRST_NAMES = ["Caio", "Davi", "Enzo", "Felipe", "Gabriel", "Hugo", "João", "Léo", "Lucas", "Mateus", "Rafael", "Vitor"];
 const LAST_NAMES = ["Almeida", "Barbosa", "Costa", "Dias", "Ferreira", "Gomes", "Lima", "Mendes", "Nunes", "Oliveira", "Rocha", "Silva"];
@@ -847,6 +848,77 @@ export function seasonTeam(game, leagueId, suppliedClubIds = null) {
   }).filter(Boolean);
 }
 
+function reportAward(winner) {
+  return {
+    type: winner.type,
+    label: winner.label,
+    stat: winner.stat,
+    statLabel: winner.statLabel,
+    playerId: winner.player.id,
+    playerName: winner.player.name,
+    clubId: winner.club.id,
+    clubName: winner.club.name
+  };
+}
+
+export function createWorldReport(game, period) {
+  const profileId = period === "midyear" ? "cross-year" : "annual";
+  const leagues = (game.leagues || []).filter(league => Number(league.tier) === 1 && leagueCalendarProfile(league).id === profileId).map(league => {
+    const standings = getSortedTable(game, league.id).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId).name }));
+    return {
+      id: league.id,
+      type: "league",
+      name: league.name,
+      country: league.country,
+      championId: standings[0]?.clubId || null,
+      championName: standings[0]?.clubName || "—",
+      standings,
+      awards: leagueAwardWinners(game, league.id).map(reportAward),
+      team: seasonTeam(game, league.id),
+      minimumAppearances: seasonTeamMinimumAppearances(game, league)
+    };
+  });
+  const competitions = (game.competitions?.items || []).filter(competition => competition.finished && (competition.reportPeriod || "endyear") === period).map(competition => ({
+    id: competition.id,
+    type: "competition",
+    name: competition.name,
+    championId: competition.championId,
+    championName: getClub(game, competition.championId)?.name || "—",
+    standings: competition.table ? competitionTableSnapshot(competition.table, game) : [],
+    awards: competition.awards || [],
+    team: competitionTeam(game, competition),
+    minimumAppearances: Math.max(1, Math.ceil(Math.max(0, ...Object.values(competition.playerStats || {}).map(stats => stats.appearances)) * 0.4))
+  }));
+  const year = game.worldSeason || game.season;
+  const ownCalendar = leagueCalendarProfile(game.leagues?.find(league => league.id === game.leagueId));
+  const europeanSeason = ownCalendar.id === "annual" ? `${year - 1}/${String(year).slice(-2)}` : `${year}/${String(year + 1).slice(-2)}`;
+  const report = {
+    id: `${year}-${period}`,
+    season: game.season,
+    year,
+    period,
+    label: period === "midyear" ? `Encerramento europeu ${europeanSeason}` : `Encerramento anual ${year}`,
+    competitions: [...leagues, ...competitions]
+  };
+  game.worldReports ??= [];
+  game.worldReports = [report, ...game.worldReports.filter(item => item.id !== report.id)].slice(0, 12);
+  game.pendingWorldReport = report;
+  game.news.unshift({ id: `world-report-${report.id}`, type: "info", title: report.label, body: `${report.competitions.length} competições encerradas estão disponíveis no panorama mundial.` });
+  return report;
+}
+
+function competitionTableSnapshot(table, game) {
+  return [...table].sort((first, second) => second.points - first.points || (second.gf - second.ga) - (first.gf - first.ga) || second.gf - first.gf).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId)?.name || "Clube" }));
+}
+
+function maybeCreateMidyearWorldReport(game) {
+  if (!game.leagues?.length || leagueCalendarProfile(game.leagues.find(league => league.id === game.leagueId)).id !== "annual") return null;
+  const midpoint = Math.ceil(game.schedule.length * 0.5);
+  const reportId = `${game.worldSeason || game.season}-midyear`;
+  if (game.week < midpoint || game.worldReports?.some(report => report.id === reportId)) return null;
+  return createWorldReport(game, "midyear");
+}
+
 function buildSeasonReport(game) {
   const leagueId = game.lastSeasonMovements?.previousUserLeagueId || game.leagueId || "national";
   const league = game.leagues?.find(item => item.id === leagueId);
@@ -905,6 +977,8 @@ function finishSeason(game) {
   });
   awardIndividualHonors(game);
   awardWorldHonors(game);
+  const ownCalendar = leagueCalendarProfile(game.leagues?.find(league => league.id === game.leagueId));
+  createWorldReport(game, ownCalendar.id === "cross-year" ? "midyear" : "endyear");
   settleFanSeason(game);
   finishSponsorshipSeason(game);
   game.news.unshift({ id: `champion-${game.season}`, type: champion.id === game.userClubId ? "positive" : "info", title: `${champion.name} é campeão!`, body: "A temporada terminou. Um novo calendário já está pronto." });
@@ -949,7 +1023,11 @@ function applyRound(game, results, random) {
     // Different league sizes progress together and finish in the same career season.
     for (const league of game.leagues) {
       if (league === own) continue;
-      const target = Math.floor(game.week / game.schedule.length * league.schedule.length);
+      const ownProfile = leagueCalendarProfile(own);
+      const leagueProfile = leagueCalendarProfile(league);
+      const progress = game.week / game.schedule.length;
+      const targetProgress = ownProfile.id === "annual" && leagueProfile.id === "cross-year" ? Math.min(1, 0.5 + progress) : progress;
+      const target = Math.floor(targetProgress * league.schedule.length);
       const context = { ...game, table: league.table, clubs: game.clubs.filter(c => league.clubIds.includes(c.id)) };
       while (league.week < target) {
         const otherResults = league.schedule[league.week].map(f => simulateMatch(context, f, random));
@@ -960,6 +1038,7 @@ function applyRound(game, results, random) {
       }
     }
     processParallelCalendar(game, random);
+    maybeCreateMidyearWorldReport(game);
   }
   buildRoundNews(game, results);
   if (game.week >= game.schedule.length) finishSeason(game);
@@ -1057,6 +1136,7 @@ export function finishLiveRound(game) {
 export function startNextSeason(game) {
   if (game.activeMatch) return { ok: false, message: "Conclua a partida em andamento primeiro." };
   if (!game.finished) return { ok: false, message: "A temporada atual ainda não terminou." };
+  delete game.pendingWorldReport;
   returnExpiredLoans(game);
   const random = mulberry32(game.rngState + game.season);
   game.season += 1;

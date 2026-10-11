@@ -48,13 +48,22 @@ test('a world season advances all leagues separately, survives reload and resets
   const before=game.clubs.find(c=>c.name==='Arsenal').budget;
   for(let i=0;i<5;i++) assert.ok(advanceWeek(game).ok);
   assert.equal(game.week,5);
-  assert.equal(game.leagues.find(l=>l.id==='eng-1').week,5);
+  assert.equal(game.leagues.find(l=>l.id==='eng-1').week,24);
   assert.notEqual(game.clubs.find(c=>c.name==='Arsenal').budget,before);
   const seller=game.clubs.find(c=>c.name==='Real Madrid');
   assert.ok(getTransferTerms(game,seller.id,seller.squad[0].id));
   game=bindUserLeague(JSON.parse(JSON.stringify(game)));
   assert.equal(game.table,game.leagues.find(l=>l.id===game.leagueId).table);
+  while(game.week<Math.ceil(game.schedule.length*0.5)) assert.ok(advanceWeek(game).ok);
+  const europeanReport=game.worldReports.find(report=>report.period==='midyear');
+  assert.ok(europeanReport);
+  assert.equal(europeanReport.label,'Encerramento europeu 2025/26');
+  for(const id of ['eng-1','esp-1','ita-1','champions','europa-league']) assert.ok(europeanReport.competitions.some(item=>item.id===id),id);
+  assert.equal(europeanReport.competitions.find(item=>item.id==='eng-1').standings[0].played,38);
+  assert.ok(europeanReport.competitions.find(item=>item.id==='champions').championId);
+  assert.ok(europeanReport.competitions.filter(item=>['eng-1','esp-1','ita-1','champions','europa-league'].includes(item.id)).every(item=>item.awards.length===3&&item.team.length===11));
   while(!game.finished) assert.ok(advanceWeek(game).ok);
+  assert.ok(game.worldReports.some(report=>report.period==='endyear'&&report.competitions.some(item=>item.id==='bra-1')));
   for(const league of game.leagues){
     assert.equal(league.week,league.schedule.length);
     for(const row of league.table) assert.equal(row.played,2*(league.clubIds.length-1));

@@ -69,8 +69,11 @@ let startupError = '';
 const repository = await openCareerRepository().catch(error => { startupError = `Não foi possível abrir o salvamento: ${error.message}`; return null; });
 let balanceDatabase;
 let game = await loadGame();
-let activeView = game ? (game.activeMatch ? "match" : game.finished && game.seasonReport ? "seasonReport" : "dashboard") : "setup";
+let activeView = game ? (game.activeMatch ? "match" : game.pendingWorldReport ? "worldReport" : game.finished && game.seasonReport ? "seasonReport" : "dashboard") : "setup";
 let seasonReportTab = "overview";
+let worldReportTab = "overview";
+let selectedWorldReportId = game?.pendingWorldReport?.id || null;
+let selectedWorldCompetitionId = null;
 let competitionLeagueId = null;
 let marketPage = 0;
 let matchTimer;
@@ -690,7 +693,36 @@ function renderParallelCompetition(competition) {
     ${phaseContent}
     ${qualificationEntries ? `<section class="card data-card"><div class="card-header"><h3>Clubes classificados</h3><span>Critério oficial adaptado ao ciclo do jogo</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Clube</th><th>Confederação</th><th>Via</th><th>Pontos</th></tr></thead><tbody>${qualificationEntries}</tbody></table></div></section>` : ""}
     ${awards ? `<section><div class="stadium-section-title"><div><p class="eyebrow">Destaques</p><h3>Prêmios individuais</h3></div><p>Um atleta pode vencer mais de uma categoria.</p></div><div class="season-awards-grid">${awards}</div></section>` : ""}
-    ${recentResults ? `<section class="card"><div class="card-header"><h3>${escapeHtml(recent.label)}</h3><span>Últimos resultados</span></div><div class="competition-fixtures">${recentResults}</div></section>` : ""}`;
+    ${recentResults ? `<section class="card"><div class="card-header"><h3>${escapeHtml(recent.label)}</h3><span>Últimos resultados</span></div><div class="competition-fixtures">${recentResults}</div></section>` : ""}
+    ${game.worldReports?.length ? `<section class="card season-history"><div class="card-header"><h3>Panoramas mundiais</h3><span>Meio e fim de ano</span></div><div class="card-body world-report-history">${game.worldReports.map(report => `<button type="button" class="secondary-button" data-world-report-id="${report.id}">${escapeHtml(report.label)} · ${report.competitions.length} competições</button>`).join("")}</div></section>` : ""}`;
+}
+
+function worldReportTabs() {
+  const tabs = [["overview", "Visão geral"], ["standings", "Classificação"], ["awards", "Premiações"], ["team", "Seleção"]];
+  return `<div class="season-report-tabs" role="tablist" aria-label="Seções do panorama mundial">${tabs.map(([id, label]) => `<button type="button" role="tab" aria-selected="${worldReportTab === id}" class="${worldReportTab === id ? "active" : ""}" data-world-report-tab="${id}">${label}</button>`).join("")}</div>`;
+}
+
+function worldReportTeam(entry) {
+  if (!entry.team?.length) return `<section class="card card-body"><p>Não há partidas avaliadas suficientes para montar a seleção.</p></section>`;
+  const positions = [entry.team.slice(8, 11), entry.team.slice(5, 8), entry.team.slice(1, 5), entry.team.slice(0, 1)];
+  const playerCard = player => `<article class="season-team-player">${teamShirtMarkup(getClub(game, player.clubId) || { name: player.clubName }, player.position)}<strong>${escapeHtml(player.playerName)}</strong><small>${escapeHtml(player.clubName)}</small><em>Nota ${player.average.toFixed(1).replace(".", ",")}</em><span>${player.appearances}J · ${player.goals}G · ${player.assists}A</span></article>`;
+  return `<section class="card season-team-card"><div class="card-header"><h3>Seleção da competição</h3><span>Formação 4-3-3 · mínimo de 40% (${entry.minimumAppearances} jogos)</span></div><div class="season-team-pitch"><div class="field-markings" aria-hidden="true"><span class="field-center-circle"></span><span class="field-center-spot"></span><span class="field-box field-box-top"><i></i><b></b></span><span class="field-box field-box-bottom"><i></i><b></b></span></div>${positions.map(row => `<div class="season-team-row" style="--players:${row.length}">${row.map(playerCard).join("")}</div>`).join("")}</div></section>`;
+}
+
+function renderWorldReport() {
+  const report = (game.worldReports || []).find(item => item.id === selectedWorldReportId) || game.pendingWorldReport || game.worldReports?.[0];
+  if (!report) { activeView = "competition"; renderCompetition(); return; }
+  selectedWorldReportId = report.id;
+  const entry = report.competitions.find(item => item.id === selectedWorldCompetitionId) || report.competitions[0];
+  selectedWorldCompetitionId = entry?.id || null;
+  const picker = `<label class="competition-picker"><span>Ver competição</span><select id="world-report-competition">${report.competitions.map(item => `<option value="${item.id}" ${item.id === entry?.id ? "selected" : ""}>${escapeHtml(item.name)}</option>`).join("")}</select></label>`;
+  const overview = `<div class="season-report-summary"><section class="season-hero"><div><p class="eyebrow">${escapeHtml(entry?.country || (entry?.type === "league" ? "Campeonato nacional" : "Torneio internacional"))}</p><h3>${escapeHtml(entry?.championName || "Temporada encerrada")}</h3><p>Campeão de ${escapeHtml(entry?.name || "competição")}.</p></div><strong>🏆</strong></section><div class="season-overview-grid">${report.competitions.map(item => `<button type="button" class="card card-body world-report-competition-card ${item.id === entry?.id ? "active" : ""}" data-world-report-competition="${item.id}"><small>${escapeHtml(item.country || (item.type === "league" ? "Liga" : "Copa"))}</small><h3>${escapeHtml(item.name)}</h3><p><strong>${escapeHtml(item.championName)}</strong></p></button>`).join("")}</div></div>`;
+  const standings = entry?.standings?.length ? renderSeasonStandings({ standings: entry.standings }) : `<section class="card card-body"><h3>${escapeHtml(entry?.name || "Competição")}</h3><p>Competição disputada em formato eliminatório. O campeão foi <strong>${escapeHtml(entry?.championName || "—")}</strong>.</p></section>`;
+  const awardCards = (entry?.awards || []).map(award => `<article class="card season-award"><span>${award.type === "topScorer" ? "⚽" : award.type === "topAssister" ? "◎" : "★"}</span><small>${escapeHtml(award.label)}</small><h3>${escapeHtml(award.playerName)}</h3><p>${escapeHtml(award.clubName)}</p><strong>${escapeHtml(award.statLabel)}</strong></article>`).join("");
+  const awards = `<div class="season-awards-grid">${awardCards || `<section class="card card-body"><p>Nenhuma premiação registrada.</p></section>`}</div>`;
+  const panels = { overview, standings, awards, team: entry ? worldReportTeam(entry) : "" };
+  const pending = game.pendingWorldReport?.id === report.id;
+  content.innerHTML = `${pageHeading("Panorama mundial", escapeHtml(report.label), report.period === "midyear" ? "Temporadas europeias e torneios encerrados em maio" : "Temporadas e torneios encerrados em dezembro")}${picker}${worldReportTabs()}<div class="season-report-panel" role="tabpanel">${panels[worldReportTab] || overview}</div><div class="season-report-actions"><p>${report.competitions.length} competições disponíveis para análise.</p><button type="button" class="primary-button" data-close-world-report>${pending ? "Continuar carreira" : "Voltar às competições"} <span>→</span></button></div>`;
 }
 
 function renderCompetition() {
@@ -714,6 +746,7 @@ function renderCompetition() {
     <section class="card data-card"><table class="data-table"><thead><tr><th>#</th><th>Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>PTS</th></tr></thead><tbody>${rows}</tbody></table></section>`;
   if (latestAwards.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Prêmios individuais da temporada ${game.lastSeasonPlayerAwards.season}</h3><span>Um jogador pode vencer mais de uma categoria</span></div><div class="card-body">${latestAwards.map(award => `<p><strong>${escapeHtml(award.label)}:</strong> <button class="player-detail-link" data-player-details="${award.playerId}" data-player-return="competition">${escapeHtml(award.playerName)}</button> · ${escapeHtml(award.clubName)} · ${escapeHtml(award.statLabel)} · prêmio de ${formatMoney(award.money)}</p>`).join("")}</div></section>`;
   if (history.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Histórico do clube</h3></div><div class="card-body">${[...history].reverse().map(season => `<p>Temporada ${season.season} · ${season.leagueName ? `${escapeHtml(season.leagueName)} · ` : ""}${season.position}º lugar · ${season.points} pontos${season.position === 1 ? " · Campeão" : ""}${season.prizeMoney ? ` · ${formatMoney(season.prizeMoney)} pela colocação` : ""}${season.individualAwardsMoney ? ` · ${formatMoney(season.individualAwardsMoney)} por prêmios individuais` : ""}</p>`).join("")}</div></section>`;
+  if (game.worldReports?.length) content.innerHTML += `<section class="card season-history"><div class="card-header"><h3>Panoramas mundiais</h3><span>Meio e fim de ano</span></div><div class="card-body world-report-history">${game.worldReports.map(report => `<button type="button" class="secondary-button" data-world-report-id="${report.id}">${escapeHtml(report.label)} · ${report.competitions.length} competições</button>`).join("")}</div></section>`;
 }
 
 const financeLabels = {
@@ -922,8 +955,8 @@ function render() {
   renderHeader();
   if (startupError) { content.innerHTML = `<section class="card card-body" role="alert"><h2>Não foi possível carregar a carreira</h2><p>${escapeHtml(startupError)}</p><p>Recarregue a página para tentar novamente. O salvamento existente não foi substituído.</p></section>`; return; }
   if (activeView === 'setup') { careerSetup.render(); if (!careerSetup.database && !careerSetup.loading && !careerSetup.error) careerSetup.load(); return; }
-  document.querySelectorAll(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === (activeView === "player" ? playerDetailReturnView : activeView)));
-  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, club: renderClubDetails, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, sponsors: renderSponsors, stadium: renderStadium }[activeView] || renderDashboard)();
+  document.querySelectorAll(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === (activeView === "player" ? playerDetailReturnView : activeView === "worldReport" ? "competition" : activeView)));
+  ({ match: renderMatch, roundReport: renderMatch, seasonReport: renderSeasonReport, worldReport: renderWorldReport, dashboard: renderDashboard, mail: renderMail, squad: renderSquad, club: renderClubDetails, player: renderPlayerDetails, lineup: () => lineupEditor.render(), academy: renderYouthAcademy, market: renderMarket, competition: renderCompetition, sponsors: renderSponsors, stadium: renderStadium }[activeView] || renderDashboard)();
   syncPenaltyDialog();
 }
 
@@ -996,7 +1029,7 @@ async function matchAction(action, takerId) {
   if (action === "penalty") result = takePenalty(game, takerId);
   if (action === "finish") {
     result = finishLiveRound(game);
-    if (result.ok) { activeView = game.finished && game.seasonReport ? "seasonReport" : "dashboard"; render(); try { await updatePlayerBalance(game); } catch { showToast("Atualização dos jogadores pendente. Será tentada na próxima abertura.", true); } showToast(game.finished ? "Temporada encerrada!" : "Rodada concluída!"); }
+    if (result.ok) { activeView = game.pendingWorldReport ? "worldReport" : game.finished && game.seasonReport ? "seasonReport" : "dashboard"; render(); try { await updatePlayerBalance(game); } catch { showToast("Atualização dos jogadores pendente. Será tentada na próxima abertura.", true); } showToast(game.pendingWorldReport ? "Novo panorama mundial disponível!" : game.finished ? "Temporada encerrada!" : "Rodada concluída!"); }
   }
   if (!result) return;
   if (game?.activeMatch?.phase === "penalty") { selectedRoundMatch = null; matchPanel = "stats"; }
@@ -1116,6 +1149,17 @@ content.addEventListener("click", event => {
   }
   const seasonTab = event.target.closest("[data-season-tab]");
   if (seasonTab) { seasonReportTab = seasonTab.dataset.seasonTab; renderSeasonReport(); return; }
+  const worldTab = event.target.closest("[data-world-report-tab]");
+  if (worldTab) { worldReportTab = worldTab.dataset.worldReportTab; renderWorldReport(); return; }
+  const worldCompetition = event.target.closest("[data-world-report-competition]");
+  if (worldCompetition) { selectedWorldCompetitionId = worldCompetition.dataset.worldReportCompetition; worldReportTab = "overview"; renderWorldReport(); return; }
+  const worldReportOpen = event.target.closest("[data-world-report-id]");
+  if (worldReportOpen) { selectedWorldReportId = worldReportOpen.dataset.worldReportId; selectedWorldCompetitionId = null; worldReportTab = "overview"; activeView = "worldReport"; render(); return; }
+  if (event.target.closest("[data-close-world-report]")) {
+    if (game.pendingWorldReport?.id === selectedWorldReportId) delete game.pendingWorldReport;
+    activeView = game.finished && game.seasonReport ? "seasonReport" : "competition";
+    saveGame(); render(); return;
+  }
   if (event.target.closest("[data-start-next-season]")) {
     const result = startNextSeason(game);
     if (result.ok) { seasonReportTab = "overview"; activeView = "dashboard"; saveGame(); showToast("Nova temporada iniciada!"); }
@@ -1350,6 +1394,7 @@ content.addEventListener("input", event => {
 
 content.addEventListener("change", event => {
   if (event.target.id === "competition-league") { competitionLeagueId = event.target.value; renderCompetition(); return; }
+  if (event.target.id === "world-report-competition") { selectedWorldCompetitionId = event.target.value; renderWorldReport(); return; }
   if (event.target.dataset.stadiumPrice) {
     const result = setStadiumTicketPrice(game, event.target.dataset.stadiumPrice, Number(event.target.value));
     if (result.ok) saveGame();
@@ -1363,11 +1408,12 @@ content.addEventListener("change", event => {
 
 function beginRound() {
   if (game.activeMatch) { activeView = "match"; render(); return; }
+  if (game.pendingWorldReport) { activeView = "worldReport"; render(); return; }
   if (game.finished) { activeView = "seasonReport"; render(); return; }
   const result = startMatch(game);
   if (result.ok) {
     saveGame();
-    activeView = game.finished && game.seasonReport ? "seasonReport" : result.bye ? "dashboard" : "match";
+    activeView = game.pendingWorldReport ? "worldReport" : game.finished && game.seasonReport ? "seasonReport" : result.bye ? "dashboard" : "match";
     selectedRoundMatch = null; matchPanel = "stats"; selectedMatchPlayer = null;
   } else {
     showToast(result.message, true);
