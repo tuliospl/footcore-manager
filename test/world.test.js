@@ -77,6 +77,22 @@ test('a world season advances all leagues separately, survives reload and resets
   assert.equal(getSortedTable(game,'eng-2').length,24);
 });
 
+test('European managers receive the annual panorama in December and their season summary in May',()=>{
+  const game=career('Liverpool');
+  for(let round=0;round<Math.ceil(game.schedule.length*0.5);round++) assert.ok(advanceWeek(game).ok);
+  const annualReport=game.worldReports.find(report=>report.period==='endyear');
+  assert.ok(annualReport);
+  assert.equal(annualReport.label,'Encerramento anual 2026');
+  assert.ok(annualReport.competitions.some(item=>item.id==='bra-1'&&item.standings[0].played===38));
+  assert.equal(game.pendingWorldReport.id,annualReport.id);
+  while(!game.finished) assert.ok(advanceWeek(game).ok);
+  const europeanReport=game.worldReports.find(report=>report.period==='midyear');
+  assert.ok(europeanReport);
+  assert.equal(europeanReport.label,'Encerramento europeu 2026/27');
+  assert.equal(game.seasonReport.leagueId,'eng-1');
+  assert.equal(game.pendingWorldReport.id,europeanReport.id);
+});
+
 test('adjacent divisions exchange clubs and award placement prizes at season end',()=>{
   const clubs=database.clubs.slice(0,8);
   const subset={...database,clubs,freeAgents:[]};

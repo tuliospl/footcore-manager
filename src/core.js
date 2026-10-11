@@ -911,12 +911,14 @@ function competitionTableSnapshot(table, game) {
   return [...table].sort((first, second) => second.points - first.points || (second.gf - second.ga) - (first.gf - first.ga) || second.gf - first.gf).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId)?.name || "Clube" }));
 }
 
-function maybeCreateMidyearWorldReport(game) {
-  if (!game.leagues?.length || leagueCalendarProfile(game.leagues.find(league => league.id === game.leagueId)).id !== "annual") return null;
+function maybeCreateInterimWorldReport(game) {
+  if (!game.leagues?.length) return null;
+  const ownCalendar = leagueCalendarProfile(game.leagues.find(league => league.id === game.leagueId)).id;
+  const period = ownCalendar === "annual" ? "midyear" : "endyear";
   const midpoint = Math.ceil(game.schedule.length * 0.5);
-  const reportId = `${game.worldSeason || game.season}-midyear`;
+  const reportId = `${game.worldSeason || game.season}-${period}`;
   if (game.week < midpoint || game.worldReports?.some(report => report.id === reportId)) return null;
-  return createWorldReport(game, "midyear");
+  return createWorldReport(game, period);
 }
 
 function buildSeasonReport(game) {
@@ -1026,7 +1028,8 @@ function applyRound(game, results, random) {
       const ownProfile = leagueCalendarProfile(own);
       const leagueProfile = leagueCalendarProfile(league);
       const progress = game.week / game.schedule.length;
-      const targetProgress = ownProfile.id === "annual" && leagueProfile.id === "cross-year" ? Math.min(1, 0.5 + progress) : progress;
+      const oppositeCalendar = ownProfile.id !== leagueProfile.id;
+      const targetProgress = oppositeCalendar ? Math.min(1, 0.5 + progress) : progress;
       const target = Math.floor(targetProgress * league.schedule.length);
       const context = { ...game, table: league.table, clubs: game.clubs.filter(c => league.clubIds.includes(c.id)) };
       while (league.week < target) {
@@ -1038,7 +1041,7 @@ function applyRound(game, results, random) {
       }
     }
     processParallelCalendar(game, random);
-    maybeCreateMidyearWorldReport(game);
+    maybeCreateInterimWorldReport(game);
   }
   buildRoundNews(game, results);
   if (game.week >= game.schedule.length) finishSeason(game);

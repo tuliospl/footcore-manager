@@ -1,6 +1,7 @@
 import { recordSeasonFinance } from "./season-tracking.js";
 import { playerValue } from "./player-balance.js";
 import { ensureWorldClubCompetitions, recordContinentalChampion, recordContinentalRound, worldCompetitionDefinitions } from "./world-club-competitions.js";
+import { leagueCalendarProfile } from "./calendar.js";
 
 const EUROPE = new Set(["DEU", "ENG", "ESP", "FRA", "ITA", "NLD", "PRT", "RUS", "TUR"]);
 const SOUTH_AMERICA = new Set(["ARG", "BRA", "COL", "PRY", "URY"]);
@@ -168,10 +169,17 @@ function createCompetition(game, definition) {
   const selection = selectedClubs(game, definition);
   const participants = selection.participants;
   if (participants.length < 4) return null;
-  const nextWeek = definition.nextWeekRatio ? Math.max(1, Math.floor(game.schedule.length * definition.nextWeekRatio)) : 1;
-  const availableWeeks = definition.reportPeriod === "midyear" ? Math.max(1, Math.floor(game.schedule.length * 0.5)) : Math.max(1, game.schedule.length - nextWeek);
+  const ownLeague = game.leagues?.find(league => league.id === game.leagueId);
+  const ownCalendar = leagueCalendarProfile(ownLeague).id;
+  const reportPeriod = definition.reportPeriod || "endyear";
+  const reportAtMidpoint = ownCalendar === "annual" && reportPeriod === "midyear" || ownCalendar === "cross-year" && reportPeriod === "endyear";
+  const defaultStartRatio = definition.nextWeekRatio || 0;
+  const startRatio = reportAtMidpoint && defaultStartRatio > 0.5 ? 0.35 : defaultStartRatio;
+  const nextWeek = startRatio ? Math.max(1, Math.floor(game.schedule.length * startRatio)) : 1;
+  const deadline = reportAtMidpoint ? Math.max(1, Math.floor(game.schedule.length * 0.5)) : game.schedule.length;
+  const availableWeeks = Math.max(1, deadline - nextWeek);
   const cadence = Math.max(1, Math.floor(availableWeeks / definition.cadenceRounds));
-  const competition = { ...definition, reportPeriod: definition.reportPeriod || "endyear", countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek, roundIndex: 0, history: [], playerStats: {}, awards: [], finished: false, championId: null, awaitingUser: false };
+  const competition = { ...definition, reportPeriod, countries: definition.countries ? [...definition.countries] : [], participants, qualification: selection.qualification, season: game.season, cadence, nextWeek, roundIndex: 0, history: [], playerStats: {}, awards: [], finished: false, championId: null, awaitingUser: false };
   if (definition.format === "groups") {
     const { groups, rounds } = createGroups(participants.slice(0, 32), definition.groupLegs || 2);
     Object.assign(competition, { phase: "groups", groups, phaseRounds: rounds, currentFixtures: rounds[0], roundLabel: "Fase de grupos · rodada 1" });
