@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGame, advanceWeek, getUserClub, sellPlayer, loanOutAcademyGraduate, loanOutPlayer } from "../src/core.js";
+import { createGame, advanceWeek, getUserClub, sellPlayer, loanOutAcademyGraduate, loanOutPlayer, startNextSeason } from "../src/core.js";
 import {
   advanceYouthAcademy,
   ageYouthAcademy,
@@ -93,13 +93,13 @@ test("academy talents can be promoted at 16, released and developed between seas
   assert.equal(academy.prospects.includes(disposable), false);
 });
 
-test("academy graduates cannot be promoted and immediately sold for their projected value", () => {
+test("academy graduates unlock sales after five professional matches or at age 18", () => {
   const game = createGame(913);
   const scout = hireByExperience(game, 5);
   startScouting(game, scout.id, "sam");
   while (scout.mission) advanceYouthAcademy(game);
   const prospect = ensureYouthAcademy(game).prospects[0];
-  prospect.age = 18;
+  prospect.age = 17;
   assert.equal(promoteProspect(game, prospect.id).ok, true);
   const club = getUserClub(game);
   const budget = club.budget;
@@ -111,15 +111,25 @@ test("academy graduates cannot be promoted and immediately sold for their projec
   const expectedFee = Math.round(prospect.value * 0.1 / 1000) * 1000;
   assert.equal(sellPlayer(game, prospect.id).ok, true);
   assert.equal(club.budget, budget + expectedFee);
+
+  const secondGame = createGame(914);
+  const secondScout = hireByExperience(secondGame, 5);
+  startScouting(secondGame, secondScout.id, "sam");
+  while (secondScout.mission) advanceYouthAcademy(secondGame);
+  const adultProspect = ensureYouthAcademy(secondGame).prospects[0];
+  adultProspect.age = 18;
+  assert.equal(promoteProspect(secondGame, adultProspect.id).ok, true);
+  assert.equal(sellPlayer(secondGame, adultProspect.id).ok, true);
 });
 
 test("academy graduates can develop on loan and return automatically", () => {
   const game = createGame(321);
   const owner = getUserClub(game);
   owner.reputation = 95;
+  owner.squad.forEach(item => { item.contractEndSeason = game.season + 3; });
   const player = owner.squad.find(item => item.position !== "GOL");
   player.academyGraduate = true;
-  player.age = 19;
+  player.age = 16;
   player.overall = 82;
   player.potential = 95;
   const startingOverall = player.overall;
@@ -134,6 +144,10 @@ test("academy graduates can develop on loan and return automatically", () => {
   assert.equal(player.loan, undefined);
   assert.ok(player.appearances >= 8);
   assert.ok(player.overall > startingOverall);
+  assert.ok(startNextSeason(game).ok);
+  assert.equal(player.age, 17);
+  assert.equal(player.appearances, 0);
+  assert.equal(sellPlayer(game, player.id).ok, true);
 });
 
 test("any owned player can be loaned when another club offers playing time", () => {

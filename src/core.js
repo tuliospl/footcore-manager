@@ -227,6 +227,15 @@ function clubAverage(club) {
   return club.squad.reduce((total, player) => total + player.overall, 0) / Math.max(1, club.squad.length);
 }
 
+function academyGraduateAppearances(game, player) {
+  const previousSeasons = (player.seasonHistory || []).filter(entry => entry.season !== game.season).reduce((total, entry) => total + (entry.appearances || 0), 0);
+  return previousSeasons + (player.appearances || 0);
+}
+
+function academyGraduateCanBeSold(game, player) {
+  return !player.academyGraduate || player.age >= 18 || academyGraduateAppearances(game, player) >= 5;
+}
+
 function ensureReleaseClause(game, club, player) {
   if (Object.prototype.hasOwnProperty.call(player, "releaseClause") || player.loan) return;
   const key = `${game.seed}:${club.id}:${player.id}:release-clause`;
@@ -1249,7 +1258,7 @@ function generateIncomingInterest(game) {
   if (game.incomingOffers.length >= 3 || game.finished) return;
   const seller = getUserClub(game);
   const sellerAverage = clubAverage(seller);
-  const eligible = seller.squad.filter(player => canTransferOut(seller, player) && (!player.academyGraduate || player.appearances >= 5)).map(player => {
+  const eligible = seller.squad.filter(player => canTransferOut(seller, player) && academyGraduateCanBeSold(game, player)).map(player => {
     const potentialBonus = Math.max(0, player.potential - player.overall) * 0.2;
     const formBonus = (player.form - 65) * 0.08;
     const relativeAppeal = player.overall - sellerAverage + potentialBonus + formBonus;
@@ -1608,11 +1617,12 @@ export function sellPlayer(game, playerId) {
   if (player.position === "GOL" && club.squad.filter(item => item.position === "GOL" && !item.loan).length === 1) {
     return { ok: false, message: "Você precisa manter ao menos um goleiro." };
   }
-  if (player.academyGraduate && player.appearances < 5) {
-    return { ok: false, message: `${player.name} ainda precisa disputar 5 jogos profissionais para despertar propostas de transferência.` };
+  const professionalAppearances = academyGraduateAppearances(game, player);
+  if (!academyGraduateCanBeSold(game, player)) {
+    return { ok: false, message: `${player.name} poderá ser vendido quando completar 18 anos ou alcançar 5 jogos profissionais, inclusive por empréstimo.` };
   }
   const academyGraduateRate = player.academyGraduate
-    ? Math.min(0.88, 0.1 + (player.appearances - 5) * 0.052)
+    ? Math.min(0.88, 0.1 + Math.max(0, professionalAppearances - 5) * 0.052)
     : 0.88;
   const fee = Math.round(player.value * academyGraduateRate / 1000) * 1000;
   club.budget += fee;

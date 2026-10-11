@@ -773,7 +773,7 @@ function renderYouthAcademy() {
       const active = academySort.key === column.key;
       const next = active ? academySort.direction === "asc" ? "desc" : "asc" : column.direction;
       return `<th scope="col" class="sortable-heading" aria-sort="${active ? academySort.direction === "asc" ? "ascending" : "descending" : "none"}"><button type="button" data-academy-sort="${column.key}" title="Ordenar por ${column.label.toLocaleLowerCase("pt-BR")} em ordem ${next === "asc" ? "crescente" : "decrescente"}">${column.label}<span aria-hidden="true">${active ? academySort.direction === "asc" ? "↑" : "↓" : "↕"}</span></button></th>`;
-    }).join("")}<th scope="col">Ações</th></tr></thead><tbody>${prospects || `<tr><td colspan="7" class="empty-state">Nenhum talento observado. Envie um olheiro para uma região.</td></tr>`}</tbody></table><p class="view-note academy-value-note">Após a promoção, o jovem precisa atuar em 5 jogos para receber propostas. O valor oferecido começa baixo e cresce gradualmente até ele se firmar no profissional.</p></section>`;
+    }).join("")}<th scope="col">Ações</th></tr></thead><tbody>${prospects || `<tr><td colspan="7" class="empty-state">Nenhum talento observado. Envie um olheiro para uma região.</td></tr>`}</tbody></table><p class="view-note academy-value-note">Após a promoção, o jovem pode ser negociado ao completar 18 anos ou alcançar 5 jogos profissionais, inclusive por empréstimo. O valor oferecido começa baixo e cresce gradualmente até ele se firmar.</p></section>`;
 }
 
 function renderMatch() {
