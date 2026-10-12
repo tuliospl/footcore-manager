@@ -684,11 +684,26 @@ function awardSeasonPrizes(game) {
   return awards;
 }
 
-function awardIndividualHonors(game) {
-  const leagueAwards = [];
+function awardIndividualHonors(game, leagueIds = null) {
   const leagues = game.leagues || [{ id: "national", name: "Liga nacional", tier: 1, clubIds: game.clubs.map(club => club.id), schedule: game.schedule }];
-  for (const league of leagues) {
+  const selectedLeagueIds = leagueIds ? new Set(leagueIds) : null;
+  const previous = game.lastSeasonPlayerAwards?.season === game.season ? game.lastSeasonPlayerAwards.leagues : [];
+  const leagueAwards = new Map(previous.map(entry => [entry.leagueId, entry]));
+  const syncHistory = record => {
+    if (record.historyRecorded) return;
+    const club = getClub(game, record.clubId);
+    const history = club?.history.find(entry => entry.season === game.season);
+    if (!history) return;
+    history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + record.money;
+    record.historyRecorded = true;
+  };
+  for (const league of leagues.filter(item => !selectedLeagueIds || selectedLeagueIds.has(item.id))) {
     if (league.clubIds.length < 2) continue;
+    const existing = leagueAwards.get(league.id);
+    if (existing) {
+      existing.awards.forEach(syncHistory);
+      continue;
+    }
     const awards = leagueAwardWinners(game, league.id).map(winner => {
       const { player, club } = winner;
       const money = leagueIndividualAwardMoney(league, winner.type);
@@ -717,14 +732,17 @@ function awardIndividualHonors(game) {
       player.awards ??= [];
       player.awards.push(record);
       const history = club.history.find(entry => entry.season === game.season);
-      if (history) history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + money;
+      if (history) {
+        history.individualAwardsMoney = (history.individualAwardsMoney ?? 0) + money;
+        record.historyRecorded = true;
+      }
       if (club.id === game.userClubId) game.news.unshift({ id: `award-${game.season}-${winner.type}-${player.id}`, type: "positive", title: `${player.name}: ${winner.label}`, body: `${winner.statLabel}. O geral e o potencial do atleta melhoraram; os ${formatMoney(money)} serão pagos no início da próxima temporada.` });
       return record;
     });
-    leagueAwards.push({ leagueId: league.id, leagueName: league.name, awards });
+    leagueAwards.set(league.id, { leagueId: league.id, leagueName: league.name, awards });
   }
-  game.lastSeasonPlayerAwards = { season: game.season, leagues: leagueAwards };
-  return leagueAwards;
+  game.lastSeasonPlayerAwards = { season: game.season, leagues: [...leagueAwards.values()] };
+  return game.lastSeasonPlayerAwards.leagues;
 }
 
 export function worldAwardWinners(game) {
@@ -892,22 +910,11 @@ export function seasonTeam(game, leagueId, suppliedClubIds = null) {
   }).filter(Boolean);
 }
 
-function reportAward(winner) {
-  return {
-    type: winner.type,
-    label: winner.label,
-    stat: winner.stat,
-    statLabel: winner.statLabel,
-    playerId: winner.player.id,
-    playerName: winner.player.name,
-    clubId: winner.club.id,
-    clubName: winner.club.name
-  };
-}
-
 export function createWorldReport(game, period) {
   const profileId = period === "midyear" ? "cross-year" : "annual";
-  const leagues = (game.leagues || []).filter(league => Number(league.tier) === 1 && leagueCalendarProfile(league).id === profileId).map(league => {
+  const reportingLeagues = (game.leagues || []).filter(league => Number(league.tier) === 1 && leagueCalendarProfile(league).id === profileId);
+  const awardedLeagues = new Map(awardIndividualHonors(game, reportingLeagues.map(league => league.id)).map(entry => [entry.leagueId, entry.awards]));
+  const leagues = reportingLeagues.map(league => {
     const standings = getSortedTable(game, league.id).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId).name }));
     return {
       id: league.id,
@@ -917,7 +924,7 @@ export function createWorldReport(game, period) {
       championId: standings[0]?.clubId || null,
       championName: standings[0]?.clubName || "—",
       standings,
-      awards: leagueAwardWinners(game, league.id).map(reportAward),
+      awards: awardedLeagues.get(league.id) || [],
       team: seasonTeam(game, league.id),
       minimumAppearances: seasonTeamMinimumAppearances(game, league)
     };

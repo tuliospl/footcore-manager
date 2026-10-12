@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney, worldAwardWinners, worldReportToDisplay } from '../src/core.js';
+import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, createWorldReport, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney, worldAwardWinners, worldReportToDisplay } from '../src/core.js';
 import { startMatch } from '../src/match.js';
 import { filterCareerClubs } from '../src/career-setup.js';
 const database = JSON.parse(readFileSync(new URL('../data/world/database.json', import.meta.url)));
@@ -103,6 +103,25 @@ test('pending world report takes priority over a stale report selection at seaso
   assert.equal(game.pendingWorldReport.period,'midyear');
   assert.notEqual(game.pendingWorldReport.id,staleReportId);
   assert.equal(worldReportToDisplay(game,staleReportId).id,game.pendingWorldReport.id);
+});
+
+test('calendar reports improve award winners from AI-controlled clubs exactly once',()=>{
+  const game=career();
+  for(const player of game.clubs.flatMap(club=>club.squad)){
+    player.goals=0;player.assists=0;player.appearances=30;player.ratedMatches=30;player.ratingTotal=180;
+  }
+  const city=game.clubs.find(item=>item.name==='Manchester City');
+  const haaland=city.squad.find(player=>player.name==='Erling Haaland');
+  Object.assign(haaland,{goals:50,assists:10,appearances:30,ratedMatches:30,ratingTotal:240});
+  const before={overall:haaland.overall,potential:haaland.potential};
+  const report=createWorldReport(game,'midyear');
+  const premier=report.competitions.find(item=>item.id==='eng-1');
+  assert.equal(premier.awards.find(award=>award.type==='topScorer').playerId,haaland.id);
+  assert.ok(haaland.overall>before.overall);
+  assert.ok(haaland.potential>before.potential);
+  const afterFirstReport={overall:haaland.overall,potential:haaland.potential,awards:haaland.awards.length,payments:game.pendingPrizePayments.length};
+  createWorldReport(game,'midyear');
+  assert.deepEqual({overall:haaland.overall,potential:haaland.potential,awards:haaland.awards.length,payments:game.pendingPrizePayments.length},afterFirstReport);
 });
 
 test('adjacent divisions exchange clubs and award placement prizes at season end',()=>{
