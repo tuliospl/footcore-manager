@@ -43,6 +43,7 @@ import {
   setTactic,
   setMarkingIntensity,
   startNextSeason,
+  worldReportToDisplay,
 } from "./core.js";
 import { startMatch, resumeMatch, pauseMatch, advanceMatchMinute, setPenaltyTaker, takePenalty, ensureLiveRound, setMatchFormation, moveMatchPlayer } from "./match.js";
 import { renderMatchEvents } from "./match-view.js";
@@ -710,7 +711,7 @@ function worldReportTeam(entry) {
 }
 
 function renderWorldReport() {
-  const report = (game.worldReports || []).find(item => item.id === selectedWorldReportId) || game.pendingWorldReport || game.worldReports?.[0];
+  const report = worldReportToDisplay(game, selectedWorldReportId);
   if (!report) { activeView = "competition"; renderCompetition(); return; }
   selectedWorldReportId = report.id;
   const entry = report.competitions.find(item => item.id === selectedWorldCompetitionId) || report.competitions[0];

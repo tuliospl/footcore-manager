@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney, worldAwardWinners } from '../src/core.js';
+import { createGameFromDatabase, createSchedule, advanceWeek, startNextSeason, bindUserLeague, getTransferTerms, getSortedTable, leagueMovementPlaces, leaguePrizeMoney, leagueSeasonRules, leagueAwardWinners, leagueIndividualAwardMoney, worldAwardWinners, worldReportToDisplay } from '../src/core.js';
 import { startMatch } from '../src/match.js';
 import { filterCareerClubs } from '../src/career-setup.js';
 const database = JSON.parse(readFileSync(new URL('../data/world/database.json', import.meta.url)));
@@ -91,6 +91,18 @@ test('European managers receive the annual panorama in December and their season
   assert.equal(europeanReport.label,'Encerramento europeu 2026/27');
   assert.equal(game.seasonReport.leagueId,'eng-1');
   assert.equal(game.pendingWorldReport.id,europeanReport.id);
+  assert.equal(worldReportToDisplay(game, annualReport.id).id, europeanReport.id);
+});
+
+test('pending world report takes priority over a stale report selection at season end',()=>{
+  const game=career('Liverpool');
+  for(let round=0;round<Math.ceil(game.schedule.length*0.5);round++) assert.ok(advanceWeek(game).ok);
+  const staleReportId=game.pendingWorldReport.id;
+  delete game.pendingWorldReport;
+  while(!game.finished) assert.ok(advanceWeek(game).ok);
+  assert.equal(game.pendingWorldReport.period,'midyear');
+  assert.notEqual(game.pendingWorldReport.id,staleReportId);
+  assert.equal(worldReportToDisplay(game,staleReportId).id,game.pendingWorldReport.id);
 });
 
 test('adjacent divisions exchange clubs and award placement prizes at season end',()=>{

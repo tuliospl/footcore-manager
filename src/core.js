@@ -951,6 +951,13 @@ export function createWorldReport(game, period) {
   return report;
 }
 
+export function worldReportToDisplay(game, selectedReportId = null) {
+  return game.pendingWorldReport
+    || (game.worldReports || []).find(report => report.id === selectedReportId)
+    || game.worldReports?.[0]
+    || null;
+}
+
 function competitionTableSnapshot(table, game) {
   return [...table].sort((first, second) => second.points - first.points || (second.gf - second.ga) - (first.gf - first.ga) || second.gf - first.gf).map((row, index) => ({ ...row, position: index + 1, clubName: getClub(game, row.clubId)?.name || "Clube" }));
 }
