@@ -162,10 +162,17 @@ test("completes and renews a season", () => {
   assert.equal(getSortedTable(game)[0].played, 14);
   assert.equal(game.lastSeasonPlayerAwards.leagues[0].leagueId, "national");
   assert.equal(game.lastSeasonPlayerAwards.leagues[0].awards.length, 3);
+  const [longTermInjury, recoveredInjury] = game.clubs[1].squad;
+  Object.assign(longTermInjury, { injuryMatches: 18, injuryLabel: "Lesão de longa duração" });
+  Object.assign(recoveredInjury, { injuryMatches: 4, injuryLabel: "Lesão grave" });
   assert.equal(startNextSeason(game).ok, true);
   assert.equal(game.season, 2);
   assert.equal(game.week, 0);
   assert.equal(game.finished, false);
+  assert.equal(longTermInjury.injuryMatches, 12);
+  assert.equal(longTermInjury.injuryLabel, "Lesão de longa duração");
+  assert.equal(recoveredInjury.injuryMatches, 0);
+  assert.equal(recoveredInjury.injuryLabel, null);
 });
 
 test("buys and sells players while updating budget", () => {

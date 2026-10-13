@@ -1113,7 +1113,24 @@ function applyRound(game, results, random) {
 export function injuryFromRoll(severityRoll, durationRoll) {
   if (severityRoll < 0.55) return { label: "Lesão leve", matches: 1 };
   if (severityRoll < 0.9) return { label: "Lesão moderada", matches: 2 + Math.floor(durationRoll * 2) };
-  return { label: "Lesão grave", matches: 4 + Math.floor(durationRoll * 3) };
+  if (severityRoll < 0.998) return { label: "Lesão grave", matches: 4 + Math.floor(durationRoll * 3) };
+  return { label: "Lesão de longa duração", matches: 12 + Math.floor(durationRoll * 13) };
+}
+
+export function applyInjury(player, injury, recoveryReduction = 0) {
+  player.injuryMatches = Math.max(1, injury.matches - recoveryReduction);
+  player.injuryLabel = injury.label;
+  const impact = { overallLoss: 0, potentialLoss: 0 };
+  if (injury.label !== "Lesão de longa duração") return impact;
+  const previousOverall = player.overall;
+  const previousPotential = player.potential;
+  player.overall = Math.max(1, player.overall - (injury.matches >= 20 ? 2 : 1));
+  player.potential = Math.max(player.overall, player.potential - 1);
+  player.form = Math.max(20, (player.form ?? 65) - 10);
+  player.value = playerValue(player);
+  impact.overallLoss = previousOverall - player.overall;
+  impact.potentialLoss = previousPotential - player.potential;
+  return impact;
 }
 
 function updateAvailability(game, results, random) {
@@ -1146,9 +1163,9 @@ function updateAvailability(game, results, random) {
         }
         if (stats.minutes > 0 && !player.injuryMatches && random() < 0.012 * medicalInjuryRisk(club)) {
           const injury = injuryFromRoll(random(), random());
-          player.injuryMatches = Math.max(1, injury.matches - medicalRecoveryReduction(club));
-          player.injuryLabel = injury.label;
-          if (clubId === game.userClubId) game.news?.unshift({ id: `injury-${game.season}-${game.week}-${player.id}`, type: "negative", title: `${player.name} se lesionou`, body: `${injury.label}: previsão de retorno em ${player.injuryMatches} ${player.injuryMatches === 1 ? "partida" : "partidas"}.` });
+          const impact = applyInjury(player, injury, medicalRecoveryReduction(club));
+          const careerImpact = impact.overallLoss || impact.potentialLoss ? ` A gravidade causou perda de ${impact.overallLoss} no geral e ${impact.potentialLoss} no potencial.` : "";
+          if (clubId === game.userClubId) game.news?.unshift({ id: `injury-${game.season}-${game.week}-${player.id}`, type: "negative", title: `${player.name} se lesionou`, body: `${injury.label}: previsão de retorno em ${player.injuryMatches} ${player.injuryMatches === 1 ? "partida" : "partidas"}.${careerImpact}` });
         }
       }
     }
@@ -1219,7 +1236,12 @@ export function startNextSeason(game) {
     if(!game.managementVersion) game.market = generateMarket(random, game.season);
   }
   game.lastRound = [];
-  [...game.clubs.flatMap(club=>club.squad), ...game.market].forEach(player => { player.goals = 0; player.assists = 0; player.yellowCards = 0; player.yellowCardAccumulation = 0; player.redCards = 0; player.suspensionMatches = 0; player.suspensionReason = null; player.injuryMatches = 0; player.injuryLabel = null; player.appearances = 0; player.ratingTotal = 0; player.ratedMatches = 0; });
+  [...game.clubs.flatMap(club=>club.squad), ...game.market].forEach(player => {
+    player.goals = 0; player.assists = 0; player.yellowCards = 0; player.yellowCardAccumulation = 0; player.redCards = 0; player.suspensionMatches = 0; player.suspensionReason = null;
+    player.injuryMatches = Math.max(0, (player.injuryMatches || 0) - 6);
+    if (!player.injuryMatches) player.injuryLabel = null;
+    player.appearances = 0; player.ratingTotal = 0; player.ratedMatches = 0;
+  });
   game.news.unshift({ id: `season-${game.season}`, type: "info", title: `Temporada ${game.season}`, body: "Os clubes voltam a campo com objetivos renovados." });
   ensureSeasonTracking(game);
   startFanSeason(game);

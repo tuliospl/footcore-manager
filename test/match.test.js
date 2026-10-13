@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGame, getUserClub, getClub, getLineup, injuryFromRoll, finishLiveRound, advanceWeek, buyPlayer, sellPlayer, makeTransferOffer, acceptClubListing, startNextSeason, setMarkingIntensity } from "../src/core.js";
+import { createGame, getUserClub, getClub, getLineup, injuryFromRoll, applyInjury, finishLiveRound, advanceWeek, buyPlayer, sellPlayer, makeTransferOffer, acceptClubListing, startNextSeason, setMarkingIntensity } from "../src/core.js";
 import { startMatch, resumeMatch, pauseMatch, advanceMatchMinute, moveMatchPlayer, substitutePlayer, setPenaltyTaker, takePenalty } from "../src/match.js";
 
 function fixture(seed = 42) {
@@ -53,6 +53,23 @@ test("three accumulated yellows suspend one match and injury severity defines re
   assert.deepEqual(injuryFromRoll(0.2, 0.9), { label: "Lesão leve", matches: 1 });
   assert.deepEqual(injuryFromRoll(0.7, 0.9), { label: "Lesão moderada", matches: 3 });
   assert.deepEqual(injuryFromRoll(0.95, 0.9), { label: "Lesão grave", matches: 6 });
+  assert.deepEqual(injuryFromRoll(0.999, 0), { label: "Lesão de longa duração", matches: 12 });
+  assert.deepEqual(injuryFromRoll(0.999, 0.999), { label: "Lesão de longa duração", matches: 24 });
+});
+
+test("long-term injuries affect overall and potential equally at AI-controlled clubs", () => {
+  const game = fixture(31);
+  const opponent = getClub(game, game.activeMatch.awayId);
+  const player = opponent.squad[0];
+  Object.assign(player, { overall: 85, potential: 92, form: 80, value: 1_000_000_000 });
+  const previousValue = player.value;
+  const impact = applyInjury(player, { label: "Lesão de longa duração", matches: 22 }, 2);
+  assert.deepEqual(impact, { overallLoss: 2, potentialLoss: 1 });
+  assert.equal(player.injuryMatches, 20);
+  assert.equal(player.overall, 83);
+  assert.equal(player.potential, 91);
+  assert.equal(player.form, 70);
+  assert.ok(player.value < previousValue);
 });
 
 test("live match pauses without advancing and blocks duplicate starts or early finalization", () => {
